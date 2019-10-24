@@ -11,26 +11,17 @@ final case class E(code: Int,
 
   def message(m: String): E = copy(message = m)
 
-  def cause(throwable: Throwable): E =
-    cause.fold(copy(cause = Some(throwable))) { existing =>
-      copy(cause = Some(throwable.initCause(existing)))
-    }
+  def cause(throwable: Throwable): E = copy(cause = Some(throwable))
 
-  def data(d: Map[String, String]): E = copy(data = self.data ++ d)
+  def data(d: Map[String, String]): E = copy(data = d)
 
-  override def toString: String =
-    List(
-      s""""code":$code""",
-      if (name.isEmpty) "" else s""""name":"$name"""",
-      if (message.isEmpty) "" else s""""message":"$message"""",
-      cause.fold("")(c => s""""cause":"${c.getMessage}""""),
-      if (data.isEmpty) "" else s""""data":${data.map({case (k, v) => s""""$k":"$v""""}).mkString("{", ",", "}")}"""
-    ).filterNot(_.isEmpty)
-     .mkString("{", ",", "}")
+  override def toString: String = DefaultEncoderE.encode(self)
 }
 
 object E {
   val empty: E = E(0, "", "", None, Map.empty)
+
+  def apply: E = empty
 
   def code(c: Int): E = empty.code(c)
 
@@ -41,4 +32,14 @@ object E {
   def cause(throwable: Throwable): E = empty.cause(throwable)
 
   def data(d: Map[String, String]): E = empty.data(d)
+
+  def apply(code: Int, name: String): E = empty.code(code).name(name)
+
+  def apply(code: Int, name: String, message: String): E = apply(code, name).message(message)
+
+  def apply(code: Int, name: String, message: String, data: Map[String, String]): E = apply(code, name, message).data(data)
+
+  def apply(code: Int, name: String, cause: Throwable): E = apply(code, name, cause.getMessage).cause(cause)
+
+  def apply(code: Int, name: String, message: String, cause: Throwable): E = apply(code, name, message).cause(cause)
 }
