@@ -21,7 +21,7 @@ final case class E(code: Int,
 object E {
   val empty: E = E(0, "", "", None, Map.empty)
 
-  def apply: E = empty
+  def apply(): E = empty
 
   def code(c: Int): E = empty.code(c)
 

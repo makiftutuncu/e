@@ -13,3 +13,9 @@ organizationHomepage := Some(url("https://akif.dev"))
 developers           := List(Developer("1", "Mehmet Akif Tütüncü", "m.akif.tutuncu@gmail.com", url("https://akif.dev")))
 apiURL               := Some(url("https://github.com/makiftutuncu/e/blob/API.md"))
 scmInfo              := Some(ScmInfo(url("https://github.com/makiftutuncu/e"), "https://github.com/makiftutuncu/e"))
+
+val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
+
+libraryDependencies ++= Seq(
+  scalaTest
+)
