@@ -1,5 +1,6 @@
 package dev.akif.e
 
+import java.util.{HashMap => JMap}
 import org.scalatest.{Matchers, WordSpec}
 
 class ESpec extends WordSpec with Matchers {
@@ -10,14 +11,20 @@ class ESpec extends WordSpec with Matchers {
       e.code    shouldBe 0
       e.name    shouldBe ""
       e.message shouldBe ""
-      e.cause   shouldBe None
-      e.data    shouldBe Map.empty
+      e.cause   shouldBe null
+      e.data    shouldBe new JMap[String, String]
+
+      e.hasCode    shouldBe false
+      e.hasName    shouldBe false
+      e.hasMessage shouldBe false
+      e.hasCause   shouldBe false
+      e.hasData    shouldBe false
     }
   }
 
   "An E" can {
     "have a code" in {
-      val e = E.code(42)
+      val e = E.empty.code(42)
 
       val expected = 42
       val actual   = e.code
@@ -26,7 +33,7 @@ class ESpec extends WordSpec with Matchers {
     }
 
     "have a name" in {
-      val e = E.name("test")
+      val e = E.empty.name("test")
 
       val expected = "test"
       val actual   = e.name
@@ -35,27 +42,28 @@ class ESpec extends WordSpec with Matchers {
     }
 
     "have a message" in {
-      val e = E.name("Test Error")
+      val e = E.empty.message("Test Error")
 
       val expected = "Test Error"
-      val actual   = e.name
+      val actual   = e.message
 
       actual shouldBe expected
     }
 
     "have a cause" in {
       val c = new RuntimeException("test")
-      val e = E.cause(c)
+      val e = E.empty.cause(c)
 
-      val expected = Some(c)
+      val expected = c
       val actual   = e.cause
 
       actual shouldBe expected
     }
 
     "have data" in {
-      val d = Map("foo" -> "bar")
-      val e = E.data(d)
+      val d = new JMap[String, String]
+      d.put("foo", "bar")
+      val e = E.empty.data(d)
 
       val expected = d
       val actual   = e.data
@@ -64,19 +72,23 @@ class ESpec extends WordSpec with Matchers {
     }
 
     "a mixture of code, name, message, cause and data" in {
-      val e = E(1, "test", "Test Message", None, Map("foo" -> "bar"))
+      val d = new JMap[String, String]
+      d.put("foo", "bar")
+      val e = new E(1, "test", "Test Message", null, d)
 
       e.code    shouldBe 1
       e.name    shouldBe "test"
       e.message shouldBe "Test Message"
-      e.cause   shouldBe None
-      e.data    shouldBe Map("foo" -> "bar")
+      e.cause   shouldBe null
+      e.data    shouldBe d
     }
   }
 
   "An E" should {
     "have same toString() output as its DefaultEncoderE.encode output" in {
-      val e = E(1, "test", "Test Message", None, Map("foo" -> "bar"))
+      val d = new JMap[String, String]
+      d.put("foo", "bar")
+      val e = new E(1, "test", "Test Message", null, d)
 
       e.toString shouldBe DefaultEncoderE.encode(e)
     }

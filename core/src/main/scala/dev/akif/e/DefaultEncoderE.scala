@@ -1,13 +1,15 @@
 package dev.akif.e
 
+import scala.collection.JavaConverters.mapAsScalaMap
+
 object DefaultEncoderE extends EncoderE[String] {
   override def encode(e: E): String = {
     val strings = List(
       s""""code":${e.code}""",
-      if (e.name.isEmpty) "" else s""""name":"${escape(e.name)}"""",
-      if (e.message.isEmpty) "" else s""""message":"${escape(e.message)}"""",
-      e.cause.fold("")(c => s""""cause":"${escape(c.getMessage)}""""),
-      if (e.data.isEmpty) "" else s""""data":${e.data.map({case (k, v) => s""""${escape(k)}":"${escape(v)}""""}).mkString("{", ",", "}")}"""
+      if (!e.hasName)    "" else s""""name":"${escape(e.name)}"""",
+      if (!e.hasMessage) "" else s""""message":"${escape(e.message)}"""",
+      if (!e.hasCause)   "" else s""""cause":"${escape(e.cause.getMessage)}"""",
+      if (!e.hasData)    "" else s""""data":${mapAsScalaMap(e.data).map({case (k, v) => s""""${escape(k)}":"${escape(v)}""""}).mkString("{", ",", "}")}"""
     )
 
     val size = strings.size

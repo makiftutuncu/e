@@ -14,7 +14,7 @@ ThisBuild / crossScalaVersions := Seq("2.12.10", scalaVersion.value)
 
 ThisBuild / publishMavenStyle := true
 ThisBuild / publishTo         := Some("GitHub makiftutuncu Apache Maven Packages" at "https://maven.pkg.github.com/makiftutuncu/e")
-ThisBuild / credentials       += Credentials("GitHub Package Registry", "maven.pkg.github.com", "makiftutuncu", Option(sys.env("GITHUB_TOKEN")).getOrElse("N/A"))
+ThisBuild / credentials       += Credentials("GitHub Package Registry", "maven.pkg.github.com", "makiftutuncu", sys.env.getOrElse("GITHUB_TOKEN", "N/A"))
 
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" % Test
 
