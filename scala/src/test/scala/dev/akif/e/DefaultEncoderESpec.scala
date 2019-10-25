@@ -5,11 +5,20 @@ import org.scalatest.{Matchers, WordSpec}
 
 class DefaultEncoderESpec extends WordSpec with Matchers {
   "DefaultEncoderE" should {
+    "encode an empty E" in {
+      val e = E.empty
+
+      val expected = """{}"""
+      val actual   = DefaultEncoderE.get().encode(e)
+
+      actual shouldBe expected
+    }
+
     "encode an E with code" in {
       val e = E.empty.code(1)
 
       val expected = """{"code":1}"""
-      val actual   = DefaultEncoderE.encode(e)
+      val actual   = DefaultEncoderE.get().encode(e)
 
       actual shouldBe expected
     }
@@ -18,7 +27,7 @@ class DefaultEncoderESpec extends WordSpec with Matchers {
       val e = new E(1, "test")
 
       val expected = """{"code":1,"name":"test"}"""
-      val actual   = DefaultEncoderE.encode(e)
+      val actual   = DefaultEncoderE.get().encode(e)
 
       actual shouldBe expected
     }
@@ -27,7 +36,7 @@ class DefaultEncoderESpec extends WordSpec with Matchers {
       val e = new E(1, "test", "Test Message")
 
       val expected = """{"code":1,"name":"test","message":"Test Message"}"""
-      val actual   = DefaultEncoderE.encode(e)
+      val actual   = DefaultEncoderE.get().encode(e)
 
       actual shouldBe expected
     }
@@ -36,7 +45,7 @@ class DefaultEncoderESpec extends WordSpec with Matchers {
       val e = new E(1, "test", "Test Message", new RuntimeException("test"), null)
 
       val expected = """{"code":1,"name":"test","message":"Test Message","cause":"test"}"""
-      val actual   = DefaultEncoderE.encode(e)
+      val actual   = DefaultEncoderE.get().encode(e)
 
       actual shouldBe expected
     }
@@ -47,7 +56,7 @@ class DefaultEncoderESpec extends WordSpec with Matchers {
       val e = new E(1, "test", "Test Message", null, d)
 
       val expected = """{"code":1,"name":"test","message":"Test Message","data":{"foo":"bar"}}"""
-      val actual   = DefaultEncoderE.encode(e)
+      val actual   = DefaultEncoderE.get().encode(e)
 
       actual shouldBe expected
     }
@@ -58,7 +67,7 @@ class DefaultEncoderESpec extends WordSpec with Matchers {
       val e = new E(1, "test", "Test Message", new RuntimeException("test"), d)
 
       val expected = """{"code":1,"name":"test","message":"Test Message","cause":"test","data":{"foo":"bar"}}"""
-      val actual   = DefaultEncoderE.encode(e)
+      val actual   = DefaultEncoderE.get().encode(e)
 
       actual shouldBe expected
     }
@@ -69,7 +78,7 @@ class DefaultEncoderESpec extends WordSpec with Matchers {
       val e = new E(1, "te\"st", "Test\"Message", new RuntimeException("te\"st"), d)
 
       val expected = """{"code":1,"name":"te\"st","message":"Test\"Message","cause":"te\"st","data":{"fo\"o":"b\"ar"}}"""
-      val actual   = DefaultEncoderE.encode(e)
+      val actual   = DefaultEncoderE.get().encode(e)
 
       actual shouldBe expected
     }

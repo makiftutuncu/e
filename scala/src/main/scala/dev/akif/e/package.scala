@@ -1,8 +1,20 @@
-package dev.akif.e
+package dev.akif
 
 import scala.util.{Failure, Success, Try}
+import scala.util.control.NonFatal
 
-object Maybe {
+package object e {
+  type Maybe[+A] = Either[E, A]
+
+  implicit class DecoderEExtensions[A](private val decoderE: DecoderE[A]) {
+    def decode(a: A): Either[DecodingFailure, E] =
+      Try(decoderE.decodeOrThrow(a)) match {
+        case Failure(df: DecodingFailure) => Left(df)
+        case Failure(NonFatal(t))         => Left(new DecodingFailure(s"Cannot decode $a as E!", t))
+        case Success(e)                   => Right(e)
+      }
+  }
+
   object implicits {
     implicit class OptionExtensions[A](private val option: Option[A]) {
       def orE(e: => E): Maybe[A] =

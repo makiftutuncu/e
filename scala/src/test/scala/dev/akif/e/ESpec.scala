@@ -90,7 +90,7 @@ class ESpec extends WordSpec with Matchers {
       d.put("foo", "bar")
       val e = new E(1, "test", "Test Message", null, d)
 
-      e.toString shouldBe DefaultEncoderE.encode(e)
+      e.toString shouldBe DefaultEncoderE.get().encode(e)
     }
   }
 }

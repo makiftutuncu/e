@@ -71,6 +71,14 @@ public final class E extends Exception implements Serializable {
         return !data.isEmpty();
     }
 
+    @Override public synchronized Throwable fillInStackTrace() {
+        if (!hasCause()) {
+            return this;
+        }
+
+        return super.fillInStackTrace();
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -87,6 +95,6 @@ public final class E extends Exception implements Serializable {
     }
 
     @Override public String toString() {
-        return DefaultEncoderE.encode(this);
+        return DefaultEncoderE.get().encode(this);
     }
 }

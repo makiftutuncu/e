@@ -1,7 +1,7 @@
 package dev.akif.e
 
-import dev.akif.e.Maybe.implicits._
-import dev.akif.e.Maybe.syntax._
+import dev.akif.e.implicits._
+import dev.akif.e.syntax._
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.util.{Failure, Success}
