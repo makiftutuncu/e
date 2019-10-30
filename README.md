@@ -187,8 +187,6 @@ def divide(i: Int, j: Int): Maybe[Int] =
     Right(i / j)
   }
 
-// -----
-
 // There are useful implicits extension methods for dealing with existing values.
 import dev.akif.e.implicits._
 import scala.util.{Failure, Success}
@@ -214,8 +212,6 @@ val maybe5: Maybe[Double] = Failure[Double](new Exception("foo")).orE(t => E.emp
 // Right(3.14)
 val maybe6: Maybe[Double] = Success[Double](3.14).orE(_ => E.empty)
 
-// -----
-
 // User doesn't have to know/use `Either` semantics to deal with `Maybe`.
 import dev.akif.e.syntax._
 
@@ -234,7 +230,45 @@ val maybeString: Maybe[String] = e.maybe[String] // Lifts E into a `Maybe[String
 `e-circe` depends on `e-scala` and [circe](https://circe.github.io/circe). It provides circe's `Encoder` and `Decoder` for `E` so that an `E` can be converted to/from circe's `Json`.
 
 ```scala
-// TODO
+// Brings in circe's `Encoder` and `Decoder` for `E`
+import dev.akif.e.circe._
+
+import dev.akif.e.{E, Maybe}
+import io.circe.{Encoder, Json}
+
+// This could be a utility method in your HTTP API
+// It makes a Json response in both error and successful cases
+def response[A: Encoder](maybe: Maybe[A]): Json =
+  maybe.fold(
+    e => encoderECirce.apply(e),         // Comes from the import
+    a => implicitly[Encoder[A]].apply(a) // Comes from context bound of `A`
+  )
+
+// Normally one wouldn't need to decode an error Json but let's assume you do
+def hasSameCode(eJson: Json, code: Int): Boolean =
+  decoderECirce                         // Comes from the import
+    .decodeJson(eJson)                  // circe's decode result is an `Either`
+    .fold(
+      decodingFailure => false,         // Failed to decode, so false
+      e               => e.code == code // Decoded as `E`, check code
+    )
+
+// In case you don't want to use `Encoder`/`Decoder` of circe,
+// there are instances of `EncoderE`/`DecoderE` of e itself for circe's `Json`
+
+val e1: E = new E(1, "test")
+
+// {"code":1,"name":"test"}
+val j1: Json = encoderEJson.encode(e1)
+
+// {"code":1,"name":"test"}
+val e2: E = decoderEJson.decodeOrThrow(e1)
+// This will throw `DecodingFailure`
+val e3: E = decoderEJson.decodeOrThrow(Json.arr(Json.fromString("foo")))
+
+// There is also a safer `DecodeE` method coming from `e-scala`.
+import dev.akif.e._
+val either: Either[DecodingFailure, E] = decoderEJson.decode(j1)
 ```
 
 ## Contributing

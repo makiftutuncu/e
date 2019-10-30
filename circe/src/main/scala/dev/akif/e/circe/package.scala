@@ -60,5 +60,10 @@ package object circe {
     }
 
   private def map2Json(map: Map[String, String]): Json =
-    Json.fromFields(map.toList.map { case (a, b) => a -> Json.fromString(b) })
+    Json.fromFields {
+      map.map {
+        case (key, value) =>
+          key -> Json.fromString(value)
+      }
+    }
 }
