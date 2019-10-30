@@ -1,8 +1,9 @@
 // === Dependencies ===
 
-lazy val circeCore   = "io.circe"      %% "circe-core"   % "0.12.3"
-lazy val circeParser = "io.circe"      %% "circe-parser" % "0.12.3"
-lazy val scalaTest   = "org.scalatest" %% "scalatest"    % "3.0.8" % Test
+lazy val circeCore   = "io.circe"          %% "circe-core"   % "0.12.3"
+lazy val circeParser = "io.circe"          %% "circe-parser" % "0.12.3"
+lazy val playJson    = "com.typesafe.play" %% "play-json"    % "2.7.4"
+lazy val scalaTest   = "org.scalatest"     %% "scalatest"    % "3.0.8" % Test
 
 // === Settings ===
 
@@ -38,7 +39,7 @@ lazy val scalaSettings = Seq(
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-scala`, `e-circe`)
+  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`)
   .settings(
     skip in publish := true
   )
@@ -60,5 +61,15 @@ lazy val `e-circe` = project
     libraryDependencies ++= Seq(
       circeCore,
       circeParser
+    )
+  )
+
+lazy val `e-play-json` = project
+  .in(file("play-json"))
+  .dependsOn(`e-scala`)
+  .settings(scalaSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      playJson
     )
   )

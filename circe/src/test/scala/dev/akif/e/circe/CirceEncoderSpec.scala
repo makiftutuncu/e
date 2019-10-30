@@ -3,7 +3,9 @@ package dev.akif.e.circe
 import java.util.{HashMap => JMap}
 
 import dev.akif.e.E
+import dev.akif.e.syntax._
 import io.circe.Json
+import io.circe.syntax._
 import org.scalatest.{Matchers, WordSpec}
 
 class CirceEncoderSpec extends WordSpec with Matchers {
@@ -13,8 +15,28 @@ class CirceEncoderSpec extends WordSpec with Matchers {
       d.put("foo", "bar")
       val e = new E(1, "test", "Test Message", null, d)
 
-      val expected = Json.obj("code" -> Json.fromInt(1), "name" -> Json.fromString("test"), "message" -> Json.fromString("Test Message"), "data" -> Json.obj("foo" -> Json.fromString("bar")))
-      val actual   = encoderECirce(e)
+      val expected = Json.obj("code" := 1, "name" := "test", "message" := "Test Message", "data" -> Json.obj("foo" := "bar"))
+      val actual   = e.asJson
+
+      actual shouldBe expected
+    }
+
+    "encode a Maybe with E in it as Json" in {
+      val d = new JMap[String, String]
+      d.put("foo", "bar")
+      val e = new E(1, "test", "Test Message", null, d)
+
+      val expected = Json.obj("code" := 1, "name" := "test", "message" := "Test Message", "data" -> Json.obj("foo" := "bar"))
+      val actual   = e.maybe[String].asJson
+
+      actual shouldBe expected
+    }
+
+    "encode a Maybe with a value in it as Json" in {
+      val a = Map("foo" -> "bar")
+
+      val expected = Json.obj("foo" := "bar")
+      val actual   = a.maybe.asJson
 
       actual shouldBe expected
     }

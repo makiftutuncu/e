@@ -15,6 +15,13 @@ package object e {
       }
   }
 
+  implicit class MaybeExtensions[A](private val maybe: Maybe[A]) {
+    val isError: Boolean  = maybe.isLeft
+    val hasError: Boolean = isError
+
+    val isValue: Boolean = maybe.isRight
+  }
+
   object implicits {
     implicit class OptionExtensions[A](private val option: Option[A]) {
       def orE(e: => E): Maybe[A] =

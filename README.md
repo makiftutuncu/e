@@ -8,8 +8,9 @@ e is a zero-dependency micro library to model errors in Java/Scala applications.
 2. [e-core](#e-core)
 3. [e-scala](#e-scala)
 4. [e-circe](#e-circe)
-5. [Contributing](#contributing)
-6. [License](#license)
+5. [e-play-json](#e-play-json)
+6. [Contributing](#contributing)
+7. [License](#license)
 
 ## Installation
 
@@ -42,6 +43,13 @@ For Maven
     <artifactId>e-circe_{scalaVersion}</artifactId>
     <version>{version}</version>
   </dependency>
+  
+  <!-- Optional, for Scala projects with play-json -->
+  <dependency>
+    <groupId>dev.akif</groupId>
+    <artifactId>e-play-json_{scalaVersion}</artifactId>
+    <version>{version}</version>
+  </dependency>
 </dependencies>
 ```
 
@@ -55,7 +63,10 @@ libraryDependencies ++= Seq(
   "dev.akif" %% "e-scala" % "{version}",
 
   // Optional, for Scala projects with circe
-  "dev.akif" %% "e-circe" % "{version}"
+  "dev.akif" %% "e-circe" % "{version}",
+
+  // Optional, for Scala projects with play-json
+  "dev.akif" %% "e-play-json" % "{version}"
 )
 ```
 
@@ -70,6 +81,9 @@ dependencies {
   
   // Optional, for Scala projects with circe
   compile 'dev.akif:e-circe_{scalaVersion}:{version}'
+  
+  // Optional, for Scala projects with play-json
+  compile 'dev.akif:e-play-json_{scalaVersion}:{version}'
 }
 ```
 
@@ -218,7 +232,7 @@ import dev.akif.e.syntax._
 // `maybe` methods can be used to convert any value or `E` to a `Maybe`.
 
 val foo: String = "foo"
-val e: E        = new E(1, "test", "Test")
+val e: E = new E(1, "test", "Test")
 
 val maybeFoo: Maybe[String]    = foo.maybe       // Lifts value into a `Maybe[String]`
 val maybeInt: Maybe[Int]       = e.maybe[Int]    // Lifts E into a `Maybe[Int]`
@@ -236,22 +250,9 @@ import dev.akif.e.circe._
 import dev.akif.e.{E, Maybe}
 import io.circe.{Encoder, Json}
 
-// This could be a utility method in your HTTP API
-// It makes a Json response in both error and successful cases
-def response[A: Encoder](maybe: Maybe[A]): Json =
-  maybe.fold(
-    e => encoderECirce.apply(e),         // Comes from the import
-    a => implicitly[Encoder[A]].apply(a) // Comes from context bound of `A`
-  )
+// TODO: Show `maybe.asJson`
 
-// Normally one wouldn't need to decode an error Json but let's assume you do
-def hasSameCode(eJson: Json, code: Int): Boolean =
-  decoderECirce                         // Comes from the import
-    .decodeJson(eJson)                  // circe's decode result is an `Either`
-    .fold(
-      decodingFailure => false,         // Failed to decode, so false
-      e               => e.code == code // Decoded as `E`, check code
-    )
+// TODO: Show `json.decodeOrE`
 
 // In case you don't want to use `Encoder`/`Decoder` of circe,
 // there are instances of `EncoderE`/`DecoderE` of e itself for circe's `Json`
@@ -269,6 +270,14 @@ val e3: E = decoderEJson.decodeOrThrow(Json.arr(Json.fromString("foo")))
 // There is also a safer `DecodeE` method coming from `e-scala`.
 import dev.akif.e._
 val either: Either[DecodingFailure, E] = decoderEJson.decode(j1)
+```
+
+## e-play-json
+
+`e-play-json` depends on `e-scala` and [play-json](https://github.com/playframework/play-json). It provides Play Json's `Reads` and `Writes` for `E` so that an `E` can be converted to/from Play Json's `JsValue`.
+
+```scala
+// TODO
 ```
 
 ## Contributing
