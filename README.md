@@ -175,7 +175,58 @@ codeExtractingDecoder.decode("foo");
 `e-scala` depends on `e-core`. It provides some implicits for e as well as a type alias `Maybe`.
 
 ```scala
-// TODO
+// `Maybe` is a type alias where the error type of `Either` is fixed to `E`
+import dev.akif.e._
+
+def divide(i: Int, j: Int): Maybe[Int] =
+  if (j == 0) {
+    // Constructing `E` is the same as Java, error is `Left` of Either
+    Left(new E(1, "divide-by-zero", "Cannot divide by 0!"))
+  } else {
+    // Value is `Right` of Either
+    Right(i / j)
+  }
+
+// -----
+
+// There are useful implicits extension methods for dealing with existing values.
+import dev.akif.e.implicits._
+import scala.util.{Failure, Success}
+
+// `orE` method can be used to convert an `Option[A]` to `Maybe[A]`.
+
+// Left({"code":1,"name":"empty"})
+val maybe1: Maybe[String] = Option.empty[String].orE(new E(1, "empty"))
+// Right("foo")
+val maybe2: Maybe[String] = Some("foo").orE(new E(1, "empty"))
+
+// `orE` method can be used to convert an `Either[L, R]` to `Maybe[R]` when an `L => E` is given.
+
+// Left({"code":1,"name":"foo"})
+val maybe3: Maybe[Int] = Left[String, Int]("foo").orE(left => new E(1, left))
+// Right(3)
+val maybe4: Maybe[Int] = Right[String, Int](3).orE(_ => new E(1, "bar"))
+
+// `orE` method can be used to convert a `Try[A]` to `Maybe[A]` when a `Throwable => E` is given.
+
+// Left({"cause":"foo"})
+val maybe5: Maybe[Double] = Failure[Double](new Exception("foo")).orE(t => E.empty.cause(t))
+// Right(3.14)
+val maybe6: Maybe[Double] = Success[Double](3.14).orE(_ => E.empty)
+
+// -----
+
+// User doesn't have to know/use `Either` semantics to deal with `Maybe`.
+import dev.akif.e.syntax._
+
+// `maybe` methods can be used to convert any value or `E` to a `Maybe`.
+
+val foo: String = "foo"
+val e: E        = new E(1, "test", "Test")
+
+val maybeFoo: Maybe[String]    = foo.maybe       // Lifts value into a `Maybe[String]`
+val maybeInt: Maybe[Int]       = e.maybe[Int]    // Lifts E into a `Maybe[Int]`
+val maybeString: Maybe[String] = e.maybe[String] // Lifts E into a `Maybe[String]`
 ```
 
 ## e-circe
