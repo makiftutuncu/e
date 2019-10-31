@@ -12,7 +12,7 @@ class WritesSpec extends WordSpec with Matchers {
     "write an E as JsValue" in {
       val d = new JMap[String, String]
       d.put("foo", "bar")
-      val e = new E(1, "test", "Test Message", null, d)
+      val e = E.of(1, "test", "Test Message", null, d)
 
       val expected = Json.obj("code" -> 1, "name" -> "test", "message" -> "Test Message", "data" -> Json.obj("foo" -> "bar"))
       val actual   = Json.toJson(e)
@@ -23,7 +23,7 @@ class WritesSpec extends WordSpec with Matchers {
     "write a Maybe with E in it as JsValue" in {
       val d = new JMap[String, String]
       d.put("foo", "bar")
-      val e = new E(1, "test", "Test Message", null, d)
+      val e = E.of(1, "test", "Test Message", null, d)
 
       val expected = Json.obj("code" -> 1, "name" -> "test", "message" -> "Test Message", "data" -> Json.obj("foo" -> "bar"))
       val actual   = Json.toJson(e.maybe[String])

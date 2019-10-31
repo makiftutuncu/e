@@ -115,13 +115,13 @@ E error2 = error1.code(404);
 Map<String, String> data = new HashMap<>();
 data.put("key", "value");
 
-// E has various constructors, this is the most complex one
-E error3 = new E(
-  1,
-  "error-name-more-like-a-code",
-  "Human readable error message",
-  new Exception("causing-exception"),
-  data
+// E has various static constructor methods named `of`, this is the most complex one
+E error3 = E.of(
+  1,                                  // code
+  "error-name-more-like-a-code",      // name
+  "Human readable error message",     // message
+  new Exception("causing-exception"), // cause
+  data                                // data
 );
 
 // An example method that can fail with an error
@@ -129,7 +129,7 @@ public int divide(int i, int j) {
   if (j == 0) {
     // E is also an `Exception` so you can throw it
     // If you're into that kind of stuff
-    throw new E(1, "divide-by-zero", "Cannot divide by 0!");
+    throw E.of(1, "divide-by-zero", "Cannot divide by 0!");
   }
   
   return i / j;
@@ -141,7 +141,7 @@ public int divide(int i, int j) {
 System.out.println(error3);
 
 // An `EncoderE` implementation for `String`
-// Basically constructs a CSV of E's fields (except for `data`)
+// Basically constructs a CSV of E's fields (except for `data` in this case)
 EncoderE<String> csvEncoder = new EncoderE<> {
     @Override public String encode(E e) {
         return String.format(
@@ -167,9 +167,10 @@ DecoderE<String> codeExtractingDecoder = new DecoderE<String> {
             String[] parts = s.split(",");
             String codeString = parts[0];
             int code = Integer.parseInt(codeString);
-            return E.empty.code(code);
+            return E.of(code);
         } catch (Exception e) {
-            // For demo purposes, don't really do catch and throw in your code
+            // `dev.akif.e.DecodingFailure` is a runtime exception
+            // Throw it to indicate a decoding failure when needed
             throw new DecodingFailure("Cannot extract code from " + s, e);
         }
     }
@@ -189,13 +190,13 @@ codeExtractingDecoder.decode("foo");
 `e-scala` depends on `e-core`. It provides some implicits for e as well as a type alias `Maybe`.
 
 ```scala
-// `Maybe` is a type alias where the error type of `Either` is fixed to `E`
+// Brings in `Maybe` which is a type alias where the error type of `Either` is fixed to `E`
 import dev.akif.e._
 
 def divide(i: Int, j: Int): Maybe[Int] =
   if (j == 0) {
     // Constructing `E` is the same as Java, error is `Left` of Either
-    Left(new E(1, "divide-by-zero", "Cannot divide by 0!"))
+    Left(E.of(1, "divide-by-zero", "Cannot divide by 0!"))
   } else {
     // Value is `Right` of Either
     Right(i / j)
@@ -208,16 +209,16 @@ import scala.util.{Failure, Success}
 // `orE` method can be used to convert an `Option[A]` to `Maybe[A]`.
 
 // Left({"code":1,"name":"empty"})
-val maybe1: Maybe[String] = Option.empty[String].orE(new E(1, "empty"))
+val maybe1: Maybe[String] = Option.empty[String].orE(E.of(1, "empty"))
 // Right("foo")
-val maybe2: Maybe[String] = Some("foo").orE(new E(1, "empty"))
+val maybe2: Maybe[String] = Some("foo").orE(E.of(1, "empty"))
 
 // `orE` method can be used to convert an `Either[L, R]` to `Maybe[R]` when an `L => E` is given.
 
 // Left({"code":1,"name":"foo"})
-val maybe3: Maybe[Int] = Left[String, Int]("foo").orE(left => new E(1, left))
+val maybe3: Maybe[Int] = Left[String, Int]("foo").orE(left => E.of(1, left))
 // Right(3)
-val maybe4: Maybe[Int] = Right[String, Int](3).orE(_ => new E(1, "bar"))
+val maybe4: Maybe[Int] = Right[String, Int](3).orE(_ => E.of(1, "bar"))
 
 // `orE` method can be used to convert a `Try[A]` to `Maybe[A]` when a `Throwable => E` is given.
 
@@ -232,11 +233,18 @@ import dev.akif.e.syntax._
 // `maybe` methods can be used to convert any value or `E` to a `Maybe`.
 
 val foo: String = "foo"
-val e: E = new E(1, "test", "Test")
+val e: E = E.of(1, "test", "Test")
 
 val maybeFoo: Maybe[String]    = foo.maybe       // Lifts value into a `Maybe[String]`
 val maybeInt: Maybe[Int]       = e.maybe[Int]    // Lifts E into a `Maybe[Int]`
 val maybeString: Maybe[String] = e.maybe[String] // Lifts E into a `Maybe[String]`
+
+// To check if a `Maybe` has an `E` or value
+
+// false
+println(maybeFoo.isError) // or `hasError`
+// true
+println(maybeInt.isValue) // or `hasValue`
 ```
 
 ## e-circe
@@ -257,7 +265,7 @@ import io.circe.{Encoder, Json}
 // In case you don't want to use `Encoder`/`Decoder` of circe,
 // there are instances of `EncoderE`/`DecoderE` of e itself for circe's `Json`
 
-val e1: E = new E(1, "test")
+val e1: E = E.of(1, "test")
 
 // {"code":1,"name":"test"}
 val j1: Json = encoderEJson.encode(e1)

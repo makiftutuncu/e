@@ -20,7 +20,7 @@ class DefaultEncoderETest {
     }
 
     @Test void testEWithCode() {
-        E e = E.empty.code(42);
+        E e = E.of(42);
 
         String expected = "{\"code\":42}";
         String actual   = encoder.encode(e);
@@ -29,7 +29,7 @@ class DefaultEncoderETest {
     }
 
     @Test void testEWithName() {
-        E e = E.empty.name("test");
+        E e = E.of("test");
 
         String expected = "{\"name\":\"test\"}";
         String actual   = encoder.encode(e);
@@ -68,7 +68,7 @@ class DefaultEncoderETest {
     }
 
     @Test void testEWithSome() {
-        E e = new E(1, "test", "Test");
+        E e = E.of(1, "test", "Test");
 
         String expected = "{\"code\":1,\"name\":\"test\",\"message\":\"Test\"}";
         String actual   = encoder.encode(e);
@@ -80,7 +80,7 @@ class DefaultEncoderETest {
         Map<String, String> d = new HashMap<>();
         d.put("foo", "bar");
         Throwable t = new Exception("test");
-        E e = new E(1, "test", "Test", t, d);
+        E e = E.of(1, "test", "Test", t, d);
 
         String expected = "{\"code\":1,\"name\":\"test\",\"message\":\"Test\",\"cause\":\"test\",\"data\":{\"foo\":\"bar\"}}";
         String actual   = encoder.encode(e);
@@ -92,7 +92,7 @@ class DefaultEncoderETest {
         Map<String, String> d = new HashMap<>();
         d.put("f\"oo", "ba\"r");
         Throwable t = new Exception("te\"st");
-        E e = new E(1, "te\"st", "Te\"st", t, d);
+        E e = E.of(1, "te\"st", "Te\"st", t, d);
 
         String expected = "{\"code\":1,\"name\":\"te\\\"st\",\"message\":\"Te\\\"st\",\"cause\":\"te\\\"st\",\"data\":{\"f\\\"oo\":\"ba\\\"r\"}}";
         String actual   = encoder.encode(e);

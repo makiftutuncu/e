@@ -45,7 +45,7 @@ package object circe {
         val data    = obj("data").flatMap(_.as[Map[String, String]].toOption).getOrElse(Map.empty)
 
         // Cannot know cause field because it isn't possible to construct the causing exception from just a serialized message string
-        new E(code, name, message, null, mapScala2Java(data))
+        E.of(code, name, message, null, mapScala2Java(data))
     }
   }
 

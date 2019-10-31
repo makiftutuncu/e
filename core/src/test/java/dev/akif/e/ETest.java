@@ -20,7 +20,7 @@ class ETest {
     }
 
     @Test void testEWithCode() {
-        E e = E.empty.code(42);
+        E e = E.of(42);
 
         assertEquals(42, e.code);
         assertEquals("", e.name);
@@ -30,7 +30,7 @@ class ETest {
     }
 
     @Test void testEWithName() {
-        E e = E.empty.name("test");
+        E e = E.of("test");
 
         assertEquals(0, e.code);
         assertEquals("test", e.name);
@@ -76,7 +76,7 @@ class ETest {
         Map<String, String> d = new HashMap<>();
         d.put("foo", "bar");
         Throwable t = new Exception("test");
-        E e = new E(1, "test", "Test", t, d);
+        E e = E.of(1, "test", "Test", t, d);
 
         assertEquals(1, e.code);
         assertEquals("test", e.name);
@@ -89,7 +89,7 @@ class ETest {
         Map<String, String> d = new HashMap<>();
         d.put("foo", "bar");
         Throwable t = new Exception("test");
-        E e = new E(1, "test", "Test", t, d);
+        E e = E.of(1, "test", "Test", t, d);
 
         String expected = DefaultEncoderE.get().encode(e);
         String actual   = e.toString();

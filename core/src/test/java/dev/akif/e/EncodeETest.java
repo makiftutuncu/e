@@ -20,7 +20,7 @@ class EncodeETest {
     @Test void testEncodeE() {
         Map<String, String> d = new HashMap<>();
         d.put("foo", "bar");
-        E e = new E(1, "test", "Test", null, d);
+        E e = E.of(1, "test", "Test", null, d);
 
         String expected = "1,1,1,0,1";
         String actual   = fieldCountingEncoderE.encode(e);

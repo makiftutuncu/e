@@ -8,7 +8,7 @@ class DecoderESpec extends WordSpec with Matchers {
   private val codeParsingDecoderE: DecoderE[String] = { s: String =>
     Try(s.toInt) match {
       case Failure(_) => throw new DecodingFailure(s"'$s' was not a valid code")
-      case Success(c) => E.empty.code(c)
+      case Success(c) => E.of(c)
     }
   }
 
@@ -21,7 +21,7 @@ class DecoderESpec extends WordSpec with Matchers {
     }
 
     "decode an E" in {
-      val expected = Right(E.empty.code(1))
+      val expected = Right(E.of(1))
       val actual   = codeParsingDecoderE.decode("1")
 
       actual shouldBe expected

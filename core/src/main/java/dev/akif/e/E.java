@@ -12,9 +12,7 @@ public final class E extends Exception implements Serializable {
     public final Throwable cause;
     public final Map<String, String> data;
 
-    public static final E empty = new E(0, "", "", null, Collections.emptyMap());
-
-    public E(int code, String name, String message, Throwable cause, Map<String, String> data) {
+    private E(int code, String name, String message, Throwable cause, Map<String, String> data) {
         super(message == null ? "" : message, cause);
         this.code = code;
         this.name = name == null ? "" : name;
@@ -23,12 +21,50 @@ public final class E extends Exception implements Serializable {
         this.data = data == null ? Collections.emptyMap() : data;
     }
 
-    public E(int code, String name, String message) {
-        this(code, name, message, null, Collections.emptyMap());
+    public static final E empty = E.of(0, "", "", null, Collections.emptyMap());
+
+    public static E of(int code) {
+        return new E(code, "", "", null, null);
     }
 
-    public E(int code, String name) {
-        this(code, name, "", null, Collections.emptyMap());
+    public static E of(int code, String name) {
+        return new E(code, name, "", null, null);
+    }
+
+    public static E of(int code, String name, String message) {
+        return new E(code, name, message, null, null);
+    }
+
+    public static E of(int code, String name, String message, Throwable cause) {
+        return new E(code, name, message, cause, null);
+    }
+
+    public static E of(int code, String name, String message, Map<String, String> data) {
+        return new E(code, name, message, null, data);
+    }
+
+    public static E of(int code, String name, String message, Throwable cause, Map<String, String> data) {
+        return new E(code, name, message, cause, data);
+    }
+
+    public static E of(String name) {
+        return new E(0, name, "", null, null);
+    }
+
+    public static E of(String name, String message) {
+        return new E(0, name, message, null, null);
+    }
+
+    public static E of(String name, String message, Throwable cause) {
+        return new E(0, name, message, cause, null);
+    }
+
+    public static E of(String name, String message, Map<String, String> data) {
+        return new E(0, name, message, null, data);
+    }
+
+    public static E of(String name, String message, Throwable cause, Map<String, String> data) {
+        return new E(0, name, message, cause, data);
     }
 
     public E code(int code) {

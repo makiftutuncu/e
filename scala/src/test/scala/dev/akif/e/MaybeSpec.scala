@@ -9,7 +9,7 @@ import scala.util.{Failure, Success}
 class MaybeSpec extends WordSpec with Matchers {
   "A Maybe" can {
     "have an E" in {
-      val maybe = E.empty.code(4).maybe[String]
+      val maybe = E.of(4).maybe[String]
 
       maybe.isError  shouldBe true
       maybe.hasError shouldBe true
@@ -29,7 +29,7 @@ class MaybeSpec extends WordSpec with Matchers {
 
   "Using `orE` method, a Maybe" can {
     "be made from an empty Option" in {
-      val e = E.empty.code(3)
+      val e = E.of(3)
 
       val expected = Left(e)
       val actual   = Option.empty[String].orE(e)
@@ -39,7 +39,7 @@ class MaybeSpec extends WordSpec with Matchers {
 
     "be made from a non-empty Option" in {
       val expected = Right("foo")
-      val actual   = Some("foo").orE(E.empty.code(3))
+      val actual   = Some("foo").orE(E.of(3))
 
       actual shouldBe expected
     }
@@ -77,7 +77,7 @@ class MaybeSpec extends WordSpec with Matchers {
 
   "Using `.maybe` syntax, a Maybe" can {
     "be made from an E" in {
-      val e = E.empty.code(4)
+      val e = E.of(4)
 
       val expected: Maybe[String] = Left(e)
       val actual: Maybe[String]   = e.maybe[String]

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DecodeETest {
     private final DecoderE<String> codeParsingDecoderE = s -> {
         try {
-            return E.empty.code(Integer.parseInt(s));
+            return E.of(Integer.parseInt(s));
         } catch (Exception e) {
             throw new DecodingFailure(String.format("'%s' was not a valid code", s), e);
         }
@@ -19,6 +19,6 @@ class DecodeETest {
     }
 
     @Test void testDecodeESucceed() {
-        assertEquals(E.empty.code(1), codeParsingDecoderE.decodeOrThrow("1"));
+        assertEquals(E.of(1), codeParsingDecoderE.decodeOrThrow("1"));
     }
 }

@@ -8,7 +8,7 @@ class ReadsSpec extends WordSpec with Matchers {
   "Play Json Reads for E" should {
     "fail to read for invalid input" in {
       val json    = Json.arr(1, 2, 3)
-      val eOnFail = new E(1, "test")
+      val eOnFail = E.of(1, "test")
 
       val expected = Left(eOnFail)
       val actual   = json.readOrE(_ => eOnFail)
@@ -18,8 +18,8 @@ class ReadsSpec extends WordSpec with Matchers {
 
     "decode a JsValue as E" in {
       val json    = Json.obj("code" -> 1, "name" -> "test1")
-      val eOnFail = new E(2, "test2")
-      val e       = new E(1, "test1")
+      val eOnFail = E.of(2, "test2")
+      val e       = E.of(1, "test1")
 
       val expected = Right(e)
       val actual   = json.readOrE(_ => eOnFail)
