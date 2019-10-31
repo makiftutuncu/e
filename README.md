@@ -252,32 +252,60 @@ println(maybeInt.isValue) // or `hasValue`
 `e-circe` depends on `e-scala` and [circe](https://circe.github.io/circe). It provides circe's `Encoder` and `Decoder` for `E` so that an `E` can be converted to/from circe's `Json`.
 
 ```scala
-// Brings in circe's `Encoder` and `Decoder` for `E`
+// Brings in circe's `Encoder` and `Decoder` instances for `E`
 import dev.akif.e.circe._
 
 import dev.akif.e.{E, Maybe}
-import io.circe.{Encoder, Json}
+import dev.akif.e.syntax._
+import io.circe.{Decoder, Encoder, Json}
+import io.circe.syntax._
 
-// TODO: Show `maybe.asJson`
-
-// TODO: Show `json.decodeOrE`
-
-// In case you don't want to use `Encoder`/`Decoder` of circe,
-// there are instances of `EncoderE`/`DecoderE` of e itself for circe's `Json`
+// `E` can be encoded and decoded
 
 val e1: E = E.of(1, "test")
 
 // {"code":1,"name":"test"}
-val j1: Json = encoderEJson.encode(e1)
+val j1: Json = e1.asJson
+
+// Right({"code":1,"name":"test"})
+val e2: Decoder.Result[E] = j1.as[E]
+
+// A `Maybe[A]` can be encoded as long as `A` can be encoded
+
+val m1: Maybe[List[Int]] = List(1, 2, 3).maybe
+val m2: Maybe[String] = E.of(1, "test").maybe[String]
+
+// [1,2,3]
+val j2: Json = m1.asJson
 
 // {"code":1,"name":"test"}
-val e2: E = decoderEJson.decodeOrThrow(e1)
-// This will throw `DecodingFailure`
-val e3: E = decoderEJson.decodeOrThrow(Json.arr(Json.fromString("foo")))
+val j3: Json = m2.asJson
 
-// There is also a safer `DecodeE` method coming from `e-scala`.
+// In case you don't want to use `Encoder`/`Decoder` of circe,
+// there are instances of `EncoderE`/`DecoderE` of e itself for circe's `Json`
+
+// {"code":1,"name":"test"}
+val j4: Json = encoderEJson.encode(e1)
+
+// {"code":1,"name":"test"}
+val e3: E = decoderEJson.decodeOrThrow(j1)
+// This will throw `DecodingFailure`
+val e4: E = decoderEJson.decodeOrThrow(Json.arr(Json.fromString("foo")))
+
+// There is also a safer `decode` method coming from `e-scala` as an extension.
 import dev.akif.e._
 val either: Either[DecodingFailure, E] = decoderEJson.decode(j1)
+
+// Decoding error can be converted to an `E` during any Json decoding
+// This is done by `decodeOrE` extension method.
+// It makes decoding result a `Maybe`, which could be useful.
+
+val j5: Json = Json.obj("foo" := "bar")
+
+val maybeMap: Maybe[Map[String, String]] =
+  j5.decodeOrE[Map[String, String]] { decodingFailure =>
+    E.of(1, "decoding-failed", decodingFailure.message).cause(decodingFailure)
+  }
 ```
 
 ## e-play-json
@@ -285,7 +313,59 @@ val either: Either[DecodingFailure, E] = decoderEJson.decode(j1)
 `e-play-json` depends on `e-scala` and [play-json](https://github.com/playframework/play-json). It provides Play Json's `Reads` and `Writes` for `E` so that an `E` can be converted to/from Play Json's `JsValue`.
 
 ```scala
-// TODO
+// Brings in Play Json's `Reads` and `Writes` instances for `E`
+import dev.akif.e.playjson._
+
+import dev.akif.e.{E, Maybe}
+import dev.akif.e.syntax._
+import play.api.libs.json._
+
+// `E` can be read and written as `JsValue`
+
+val e1: E = E.of(1, "test")
+
+// {"code":1,"name":"test"}
+val j1: JsValue = Json.toJson(e1)
+
+// Some({"code":1,"name":"test"})
+val e2: Option[E] = j1.asOpt[E]
+
+// A `Maybe[A]` can be written as `JsValue` as long as `A` can be written as `JsValue`
+
+val m1: Maybe[List[Int]] = List(1, 2, 3).maybe
+val m2: Maybe[String] = E.of(1, "test").maybe[String]
+
+// [1,2,3]
+val j2: JsValue = Json.toJson(m1)
+
+// {"code":1,"name":"test"}
+val j3: JsValue = Json.toJson(m2)
+
+// In case you don't want to use `Reads`/`Writes` of Play Json,
+// there are instances of `EncoderE`/`DecoderE` of e itself for Play Json's `JsValue`
+
+// {"code":1,"name":"test"}
+val j4: JsValue = encoderEJsValue.encode(e1)
+
+// {"code":1,"name":"test"}
+val e3: E = decoderEJsValue.decodeOrThrow(j1)
+// This will throw `DecodingFailure`
+val e4: E = decoderEJsValue.decodeOrThrow(Json.arr("foo"))
+
+// There is also a safer `decode` method coming from `e-scala` as an extension.
+import dev.akif.e._
+val either: Either[DecodingFailure, E] = decoderEJsValue.decode(j1)
+
+// Reading error (`JsError`) can be converted to an `E` during any JsValue reading
+// This is done by `readOrE` extension method.
+// It makes decoding result a `Maybe`, which could be useful.
+
+val j5: JsValue = Json.obj("foo" -> "bar")
+
+val maybeMap: Maybe[Map[String, String]] =
+  j5.readOrE[Map[String, String]] { jsError =>
+    E.of(1, "decoding-failed", jsError.toString)
+  }
 ```
 
 ## Contributing

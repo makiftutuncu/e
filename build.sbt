@@ -7,7 +7,7 @@ lazy val jUnit          = "org.junit.jupiter"  % "junit-jupiter"     % "5.5.2" %
 lazy val jUnitInterface = "net.aichler"        % "jupiter-interface" % "0.8.3" % Test
 lazy val scalaTest      = "org.scalatest"     %% "scalatest"         % "3.0.8" % Test
 
-// === Settings ===
+// === Project Settings ===
 
 description          in ThisBuild := "A zero-dependency micro library to model errors"
 homepage             in ThisBuild := Some(url("https://github.com/makiftutuncu/e"))
@@ -18,9 +18,6 @@ organization         in ThisBuild := "dev.akif"
 organizationHomepage in ThisBuild := Some(url("https://akif.dev"))
 developers           in ThisBuild := List(Developer("1", "Mehmet Akif Tütüncü", "m.akif.tutuncu@gmail.com", url("https://akif.dev")))
 scmInfo              in ThisBuild := Some(ScmInfo(url("https://github.com/makiftutuncu/e"), "git@github.com:makiftutuncu/e.git"))
-publishMavenStyle    in ThisBuild := true
-publishTo            in ThisBuild := Some("GitHub makiftutuncu Apache Maven Packages" at "https://maven.pkg.github.com/makiftutuncu/e")
-credentials          in ThisBuild += Credentials("GitHub Package Registry", "maven.pkg.github.com", "makiftutuncu", sys.env.getOrElse("GITHUB_TOKEN", "N/A"))
 
 lazy val javaSettings = Seq(
   // Do not append Scala versions to the generated artifacts
@@ -39,8 +36,8 @@ lazy val javaSettings = Seq(
 )
 
 lazy val scalaSettings = Seq(
-  scalaVersion       := "2.13.1",
-  crossScalaVersions := Seq("2.12.10", scalaVersion.value),
+  scalaVersion         := "2.13.1",
+  crossScalaVersions   := Seq("2.12.10", scalaVersion.value),
   libraryDependencies ++= Seq(
     scalaTest
   )
@@ -84,3 +81,29 @@ lazy val `e-play-json` = project
       playJson
     )
   )
+
+// === Release Settings ===
+
+import ReleaseTransformations._
+
+credentials          in ThisBuild += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
+pomIncludeRepository in ThisBuild := { _ => false }
+publishMavenStyle    in ThisBuild := true
+publishTo            in ThisBuild := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runClean,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  releaseStepCommandAndRemaining("e-core/publishSigned"),
+  releaseStepCommandAndRemaining("+e-scala/publishSigned"),
+  releaseStepCommandAndRemaining("+e-circe/publishSigned"),
+  releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges
+)
