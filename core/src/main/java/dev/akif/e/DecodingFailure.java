@@ -1,9 +1,8 @@
 package dev.akif.e;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
-public class DecodingFailure extends Exception {
+public class DecodingFailure extends RuntimeException {
     public final String message;
 
     public DecodingFailure(String message) {

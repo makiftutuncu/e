@@ -28,11 +28,11 @@ public final class DefaultEncoderE implements EncoderE<String> {
         return joiner.toString();
     }
 
-    private String escape(String s) {
+    String escape(String s) {
         return s.replaceAll("\"", "\\\\\"");
     }
 
-    private String makeDataString(Map<String, String> data) {
+    String makeDataString(Map<String, String> data) {
         StringJoiner joiner = new StringJoiner(",", "{", "}");
         data.forEach((key, value) -> joiner.add(String.format("\"%s\":\"%s\"", escape(key), escape(value))));
         return joiner.toString();

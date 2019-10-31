@@ -1,7 +1,7 @@
 package dev.akif
 
-import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
+import scala.util.{Failure, Success, Try}
 
 package object e {
   type Maybe[+A] = Either[E, A]
@@ -19,7 +19,8 @@ package object e {
     val isError: Boolean  = maybe.isLeft
     val hasError: Boolean = isError
 
-    val isValue: Boolean = maybe.isRight
+    val isValue: Boolean  = maybe.isRight
+    val hasValue: Boolean = isValue
   }
 
   object implicits {

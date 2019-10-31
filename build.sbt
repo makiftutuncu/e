@@ -1,9 +1,11 @@
 // === Dependencies ===
 
-lazy val circeCore   = "io.circe"          %% "circe-core"   % "0.12.3"
-lazy val circeParser = "io.circe"          %% "circe-parser" % "0.12.3"
-lazy val playJson    = "com.typesafe.play" %% "play-json"    % "2.7.4"
-lazy val scalaTest   = "org.scalatest"     %% "scalatest"    % "3.0.8" % Test
+lazy val circeCore      = "io.circe"          %% "circe-core"        % "0.12.3"
+lazy val circeParser    = "io.circe"          %% "circe-parser"      % "0.12.3"
+lazy val playJson       = "com.typesafe.play" %% "play-json"         % "2.7.4"
+lazy val jUnit          = "org.junit.jupiter"  % "junit-jupiter"     % "5.5.2" % Test
+lazy val jUnitInterface = "net.aichler"        % "jupiter-interface" % "0.8.3" % Test
+lazy val scalaTest      = "org.scalatest"     %% "scalatest"         % "3.0.8" % Test
 
 // === Settings ===
 
@@ -24,7 +26,16 @@ lazy val javaSettings = Seq(
   // Do not append Scala versions to the generated artifacts
   crossPaths := false,
   // This forbids including Scala related libraries into the dependency
-  autoScalaLibrary := false
+  autoScalaLibrary := false,
+
+  resolvers += Resolver.jcenterRepo,
+
+  libraryDependencies ++= Seq(
+    jUnit,
+    jUnitInterface
+  ),
+
+  testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
 )
 
 lazy val scalaSettings = Seq(

@@ -13,7 +13,7 @@ class DecoderESpec extends WordSpec with Matchers {
   }
 
   "A DecoderE" should {
-    "fail to decode for invalid input" in {
+    "fail to decode for invalid input without throwing exception" in {
       val expected = Left(new DecodingFailure("'a' was not a valid code"))
       val actual   = codeParsingDecoderE.decode("a")
 

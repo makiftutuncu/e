@@ -7,6 +7,26 @@ import org.scalatest.{Matchers, WordSpec}
 import scala.util.{Failure, Success}
 
 class MaybeSpec extends WordSpec with Matchers {
+  "A Maybe" can {
+    "have an E" in {
+      val maybe = E.empty.code(4).maybe[String]
+
+      maybe.isError  shouldBe true
+      maybe.hasError shouldBe true
+      maybe.isValue  shouldBe false
+      maybe.hasValue shouldBe false
+    }
+
+    "have a value" in {
+      val maybe = "foo".maybe
+
+      maybe.isError  shouldBe false
+      maybe.hasError shouldBe false
+      maybe.isValue  shouldBe true
+      maybe.hasValue shouldBe true
+    }
+  }
+
   "Using `orE` method, a Maybe" can {
     "be made from an empty Option" in {
       val e = E.empty.code(3)
