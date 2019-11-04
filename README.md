@@ -16,11 +16,11 @@ e is a zero-dependency micro library to model errors in Java/Scala applications.
 
 | Latest Version | Scala Version  |
 | -------------- | -------------- |
-| 0.1.4          | 2.13<br />2.12 |
+| 0.2.0          | 2.13<br />2.12 |
 
-e **will be** published to Maven Central. In order to add it to your project, replace `version` and `scalaVersion` with correct versions and do following:
+e is published to Maven Central. In order to add it to your project, replace `version` and `scalaVersion` with correct versions and do following:
 
-For Maven
+For Maven, add to your `pom.xml`
 
 ```xml
 <dependencies>
@@ -53,37 +53,25 @@ For Maven
 </dependencies>
 ```
 
-For SBT
+For SBT, add to your `build.sbt`
 
 ```scala
 libraryDependencies ++= Seq(
-  "dev.akif"  % "e-core"  % "{version}",
-
-  // Optional, for Scala projects
-  "dev.akif" %% "e-scala" % "{version}",
-
-  // Optional, for Scala projects with circe
-  "dev.akif" %% "e-circe" % "{version}",
-
-  // Optional, for Scala projects with play-json
-  "dev.akif" %% "e-play-json" % "{version}"
+  "dev.akif"  % "e-core"      % "{version}",
+  "dev.akif" %% "e-scala"     % "{version}", // Optional, for Scala projects
+  "dev.akif" %% "e-circe"     % "{version}", // Optional, for Scala projects with circe
+  "dev.akif" %% "e-play-json" % "{version}"  // Optional, for Scala projects with play-json
 )
 ```
 
-For Gradle
+For Gradle, add to your project's `build.gradle`
 
 ```javascript
 dependencies {
   compile 'dev.akif:e-core:{version}'
-  
-  // Optional, for Scala projects
-  compile 'dev.akif:e-scala_{scalaVersion}:{version}'
-  
-  // Optional, for Scala projects with circe
-  compile 'dev.akif:e-circe_{scalaVersion}:{version}'
-  
-  // Optional, for Scala projects with play-json
-  compile 'dev.akif:e-play-json_{scalaVersion}:{version}'
+  compile 'dev.akif:e-scala_{scalaVersion}:{version}'     // Optional, for Scala projects
+  compile 'dev.akif:e-circe_{scalaVersion}:{version}'     // Optional, for Scala projects with circe
+  compile 'dev.akif:e-play-json_{scalaVersion}:{version}' // Optional, for Scala projects with play-json
 }
 ```
 
