@@ -9,14 +9,16 @@ e is a zero-dependency micro library to model errors in Java/Scala applications.
 3. [e-scala](#e-scala)
 4. [e-circe](#e-circe)
 5. [e-play-json](#e-play-json)
-6. [Contributing](#contributing)
-7. [License](#license)
+6. [e-gson](#e-gson)
+7. [Contributing](#contributing)
+8. [License](#license)
 
 ## Installation
 
 | Latest Version | Scala Version  |
 | -------------- | -------------- |
-| 0.2.0          | 2.13<br />2.12 |
+| 0.2.1          | 2.13           |
+| 0.2.1          | 2.12           |
 
 e is published to Maven Central. In order to add it to your project, replace `version` and `scalaVersion` with correct versions and do following:
 
@@ -50,6 +52,13 @@ For Maven, add to your `pom.xml`
     <artifactId>e-play-json_{scalaVersion}</artifactId>
     <version>{version}</version>
   </dependency>
+  
+  <!-- Optional, for Java projects with gson -->
+  <dependency>
+    <groupId>dev.akif</groupId>
+    <artifactId>e-gson</artifactId>
+    <version>{version}</version>
+  </dependency>
 </dependencies>
 ```
 
@@ -60,7 +69,8 @@ libraryDependencies ++= Seq(
   "dev.akif"  % "e-core"      % "{version}",
   "dev.akif" %% "e-scala"     % "{version}", // Optional, for Scala projects
   "dev.akif" %% "e-circe"     % "{version}", // Optional, for Scala projects with circe
-  "dev.akif" %% "e-play-json" % "{version}"  // Optional, for Scala projects with play-json
+  "dev.akif" %% "e-play-json" % "{version}", // Optional, for Scala projects with play-json
+  "dev.akif"  % "e-gson"      % "{version}"  // Optional, for Java projects with gson
 )
 ```
 
@@ -72,6 +82,7 @@ dependencies {
   compile 'dev.akif:e-scala_{scalaVersion}:{version}'     // Optional, for Scala projects
   compile 'dev.akif:e-circe_{scalaVersion}:{version}'     // Optional, for Scala projects with circe
   compile 'dev.akif:e-play-json_{scalaVersion}:{version}' // Optional, for Scala projects with play-json
+  compile 'dev.akif:e-gson:{version}'                     // Optional, for Java projects with gson
 }
 ```
 
@@ -354,6 +365,53 @@ val maybeMap: Maybe[Map[String, String]] =
   j5.readOrE[Map[String, String]] { jsError =>
     E.of(1, "decoding-failed", jsError.toString)
   }
+```
+
+## e-gson
+
+`e-gson` depends on `e-core` and [gson](https://github.com/google/gson). It provides Gson's `JsonSerializer` and `JsonDeserializer` for `E` so that an `E` can be converted to/from Json via Gson.
+
+```java
+import com.google.gson.*;
+import dev.akif.e.*;
+import dev.akif.e.gson.EGsonAdapter;
+
+// This adapter is `JsonSerializer<E>`/`JsonDeserializer<E>` for gson as well as `EncoderE<JsonElement>`/`DecoderE<JsonElement>`
+EGsonAdapter adapter = new EGsonAdapter();
+
+// You will need to register `adapter` as a type adapter
+Gson gson = new GsonBuilder()
+    .registerTypeAdapter(E.class, adapter)
+    .create();
+
+E e1 = E.of(1, "test", "Test");
+
+// To convert an `E` to Json String
+// {"code":1,"name":"test","message":"Test"}
+String json1 = gson.toJson(e1);
+
+// To parse a Json String as `E`
+E e2 = gson.fromJson(json1, E.class);
+
+// Will fail with a `DecodingFailure` because Json is not a valid `E` Json
+gson.fromJson("[1,2,3]", E.class);
+
+e1.equals(e2); // Evaluates to `true`
+
+// In case you want to use `EncoderE`/`DecoderE` directly
+
+// {"code":1,"name":"test","message":"Test"}
+JsonElement json2 = adapter.encode(e1);
+
+E e3 = adapter.decodeOrThrow(json2);
+
+e1.equals(e3); // Evaluates to `true`
+
+JsonArray arr = new JsonArray();
+arr.add("foo");
+
+// Will fail with a `DecodingFailure` because `["foo"]` is not a valid `E` Json
+E e4 = adapter.decodeOrThrow(arr);
 ```
 
 ## Contributing
