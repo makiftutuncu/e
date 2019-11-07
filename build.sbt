@@ -1,11 +1,12 @@
 // === Dependencies ===
 
-lazy val circeCore      = "io.circe"          %% "circe-core"        % "0.12.3"
-lazy val circeParser    = "io.circe"          %% "circe-parser"      % "0.12.3"
-lazy val playJson       = "com.typesafe.play" %% "play-json"         % "2.7.4"
-lazy val jUnit          = "org.junit.jupiter"  % "junit-jupiter"     % "5.5.2" % Test
-lazy val jUnitInterface = "net.aichler"        % "jupiter-interface" % "0.8.3" % Test
-lazy val scalaTest      = "org.scalatest"     %% "scalatest"         % "3.0.8" % Test
+lazy val circeCore      = "io.circe"             %% "circe-core"        % "0.12.3"
+lazy val circeParser    = "io.circe"             %% "circe-parser"      % "0.12.3"
+lazy val gson           = "com.google.code.gson"  % "gson"              % "2.8.6"
+lazy val playJson       = "com.typesafe.play"    %% "play-json"         % "2.7.4"
+lazy val jUnit          = "org.junit.jupiter"     % "junit-jupiter"     % "5.5.2" % Test
+lazy val jUnitInterface = "net.aichler"           % "jupiter-interface" % "0.8.3" % Test
+lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.0.8" % Test
 
 // === Project Settings ===
 
@@ -13,10 +14,10 @@ description          in ThisBuild := "A zero-dependency micro library to model e
 homepage             in ThisBuild := Some(url("https://github.com/makiftutuncu/e"))
 startYear            in ThisBuild := Some(2019)
 licenses             in ThisBuild := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
-organizationName     in ThisBuild := "Mehmet Akif Tütüncü"
 organization         in ThisBuild := "dev.akif"
+organizationName     in ThisBuild := "Mehmet Akif Tütüncü"
 organizationHomepage in ThisBuild := Some(url("https://akif.dev"))
-developers           in ThisBuild := List(Developer("1", "Mehmet Akif Tütüncü", "m.akif.tutuncu@gmail.com", url("https://akif.dev")))
+developers           in ThisBuild := List(Developer("makiftutuncu", "Mehmet Akif Tütüncü", "m.akif.tutuncu@gmail.com", url("https://akif.dev")))
 scmInfo              in ThisBuild := Some(ScmInfo(url("https://github.com/makiftutuncu/e"), "git@github.com:makiftutuncu/e.git"))
 
 lazy val javaSettings = Seq(
@@ -47,7 +48,7 @@ lazy val scalaSettings = Seq(
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`)
+  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`, `e-gson`)
   .settings(
     skip in publish := true
   )
@@ -82,6 +83,16 @@ lazy val `e-play-json` = project
     )
   )
 
+lazy val `e-gson` = project
+  .in(file("gson"))
+  .dependsOn(`e-core`)
+  .settings(javaSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      gson
+    )
+  )
+
 // === Release Settings ===
 
 import ReleaseTransformations._
@@ -103,6 +114,7 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
+  releaseStepCommandAndRemaining("e-gson/publishSigned"),
   setNextVersion,
   commitNextVersion,
   pushChanges
