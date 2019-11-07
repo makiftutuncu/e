@@ -17,7 +17,8 @@ e is a zero-dependency micro library to model errors in Java/Scala applications.
 
 | Latest Version | Scala Version  |
 | -------------- | -------------- |
-| 0.2.0          | 2.13<br />2.12 |
+| 0.2.1          | 2.13           |
+| 0.2.1          | 2.12           |
 
 e is published to Maven Central. In order to add it to your project, replace `version` and `scalaVersion` with correct versions and do following:
 
