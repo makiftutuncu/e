@@ -57,9 +57,7 @@ class DefaultEncoderETest {
     }
 
     @Test void testEWithData() {
-        Map<String, String> d = new HashMap<>();
-        d.put("foo", "bar");
-        E e = E.empty.data(d);
+        E e = E.empty.data("foo", "bar");
 
         String expected = "{\"data\":{\"foo\":\"bar\"}}";
         String actual   = encoder.encode(e);
