@@ -17,8 +17,8 @@ e is a zero-dependency micro library to model errors in Java/Scala applications.
 
 | Latest Version | Scala Version  |
 | -------------- | -------------- |
-| 0.2.1          | 2.13           |
-| 0.2.1          | 2.12           |
+| 0.2.2          | 2.13           |
+| 0.2.2          | 2.12           |
 
 e is published to Maven Central. In order to add it to your project, replace `version` and `scalaVersion` with correct versions and do following:
 
@@ -90,7 +90,7 @@ dependencies {
 
 `e-core` is the core module of e which only contains main types such as
 
-* `E` the error type itself
+* `E` the error type itself, its fields are immutable (modifications return new instances)
 * `EncoderE` type to convert an `E` to a given type
 * `DecoderE` type to convert a given type to `E`
 
@@ -106,7 +106,7 @@ import dev.akif.e.*;
 E error1 = E.empty;
 
 // Another error having some error code
-// It's a new instance, a copy of `error1`
+// It's a new instance, a copy of `error1` since `E` is immutable
 // There are also `name`, `message`, `cause` and `data` methods
 E error2 = error1.code(404);
 
@@ -122,6 +122,9 @@ E error3 = E.of(
   new Exception("causing-exception"), // cause
   data                                // data
 );
+
+// You can use `data(String key, String value)` method for simpler usage of setting data
+E error4 = error3.data("foo", "bar")
 
 // An example method that can fail with an error
 public int divide(int i, int j) {
@@ -177,8 +180,8 @@ DecoderE<String> codeExtractingDecoder = new DecoderE<String> {
 
 // Will print
 // 1
-E error4 = codeExtractingDecoder.decode(encoded);
-System.out.println(error4.code);
+E error5 = codeExtractingDecoder.decode(encoded);
+System.out.println(error5.code);
 
 // Will fail because there is no code (int) in "foo"
 codeExtractingDecoder.decode("foo");

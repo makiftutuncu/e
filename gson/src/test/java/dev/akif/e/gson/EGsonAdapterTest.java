@@ -69,9 +69,7 @@ class EGsonAdapterTest {
     }
 
     @Test void testToJsonEWithData() {
-        Map<String, String> d = new HashMap<>();
-        d.put("foo", "bar");
-        E e = E.empty.data(d);
+        E e = E.empty.data("foo", "bar");
 
         String expected = "{\"data\":{\"foo\":\"bar\"}}";
         String actual   = gson.toJson(e);
@@ -164,10 +162,8 @@ class EGsonAdapterTest {
 
     @Test void testFromJsonEWithData() {
         String json = "{\"data\":{\"foo\":\"bar\"}}";
-        Map<String, String> d = new HashMap<>();
-        d.put("foo", "bar");
 
-        E expected = E.empty.data(d);
+        E expected = E.empty.data("foo", "bar");
         E actual   = gson.fromJson(json, E.class);
 
         assertEquals(expected, actual);
@@ -260,9 +256,7 @@ class EGsonAdapterTest {
     }
 
     @Test void testEncodeEWithData() {
-        Map<String, String> d = new HashMap<>();
-        d.put("foo", "bar");
-        E e = E.empty.data(d);
+        E e = E.empty.data("foo", "bar");
 
         JsonObject expected = new JsonObject();
         JsonObject data = new JsonObject();
@@ -388,10 +382,8 @@ class EGsonAdapterTest {
         JsonObject data = new JsonObject();
         data.add("foo", new JsonPrimitive("bar"));
         json.add("data", data);
-        Map<String, String> d = new HashMap<>();
-        d.put("foo", "bar");
 
-        E expected = E.empty.data(d);
+        E expected = E.empty.data("foo", "bar");
         E actual   = adapter.decodeOrThrow(json);
 
         assertEquals(expected, actual);

@@ -2,6 +2,7 @@ package dev.akif.e;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -85,6 +86,12 @@ public final class E extends Exception implements Serializable {
 
     public E data(Map<String, String> data) {
         return new E(this.code, this.name, this.message, this.cause, data);
+    }
+
+    public E data(String key, String value) {
+        Map<String, String> newData = new HashMap<>(this.data);
+        newData.put(key, value);
+        return new E(this.code, this.name, this.message, this.cause, newData);
     }
 
     public boolean hasCode() {
