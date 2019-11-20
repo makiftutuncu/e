@@ -3,7 +3,7 @@
 lazy val circeCore      = "io.circe"             %% "circe-core"        % "0.12.3"
 lazy val circeParser    = "io.circe"             %% "circe-parser"      % "0.12.3"
 lazy val gson           = "com.google.code.gson"  % "gson"              % "2.8.6"
-lazy val playJson       = "com.typesafe.play"    %% "play-json"         % "2.7.4"
+lazy val playJson       = "com.typesafe.play"    %% "play-json"         % "2.8.0"
 lazy val jUnit          = "org.junit.jupiter"     % "junit-jupiter"     % "5.5.2" % Test
 lazy val jUnitInterface = "net.aichler"           % "jupiter-interface" % "0.8.3" % Test
 lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.0.8" % Test
