@@ -6,9 +6,10 @@ import dev.akif.e.E
 import dev.akif.e.syntax._
 import io.circe.Json
 import io.circe.syntax._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class CirceEncoderSpec extends WordSpec with Matchers {
+class CirceEncoderSpec extends AnyWordSpec with Matchers {
   "Circe Encoder for E" should {
     "encode an E as Json" in {
       val d = new JMap[String, String]

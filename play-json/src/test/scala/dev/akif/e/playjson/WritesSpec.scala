@@ -4,10 +4,11 @@ import java.util.{HashMap => JMap}
 
 import dev.akif.e.E
 import dev.akif.e.syntax._
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class WritesSpec extends WordSpec with Matchers {
+class WritesSpec extends AnyWordSpec with Matchers {
   "Play Json Writes for E" should {
     "write an E as JsValue" in {
       val d = new JMap[String, String]

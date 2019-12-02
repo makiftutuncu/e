@@ -2,11 +2,12 @@ package dev.akif.e
 
 import dev.akif.e.implicits._
 import dev.akif.e.syntax._
-import org.scalatest.{Matchers, WordSpec}
 
 import scala.util.{Failure, Success}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class MaybeSpec extends WordSpec with Matchers {
+class MaybeSpec extends AnyWordSpec with Matchers {
   "A Maybe" can {
     "have an E" in {
       val maybe = E.of(4).maybe[String]
