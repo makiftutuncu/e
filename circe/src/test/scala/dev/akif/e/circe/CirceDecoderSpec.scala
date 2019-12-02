@@ -3,9 +3,10 @@ package dev.akif.e.circe
 import dev.akif.e.E
 import io.circe.Json
 import io.circe.syntax._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class CirceDecoderSpec extends WordSpec with Matchers {
+class CirceDecoderSpec extends AnyWordSpec with Matchers {
   "Circe Decoder for E" should {
     "fail to decode for invalid input" in {
       val json = Json.arr(1.asJson, 2.asJson, 3.asJson)

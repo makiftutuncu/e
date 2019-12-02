@@ -1,10 +1,11 @@
 package dev.akif.e.playjson
 
 import dev.akif.e.E
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class ReadsSpec extends WordSpec with Matchers {
+class ReadsSpec extends AnyWordSpec with Matchers {
   "Play Json Reads for E" should {
     "fail to read for invalid input" in {
       val json    = Json.arr(1, 2, 3)

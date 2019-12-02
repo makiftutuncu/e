@@ -1,10 +1,11 @@
 package dev.akif.e
 
-import org.scalatest.{Matchers, WordSpec}
 
 import scala.util.{Failure, Success, Try}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class DecoderESpec extends WordSpec with Matchers {
+class DecoderESpec extends AnyWordSpec with Matchers {
   private val codeParsingDecoderE: DecoderE[String] = { s: String =>
     Try(s.toInt) match {
       case Failure(_) => throw new DecodingFailure(s"'$s' was not a valid code")

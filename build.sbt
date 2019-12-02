@@ -6,7 +6,7 @@ lazy val gson           = "com.google.code.gson"  % "gson"              % "2.8.6
 lazy val playJson       = "com.typesafe.play"    %% "play-json"         % "2.8.0"
 lazy val jUnit          = "org.junit.jupiter"     % "junit-jupiter"     % "5.5.2" % Test
 lazy val jUnitInterface = "net.aichler"           % "jupiter-interface" % "0.8.3" % Test
-lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.0.8" % Test
+lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.1.0" % Test
 
 // === Project Settings ===
 
