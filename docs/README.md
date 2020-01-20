@@ -90,11 +90,11 @@ For Gradle, add to your project's `build.gradle`
 
 ```javascript
 dependencies {
-  implementation('dev.akif:e-core:@VERSION@')                      // Needed, core module for Java/Scala
+  implementation('dev.akif:e-core:@VERSION@')           // Needed, core module for Java/Scala
   implementation('dev.akif:e-scala_@SCALA_VERSION@:@VERSION@')     // Optional, for Scala
   implementation('dev.akif:e-circe_@SCALA_VERSION@:@VERSION@')     // Optional, for Scala with circe
   implementation('dev.akif:e-play-json_@SCALA_VERSION@:@VERSION@') // Optional, for Scala with play-json
-  implementation('dev.akif:e-gson:@VERSION@')                      // Optional, for Java with gson
+  implementation('dev.akif:e-gson:@VERSION@')           // Optional, for Java with gson
   implementation('dev.akif:e-zio_@SCALA_VERSION@:@VERSION@')       // Optional, for Scala with zio
 }
 ```
