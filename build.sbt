@@ -4,6 +4,7 @@ lazy val circeCore      = "io.circe"             %% "circe-core"        % "0.12.
 lazy val circeParser    = "io.circe"             %% "circe-parser"      % "0.12.3"
 lazy val gson           = "com.google.code.gson"  % "gson"              % "2.8.6"
 lazy val playJson       = "com.typesafe.play"    %% "play-json"         % "2.8.1"
+lazy val zio            = "dev.zio"              %% "zio"               % "1.0.0-RC17"
 lazy val jUnit          = "org.junit.jupiter"     % "junit-jupiter"     % "5.5.2" % Test
 lazy val jUnitInterface = "net.aichler"           % "jupiter-interface" % "0.8.3" % Test
 lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.1.0" % Test
@@ -36,9 +37,12 @@ lazy val javaSettings = Seq(
   testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
 )
 
+lazy val latestScalaVersion         = "2.13.1"
+lazy val crossCompiledScalaVersions = Seq("2.12.10", latestScalaVersion)
+
 lazy val scalaSettings = Seq(
-  scalaVersion         := "2.13.1",
-  crossScalaVersions   := Seq("2.12.10", scalaVersion.value),
+  scalaVersion         := latestScalaVersion,
+  crossScalaVersions   := crossCompiledScalaVersions,
   libraryDependencies ++= Seq(
     scalaTest
   )
@@ -48,9 +52,16 @@ lazy val scalaSettings = Seq(
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`, `e-gson`)
+  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .enablePlugins(MdocPlugin)
   .settings(
-    skip in publish := true
+    skip in publish := true,
+    mdocVariables := Map(
+      "VERSION"              -> version.value,
+      "SCALA_VERSION"        -> latestScalaVersion.split("\\.").take(2).mkString("."),
+      "CROSS_SCALA_VERSIONS" -> crossCompiledScalaVersions.map(_.split("\\.").take(2).mkString(".")).mkString(", ")
+    ),
+    mdocOut := file(".")
   )
 
 lazy val `e-core` = project
@@ -93,6 +104,16 @@ lazy val `e-gson` = project
     )
   )
 
+lazy val `e-zio` = project
+  .in(file("zio"))
+  .dependsOn(`e-scala`)
+  .settings(scalaSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      zio
+    )
+  )
+
 // === Release Settings ===
 
 import ReleaseTransformations._
@@ -115,6 +136,8 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
+  releaseStepCommandAndRemaining("+e-zio/publishSigned"),
+  releaseStepCommandAndRemaining("e/mdoc"),
   setNextVersion,
   commitNextVersion,
   pushChanges
