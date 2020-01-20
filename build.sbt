@@ -49,7 +49,7 @@ lazy val scalaSettings = Seq(
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`, `e-gson`)
+  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
   .settings(
     skip in publish := true
   )
