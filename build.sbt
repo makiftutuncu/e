@@ -4,6 +4,7 @@ lazy val circeCore      = "io.circe"             %% "circe-core"        % "0.12.
 lazy val circeParser    = "io.circe"             %% "circe-parser"      % "0.12.3"
 lazy val gson           = "com.google.code.gson"  % "gson"              % "2.8.6"
 lazy val playJson       = "com.typesafe.play"    %% "play-json"         % "2.8.1"
+lazy val zio            = "dev.zio"              %% "zio"               % "1.0.0-RC17"
 lazy val jUnit          = "org.junit.jupiter"     % "junit-jupiter"     % "5.5.2" % Test
 lazy val jUnitInterface = "net.aichler"           % "jupiter-interface" % "0.8.3" % Test
 lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.1.0" % Test
@@ -93,6 +94,16 @@ lazy val `e-gson` = project
     )
   )
 
+lazy val `e-zio` = project
+  .in(file("zio"))
+  .dependsOn(`e-scala`)
+  .settings(scalaSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      zio
+    )
+  )
+
 // === Release Settings ===
 
 import ReleaseTransformations._
@@ -115,6 +126,7 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
+  releaseStepCommandAndRemaining("+e-zio/publishSigned"),
   setNextVersion,
   commitNextVersion,
   pushChanges

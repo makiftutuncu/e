@@ -10,8 +10,9 @@ e is a zero-dependency micro library to model errors in Java/Scala applications.
 4. [e-circe](#e-circe)
 5. [e-play-json](#e-play-json)
 6. [e-gson](#e-gson)
-7. [Contributing](#contributing)
-8. [License](#license)
+7. [e-zio](#e-zio)
+8. [Contributing](#contributing)
+9. [License](#license)
 
 ## Installation
 
@@ -59,6 +60,13 @@ For Maven, add to your `pom.xml`
     <artifactId>e-gson</artifactId>
     <version>{version}</version>
   </dependency>
+  
+  <!-- Optional, for Scala projects with zio -->
+  <dependency>
+    <groupId>dev.akif</groupId>
+    <artifactId>e-zio_{scalaVersion}</artifactId>
+    <version>{version}</version>
+  </dependency>
 </dependencies>
 ```
 
@@ -70,7 +78,8 @@ libraryDependencies ++= Seq(
   "dev.akif" %% "e-scala"     % "{version}", // Optional, for Scala projects
   "dev.akif" %% "e-circe"     % "{version}", // Optional, for Scala projects with circe
   "dev.akif" %% "e-play-json" % "{version}", // Optional, for Scala projects with play-json
-  "dev.akif"  % "e-gson"      % "{version}"  // Optional, for Java projects with gson
+  "dev.akif"  % "e-gson"      % "{version}", // Optional, for Java projects with gson
+  "dev.akif" %% "e-zio"       % "{version}"  // Optional, for Scala projects with zio
 )
 ```
 
@@ -83,6 +92,7 @@ dependencies {
   compile 'dev.akif:e-circe_{scalaVersion}:{version}'     // Optional, for Scala projects with circe
   compile 'dev.akif:e-play-json_{scalaVersion}:{version}' // Optional, for Scala projects with play-json
   compile 'dev.akif:e-gson:{version}'                     // Optional, for Java projects with gson
+  compile 'dev.akif:e-zio_{scalaVersion}:{version}'       // Optional, for Scala projects with zio
 }
 ```
 
@@ -415,6 +425,36 @@ arr.add("foo");
 
 // Will fail with a `DecodingFailure` because `["foo"]` is not a valid `E` Json
 E e4 = adapter.decodeOrThrow(arr);
+```
+
+## e-zio
+
+`e-zio` depends on `e-scala` and [ZIO](https://zio.dev/). It provides type aliases `MaybeZ[A]` and `MaybeZR[R, A]` which fix the error type of `ZIO` to `E`. It also provides some syntax extensions.
+
+```scala
+// Brings in MaybeZ and MaybeZR
+import dev.akif.e.E
+import dev.akif.e.zio._
+import dev.akif.e.zio.syntax._
+
+val e: E = E.of(1, "test")
+
+// This will build a failed ZIO[String, dev.akif.e.E, Int]
+val z1: MaybeZR[String, Int] = e.maybeZR[String, Int]
+val z2: MaybeZR[String, Int] = MaybeZR.error[String, Int](e)
+
+// This will build a failed ZIO[Any, dev.akif.e.E, Int]
+val z3: MaybeZ[Int] = e.maybeZ[Int]
+val z4: MaybeZ[Int] = MaybeZ.error[Int](e)
+
+
+// This will build a successful ZIO[String, dev.akif.e.E, Int]
+val z5: MaybeZR[String, Int] = 42.maybeZR[String, Int]
+val z6: MaybeZR[String, Int] = MaybeZR.value[String, Int](42)
+
+// This will build a successful ZIO[Any, dev.akif.e.E, Int]
+val z7: MaybeZ[Int] = 42.maybeZ[Int]
+val z8: MaybeZ[Int] = MaybeZ.value[Int](42)
 ```
 
 ## Contributing
