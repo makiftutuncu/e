@@ -423,4 +423,4 @@ All contributions are welcome. Please feel free to send a pull request. Thank yo
 
 ## License
 
-e is licensed with MIT License. See [LICENSE.md](https://github.com/makiftutuncu/bookstore/blob/master/LICENSE.md) for details.
+e is licensed with MIT License. See [LICENSE.md](https://github.com/makiftutuncu/e/blob/master/LICENSE.md) for details.
