@@ -37,9 +37,12 @@ lazy val javaSettings = Seq(
   testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
 )
 
+lazy val latestScalaVersion         = "2.13.1"
+lazy val crossCompiledScalaVersions = Seq("2.12.10", latestScalaVersion)
+
 lazy val scalaSettings = Seq(
-  scalaVersion         := "2.13.1",
-  crossScalaVersions   := Seq("2.12.10", scalaVersion.value),
+  scalaVersion         := latestScalaVersion,
+  crossScalaVersions   := crossCompiledScalaVersions,
   libraryDependencies ++= Seq(
     scalaTest
   )
@@ -50,8 +53,15 @@ lazy val scalaSettings = Seq(
 lazy val e = project
   .in(file("."))
   .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .enablePlugins(MdocPlugin)
   .settings(
-    skip in publish := true
+    skip in publish := true,
+    mdocVariables := Map(
+      "VERSION"              -> version.value,
+      "SCALA_VERSION"        -> latestScalaVersion.split("\\.").take(2).mkString("."),
+      "CROSS_SCALA_VERSIONS" -> crossCompiledScalaVersions.map(_.split("\\.").take(2).mkString(".")).mkString(", ")
+    ),
+    mdocOut := file(".")
   )
 
 lazy val `e-core` = project
@@ -127,6 +137,7 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
   releaseStepCommandAndRemaining("+e-zio/publishSigned"),
+  releaseStepCommandAndRemaining("e/mdoc"),
   setNextVersion,
   commitNextVersion,
   pushChanges
