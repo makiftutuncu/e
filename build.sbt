@@ -37,6 +37,28 @@ lazy val javaSettings = Seq(
   testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
 )
 
+lazy val kotlinSettings = Seq(
+  // Do not append Scala versions to the generated artifacts
+  crossPaths := false,
+  // This forbids including Scala related libraries into the dependency
+  autoScalaLibrary := false,
+
+  javacOptions ++= Seq("-source", "11"),
+
+  kotlinLib("stdlib"),
+
+  kotlinVersion := "1.3.41",
+
+  resolvers += Resolver.jcenterRepo,
+
+  libraryDependencies ++= Seq(
+    jUnit,
+    jUnitInterface
+  ),
+
+  testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
+)
+
 lazy val latestScalaVersion         = "2.13.1"
 lazy val crossCompiledScalaVersions = Seq("2.12.10", latestScalaVersion)
 
@@ -66,7 +88,7 @@ lazy val e = project
 
 lazy val `e-core` = project
   .in(file("core"))
-  .settings(javaSettings)
+  .settings(kotlinSettings)
 
 lazy val `e-scala` = project
   .in(file("scala"))

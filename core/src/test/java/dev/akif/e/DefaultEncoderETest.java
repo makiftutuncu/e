@@ -8,6 +8,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DefaultEncoderETest {
+    /*
     private final DefaultEncoderE encoder = DefaultEncoderE.get();
 
     @Test void testEmptyE() {
@@ -97,4 +98,5 @@ class DefaultEncoderETest {
 
         assertEquals(expected, actual);
     }
+    */
 }

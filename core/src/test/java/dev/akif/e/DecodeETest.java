@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DecodeETest {
+    /*
     private final DecoderE<String> codeParsingDecoderE = s -> {
         try {
             return E.of(Integer.parseInt(s));
@@ -21,4 +22,5 @@ class DecodeETest {
     @Test void testDecodeESucceed() {
         assertEquals(E.of(1), codeParsingDecoderE.decodeOrThrow("1"));
     }
+    */
 }

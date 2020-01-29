@@ -8,6 +8,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EncodeETest {
+    /*
     private final EncoderE<String> fieldCountingEncoderE = e -> String.format(
         "%d,%d,%d,%d,%d",
         e.hasCode()    ? 1 : 0,
@@ -27,4 +28,5 @@ class EncodeETest {
 
         assertEquals(expected, actual);
     }
+    */
 }
