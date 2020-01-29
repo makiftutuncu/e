@@ -1,5 +1,8 @@
 package dev.akif.e
 
+import dev.akif.e.codec.StringEncoder
+import dev.akif.e.codec.encodeWith
+
 class E private constructor(val code: Int,
                             val name: String,
                             val message: String,
@@ -34,12 +37,7 @@ class E private constructor(val code: Int,
     override fun hashCode(): Int =
         code + name.hashCode() + message.hashCode() + (cause?.hashCode() ?: 0) + data.hashCode()
 
-    override fun toString(): String =
-        """{"code":$code""" +
-        (if (!hasName())    "" else ""","name":"$name"""") +
-        (if (!hasMessage()) "" else ""","message":"$message"""") +
-        (if (!hasData())    "" else ""","data":${data.map { """"${it.key}":"${it.value}"""" }.joinToString(",", "{", "}")}""") +
-        "}"
+    override fun toString(): String = this.encodeWith(StringEncoder)
 
     companion object {
         @JvmStatic

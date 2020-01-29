@@ -13,26 +13,14 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import dev.akif.e.DecoderE;
-import dev.akif.e.DecodingFailure;
 import dev.akif.e.E;
-import dev.akif.e.EncoderE;
+import dev.akif.e.codec.Codec;
+import dev.akif.e.codec.DecodingError;
 
-public class EGsonAdapter implements EncoderE<JsonElement>,
-                                     DecoderE<JsonElement>,
-                                     JsonSerializer<E>,
-                                     JsonDeserializer<E> {
-    @Override public JsonElement encode(E e) {
-        JsonObject obj = new JsonObject();
-        if (e.hasCode())    obj.addProperty("code",    e.code);
-        if (e.hasName())    obj.addProperty("name",    e.name);
-        if (e.hasMessage()) obj.addProperty("message", e.message);
-        if (e.hasCause())   obj.addProperty("cause",   e.cause.getMessage());
-        if (e.hasData())    obj.add("data", encodeData(e.data));
-        return obj;
-    }
-
-    @Override public E decodeOrThrow(JsonElement json) {
+public class EGsonAdapter implements Codec<JsonElement, JsonElement>,
+                                     JsonDeserializer<E>,
+                                     JsonSerializer<E> {
+    @Override public E decode(JsonElement json) throws DecodingError {
         try {
             JsonObject obj            = json.getAsJsonObject();
             JsonPrimitive codeJson    = obj.getAsJsonPrimitive("code");
@@ -43,10 +31,19 @@ public class EGsonAdapter implements EncoderE<JsonElement>,
             String name               = nameJson    != null ? nameJson.getAsString()    : "";
             String message            = messageJson != null ? messageJson.getAsString() : "";
             Map<String, String> data  = dataJson    != null ? decodeData(dataJson)      : new HashMap<>();
-            return E.of(code, name, message, data);
+            return E.of(code, name, message, null, data);
         } catch (Exception e) {
-            throw new DecodingFailure("", e);
+            throw new DecodingError("", e);
         }
+    }
+
+    @Override public JsonElement encode(E e) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("code", e.getCode());
+        if (e.hasName())    obj.addProperty("name",    e.getName());
+        if (e.hasMessage()) obj.addProperty("message", e.getMessage());
+        if (e.hasData())    obj.add("data", encodeData(e.getData()));
+        return obj;
     }
 
     @Override public JsonElement serialize(E e, Type typeOfSrc, JsonSerializationContext context) {
@@ -54,7 +51,12 @@ public class EGsonAdapter implements EncoderE<JsonElement>,
     }
 
     @Override public E deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        return decodeOrThrow(json);
+        try
+        {
+            return decode(json);
+        } catch (DecodingError e) {
+            throw new JsonParseException(e);
+        }
     }
 
     private JsonElement encodeData(Map<String, String> data) {
