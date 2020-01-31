@@ -20,7 +20,7 @@ import dev.akif.e.codec.DecodingError;
 public class EGsonAdapter implements Codec<JsonElement, JsonElement>,
                                      JsonDeserializer<E>,
                                      JsonSerializer<E> {
-    @Override public E decode(JsonElement json) throws DecodingError {
+    @Override public E decodeOrThrow(JsonElement json) throws DecodingError {
         try {
             JsonObject obj            = json.getAsJsonObject();
             JsonPrimitive codeJson    = obj.getAsJsonPrimitive("code");
@@ -33,6 +33,7 @@ public class EGsonAdapter implements Codec<JsonElement, JsonElement>,
             Map<String, String> data  = dataJson    != null ? decodeData(dataJson)      : new HashMap<>();
             return E.of(code, name, message, null, data);
         } catch (Exception e) {
+            // TODO: Write a message
             throw new DecodingError("", e);
         }
     }
@@ -53,7 +54,7 @@ public class EGsonAdapter implements Codec<JsonElement, JsonElement>,
     @Override public E deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         try
         {
-            return decode(json);
+            return decodeOrThrow(json);
         } catch (DecodingError e) {
             throw new JsonParseException(e);
         }

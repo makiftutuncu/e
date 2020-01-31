@@ -1,9 +1,10 @@
 package dev.akif.e
 
 
-import scala.util.{Failure, Success, Try}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
+import scala.util.{Failure, Success, Try}
 
 class DecoderESpec extends AnyWordSpec with Matchers {
   private val codeParsingDecoderE: DecoderE[String] = { s: String =>

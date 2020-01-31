@@ -151,6 +151,7 @@ releaseProcess := Seq[ReleaseStep](
   runClean,
   runTest,
   setReleaseVersion,
+  releaseStepCommandAndRemaining("e/mdoc"),
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("e-core/publishSigned"),
@@ -159,7 +160,6 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
   releaseStepCommandAndRemaining("+e-zio/publishSigned"),
-  releaseStepCommandAndRemaining("e/mdoc"),
   setNextVersion,
   commitNextVersion,
   pushChanges

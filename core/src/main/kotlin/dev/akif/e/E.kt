@@ -3,6 +3,17 @@ package dev.akif.e
 import dev.akif.e.codec.StringEncoder
 import dev.akif.e.codec.encodeWith
 
+/**
+ * E represents an error. It may contain additional information about the error.
+ *
+ * @constructor Builds an [E] with all its properties
+ *
+ * @property code    Numerical error code, indicating the type of the error
+ * @property name    Name of the error, usually a machine-readable and identifier-like value, for example: "invalid-data"
+ * @property message Message of the error, usually a human readable description, for example: "Value cannot be empty!"
+ * @property cause   Cause of the error in the case the error is caused by some [Throwable]
+ * @property data    Data related to the error that could be useful for understanding and fixing the error
+ */
 class E private constructor(val code: Int,
                             val name: String,
                             val message: String,
@@ -31,7 +42,7 @@ class E private constructor(val code: Int,
         if (this === other) return true
         if (other !is E) return false
 
-        return code != other.code && name != other.name && message != other.message && data != other.data;
+        return code == other.code && name == other.name && message == other.message && data == other.data;
     }
 
     override fun hashCode(): Int =

@@ -1,9 +1,9 @@
 package dev.akif.e.playjson
 
 import dev.akif.e.E
-import play.api.libs.json.Json
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.Json
 
 class ReadsSpec extends AnyWordSpec with Matchers {
   "Play Json Reads for E" should {

@@ -1,17 +1,19 @@
 package dev.akif
 
+import dev.akif.e.codec.{Decoder, DecodingError}
+
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 package object e {
   type Maybe[+A] = Either[E, A]
 
-  implicit class DecoderEExtensions[A](private val decoderE: DecoderE[A]) {
-    def decode(a: A): Either[DecodingFailure, E] =
-      Try(decoderE.decodeOrThrow(a)) match {
-        case Failure(df: DecodingFailure) => Left(df)
-        case Failure(NonFatal(t))         => Left(new DecodingFailure(s"Cannot decode $a as E!", t))
-        case Success(e)                   => Right(e)
+  implicit class DecoderExtensions[A](private val decoder: Decoder[A]) {
+    def decode(a: A): Either[DecodingError, E] =
+      Try(decoder.decodeOrThrow(a)) match {
+        case Failure(de: DecodingError) => Left(de)
+        case Failure(NonFatal(t))       => Left(new DecodingError(s"Cannot decode $a as E!", t))
+        case Success(e)                 => Right(e)
       }
   }
 

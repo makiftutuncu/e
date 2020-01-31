@@ -1,13 +1,12 @@
 package dev.akif.e.zio
 
 import dev.akif.e.E
-import dev.akif.e.zio._
 import dev.akif.e.zio.syntax._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import zio.Exit.{Failure, Success}
 import zio.internal.PlatformLive
 import zio.{Cause, ZIO, Runtime => ZIORuntime}
-import zio.Exit.{Failure, Success}
 
 class ZIOSpec extends AnyWordSpec with Matchers {
   val divider: Divider = (a, b) => a / b

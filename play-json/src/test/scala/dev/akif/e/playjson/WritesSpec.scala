@@ -4,9 +4,9 @@ import java.util.{HashMap => JMap}
 
 import dev.akif.e.E
 import dev.akif.e.syntax._
-import play.api.libs.json.Json
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.Json
 
 class WritesSpec extends AnyWordSpec with Matchers {
   "Play Json Writes for E" should {

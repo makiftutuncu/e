@@ -2,10 +2,10 @@ package dev.akif.e
 
 import dev.akif.e.implicits._
 import dev.akif.e.syntax._
-
-import scala.util.{Failure, Success}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
+import scala.util.{Failure, Success}
 
 class MaybeSpec extends AnyWordSpec with Matchers {
   "A Maybe" can {
