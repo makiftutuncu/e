@@ -52,7 +52,7 @@ lazy val scalaSettings = Seq(
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-scala`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .aggregate(`e-core`, `e-java`, `e-scala`/*, `e-circe`, `e-play-json`, `e-gson`, `e-zio`*/)
   .enablePlugins(MdocPlugin)
   .settings(
     skip in publish := true,
@@ -65,14 +65,20 @@ lazy val e = project
   )
 
 lazy val `e-core` = project
-  .in(file("core"))
+  .in(file("e-core"))
+  .settings(javaSettings)
+
+lazy val `e-java` = project
+  .in(file("e-java"))
+  .dependsOn(`e-core`)
   .settings(javaSettings)
 
 lazy val `e-scala` = project
-  .in(file("scala"))
+  .in(file("e-scala"))
   .dependsOn(`e-core`)
   .settings(scalaSettings)
 
+/*
 lazy val `e-circe` = project
   .in(file("circe"))
   .dependsOn(`e-scala`)
@@ -113,6 +119,7 @@ lazy val `e-zio` = project
       zio
     )
   )
+*/
 
 // === Release Settings ===
 
@@ -129,15 +136,17 @@ releaseProcess := Seq[ReleaseStep](
   runClean,
   runTest,
   setReleaseVersion,
+  releaseStepCommandAndRemaining("e/mdoc"),
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("e-core/publishSigned"),
+  releaseStepCommandAndRemaining("e-java/publishSigned"),
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
-  releaseStepCommandAndRemaining("+e-circe/publishSigned"),
+  /*releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
   releaseStepCommandAndRemaining("+e-zio/publishSigned"),
-  releaseStepCommandAndRemaining("e/mdoc"),
+  */
   setNextVersion,
   commitNextVersion,
   pushChanges
