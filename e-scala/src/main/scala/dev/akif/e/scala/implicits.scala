@@ -1,9 +1,11 @@
 package dev.akif.e.scala
 
+import dev.akif.e.AbstractDecoder
+
 import scala.util.{Failure, Success, Try}
 
 object implicits {
-  implicit class DecoderExtensions[A](private val decoder: Decoder[A]) {
+  implicit class DecoderExtensions[A](private val decoder: AbstractDecoder[A, E]) {
     def decodeEither(a: A): Either[E, E] = {
       val result        = decoder.decode(a)
       val decodingError = result.decodingError()
@@ -15,7 +17,7 @@ object implicits {
         Right(decoded.get())
       } else {
         val e = E.empty
-          .name("invalid-decoder")
+          .name("decoding-failure")
           .message("Invalid Decoder because it contains neither a decoding error nor a decoded E!")
           .data("class", decoder.getClass.getCanonicalName)
           .data("input", a.toString)

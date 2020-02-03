@@ -1,3 +1,3 @@
 package dev.akif.e;
 
-public interface AbstractCodec<E extends AbstractE<?, ?>, IN, OUT> extends AbstractDecoder<IN, E>, AbstractEncoder<E, OUT> {}
+public interface AbstractCodec<E extends AbstractE<?, ?>, A> extends AbstractDecoder<A, E>, AbstractEncoder<E, A> {}

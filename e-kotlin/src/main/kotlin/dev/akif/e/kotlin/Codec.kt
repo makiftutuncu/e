@@ -1,13 +1,14 @@
 package dev.akif.e.kotlin
 
+import dev.akif.e.AbstractCodec
 import dev.akif.e.AbstractDecoder
 import dev.akif.e.AbstractEncoder
+
+interface Codec<A> : AbstractCodec<E, A>
 
 interface Decoder<IN> : AbstractDecoder<IN, E>
 
 interface Encoder<OUT> : AbstractEncoder<E, OUT>
-
-interface Codec<IN, OUT> : Decoder<IN>, Encoder<OUT>
 
 fun <IN> Decoder<IN>.decodeMaybe(input: IN): Maybe<E> {
     val result        = this.decode(input)
@@ -18,7 +19,7 @@ fun <IN> Decoder<IN>.decodeMaybe(input: IN): Maybe<E> {
         decodingError.isPresent -> Failure(decodingError.get())
         decoded.isPresent       -> Success(decoded.get())
         else                    -> Failure(E.empty()
-                                            .name("invalid-decoder")
+                                            .name("decoding-failure")
                                             .message("Invalid Decoder because it contains neither a decoding error nor a decoded E!")
                                             .data("class", this::class.java.canonicalName)
                                             .data("input", input.toString()))

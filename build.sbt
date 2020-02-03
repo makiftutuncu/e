@@ -14,7 +14,18 @@ scmInfo              in ThisBuild := Some(ScmInfo(url("https://github.com/makift
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-java`, `e-scala`, `e-kotlin`/*, `e-circe`, `e-play-json`, `e-gson`, `e-zio`*/)
+  .aggregate(
+    `e-core`,
+    `e-java`,
+    `e-scala`,
+    `e-kotlin`,
+    `e-circe`,
+    /*
+    `e-play-json`,
+    `e-gson`,
+    `e-zio`
+    */
+  )
   .enablePlugins(MdocPlugin)
   .settings(Settings.mdocSettings)
 
@@ -37,11 +48,10 @@ lazy val `e-kotlin` = project
   .dependsOn(`e-core`)
   .settings(Settings.kotlinSettings)
 
-/*
 lazy val `e-circe` = project
-  .in(file("circe"))
+  .in(file("e-circe"))
   .dependsOn(`e-scala`)
-  .settings(scalaSettings)
+  .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.circeCore,
@@ -49,6 +59,7 @@ lazy val `e-circe` = project
     )
   )
 
+/*
 lazy val `e-play-json` = project
   .in(file("play-json"))
   .dependsOn(`e-scala`)
@@ -102,8 +113,8 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("e-java/publishSigned"),
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
   releaseStepCommandAndRemaining("e-kotlin/publishSigned"),
-  /*releaseStepCommandAndRemaining("+e-circe/publishSigned"),
-  releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
+  releaseStepCommandAndRemaining("+e-circe/publishSigned"),
+  /*releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
   releaseStepCommandAndRemaining("+e-zio/publishSigned"),
   */
