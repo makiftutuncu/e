@@ -19,6 +19,6 @@ public abstract class AbstractJsonStringEncoder<Cause, Data> implements Abstract
     }
 
     protected String escape(String s) {
-        return s.replace("\"", "\\\\\"");
+        return s.replace("\"", "\\\"");
     }
 }

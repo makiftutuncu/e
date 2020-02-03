@@ -11,8 +11,8 @@ public final class E extends AbstractE<Throwable, Map<String, String>>  {
     public E(int code, String name, String message, Throwable cause, Map<String, String> data) {
         super(
             code,
-            name == null || !name.trim().isEmpty() ? "" : name,
-            message == null || !message.trim().isEmpty() ? "" : message,
+            isBlankString(name) ? "" : name,
+            isBlankString(message) ? "" : message,
             cause,
             data == null ? new LinkedHashMap<>() : data
         );
@@ -91,10 +91,10 @@ public final class E extends AbstractE<Throwable, Map<String, String>>  {
         AbstractE<?, ?> that = (AbstractE<?, ?>) o;
 
         return this.code() == that.code() &&
-                this.name().equals(that.name()) &&
-                this.message().equals(that.message()) &&
-                Objects.equals(this.cause(), that.cause()) &&
-                Objects.equals(this.data(), that.data());
+               this.name().equals(that.name()) &&
+               this.message().equals(that.message()) &&
+               Objects.equals(this.cause(), that.cause()) &&
+               Objects.equals(this.data(), that.data());
     }
 
     @Override public int hashCode() {
@@ -102,6 +102,6 @@ public final class E extends AbstractE<Throwable, Map<String, String>>  {
     }
 
     @Override public String toString() {
-        return JsonStringEncoder.get().toString();
+        return JsonStringEncoder.get().encode(this);
     }
 }
