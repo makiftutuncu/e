@@ -20,8 +20,8 @@ lazy val e = project
     `e-scala`,
     `e-kotlin`,
     `e-circe`,
-    /*
     `e-play-json`,
+    /*
     `e-gson`,
     `e-zio`
     */
@@ -59,17 +59,17 @@ lazy val `e-circe` = project
     )
   )
 
-/*
 lazy val `e-play-json` = project
-  .in(file("play-json"))
+  .in(file("e-play-json"))
   .dependsOn(`e-scala`)
-  .settings(scalaSettings)
+  .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.playJson
     )
   )
 
+/*
 lazy val `e-gson` = project
   .in(file("gson"))
   .dependsOn(`e-core`)
@@ -114,7 +114,8 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
   releaseStepCommandAndRemaining("e-kotlin/publishSigned"),
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
-  /*releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
+  releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
+  /*
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
   releaseStepCommandAndRemaining("+e-zio/publishSigned"),
   */

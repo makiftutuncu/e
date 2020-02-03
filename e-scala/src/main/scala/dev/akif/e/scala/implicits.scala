@@ -7,23 +7,10 @@ import scala.util.{Failure, Success, Try}
 object implicits {
   implicit class DecoderExtensions[A](private val decoder: AbstractDecoder[A, E]) {
     def decodeEither(a: A): Either[E, E] = {
-      val result        = decoder.decode(a)
-      val decodingError = result.decodingError()
-      val decoded       = result.decoded()
+      val result = decoder.decode(a)
+      val e      = result.get()
 
-      if (decodingError.isPresent) {
-        Left(decodingError.get())
-      } else if (decoded.isPresent) {
-        Right(decoded.get())
-      } else {
-        val e = E.empty
-          .name("decoding-failure")
-          .message("Invalid Decoder because it contains neither a decoding error nor a decoded E!")
-          .data("class", decoder.getClass.getCanonicalName)
-          .data("input", a.toString)
-
-        Left(e)
-      }
+      Either.cond(result.isSuccess, e, e)
     }
   }
 

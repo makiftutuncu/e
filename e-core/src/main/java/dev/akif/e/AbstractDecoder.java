@@ -1,33 +1,35 @@
 package dev.akif.e;
 
-import java.util.Optional;
-
 public interface AbstractDecoder<IN, E extends AbstractE<?, ?>> {
     DecodingResult<E> decode(IN input);
 
     final class DecodingResult<E> {
-        private final E decodingError;
-        private final E decoded;
+        public final boolean isSuccess;
+        private final E e;
 
-        private DecodingResult(E decodingError, E decoded) {
-            this.decodingError = decodingError;
-            this.decoded = decoded;
+        private DecodingResult(boolean isSuccess, E e) {
+            this.isSuccess = isSuccess;
+            this.e = e;
         }
 
         public static <E> DecodingResult<E> fail(E decodingError) {
-            return new DecodingResult<>(decodingError, null);
+            if (decodingError == null) {
+                throw new IllegalArgumentException("Decoding failure cannot be null!");
+            }
+
+            return new DecodingResult<>(false, decodingError);
         }
 
         public static <E> DecodingResult<E> succeed(E decoded) {
-            return new DecodingResult<>(null, decoded);
+            if (decoded == null) {
+                throw new IllegalArgumentException("Decoded E cannot be null!");
+            }
+
+            return new DecodingResult<>(true, decoded);
         }
 
-        public Optional<E> decodingError() {
-            return Optional.ofNullable(decodingError);
-        }
-
-        public Optional<E> decoded() {
-            return Optional.ofNullable(decoded);
+        public E get() {
+            return e;
         }
     }
 }
