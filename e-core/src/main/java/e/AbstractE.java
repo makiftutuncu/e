@@ -52,11 +52,11 @@ public abstract class AbstractE<Cause, Data> {
     }
 
     public boolean hasName() {
-        return name() != null && !name().trim().isEmpty();
+        return !isBlankString(name());
     }
 
     public boolean hasMessage() {
-        return message() != null && !message().trim().isEmpty();
+        return !isBlankString(message());
     }
 
     public abstract boolean hasCause();
@@ -64,4 +64,8 @@ public abstract class AbstractE<Cause, Data> {
     public abstract boolean hasData();
 
     public abstract Exception toException();
+
+    protected static boolean isBlankString(String s) {
+        return s == null || s.trim().isEmpty();
+    }
 }
