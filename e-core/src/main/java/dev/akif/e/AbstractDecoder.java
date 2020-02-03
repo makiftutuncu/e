@@ -26,7 +26,7 @@ public interface AbstractDecoder<IN, E extends AbstractE<?, ?>> {
             return Optional.ofNullable(decodingError);
         }
 
-        public Optional<E> get() {
+        public Optional<E> decoded() {
             return Optional.ofNullable(decoded);
         }
     }

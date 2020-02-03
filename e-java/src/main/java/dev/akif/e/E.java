@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class E extends AbstractE<Throwable, Map<String, String>> {
-    private E(int code, String name, String message, Throwable cause, Map<String, String> data) {
+    public E(int code, String name, String message, Throwable cause, Map<String, String> data) {
         super(
             code,
             name == null || !name.trim().isEmpty() ? "" : name,
@@ -16,47 +16,47 @@ public final class E extends AbstractE<Throwable, Map<String, String>> {
         );
     }
 
-    public static E of(int code, String name, String message, Throwable cause, Map<String, String> data) {
-        return new E(code, name, message, cause, data);
+    public E(int code, String name, String message, Throwable cause) {
+        this(code, name, message, cause, null);
     }
 
-    public static E of(int code, String name, String message, Throwable cause) {
-        return new E(code, name, message, cause, null);
+    public E(int code, String name, String message) {
+        this(code, name, message, null, null);
     }
 
-    public static E of(int code, String name, String message) {
-        return new E(code, name, message, null, null);
+    public E(int code, String name) {
+        this(code, name, null, null, null);
     }
 
-    public static E of(int code, String name) {
-        return new E(code, name, null, null, null);
+    public E(int code) {
+        this(code, null, null, null, null);
     }
 
-    public static E of(int code) {
-        return new E(code, null, null, null, null);
+    public E() {
+        this(EMPTY_CODE, null, null, null, null);
     }
 
     public static E empty() {
-        return new E(EMPTY_CODE, null, null, null, null);
+        return new E();
     }
 
-    public E code(int code) {
+    @Override public E code(int code) {
         return new E(code, name(), message(), cause(), data());
     }
 
-    public E name(String name) {
+    @Override public E name(String name) {
         return new E(code(), name, message(), cause(), data());
     }
 
-    public E message(String message) {
+    @Override public E message(String message) {
         return new E(code(), name(), message, cause(), data());
     }
 
-    public E cause(Throwable cause) {
+    @Override public E cause(Throwable cause) {
         return new E(code(), name(), message(), cause, data());
     }
 
-    public E data(Map<String, String> data) {
+    @Override public E data(Map<String, String> data) {
         return new E(code(), name(), message(), cause(), data);
     }
 

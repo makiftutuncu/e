@@ -37,6 +37,16 @@ public abstract class AbstractE<Cause, Data> {
         return _data;
     }
 
+    public abstract AbstractE<Cause, Data> code(int code);
+
+    public abstract AbstractE<Cause, Data> name(String name);
+
+    public abstract AbstractE<Cause, Data> message(String message);
+
+    public abstract AbstractE<Cause, Data> cause(Cause cause);
+
+    public abstract AbstractE<Cause, Data> data(Data data);
+
     public boolean hasCode() {
         return code() != EMPTY_CODE;
     }
