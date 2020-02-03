@@ -89,7 +89,7 @@ lazy val `e-zio` = project
 
 // === Release Settings ===
 
-import ReleaseTransformations._
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 credentials          in ThisBuild += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
 pomIncludeRepository in ThisBuild := { _ => false }
