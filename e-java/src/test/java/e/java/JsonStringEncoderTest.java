@@ -20,7 +20,7 @@ public class JsonStringEncoderTest {
         data.put("test", "data");
     }
 
-    @Test void testEncodeEWithAllFields() {
+    @Test void testEncodingEWithAllFields() {
         E e = new E(1, "test-name", "Test Message", cause, data);
 
         String expected = "{\"code\":1,\"name\":\"test-name\",\"message\":\"Test Message\",\"cause\":\"Test Exception\",\"data\":{\"test\":\"data\"}}";
@@ -29,7 +29,7 @@ public class JsonStringEncoderTest {
         assertEquals(expected, actual);
     }
 
-    @Test void testEncodeEWithSomeFields() {
+    @Test void testEncodingEWithSomeFields() {
         E e = new E().name("test-name").message("Test Message");
 
         String expected = "{\"name\":\"test-name\",\"message\":\"Test Message\"}";
@@ -38,7 +38,7 @@ public class JsonStringEncoderTest {
         assertEquals(expected, actual);
     }
 
-    @Test void testEncodeEWithQuotes() {
+    @Test void testEncodingEWithQuotes() {
         data.put("test", "da\"ta");
         data.put("f\"oo", "bar");
         E e = new E().name("test-name").data(data);
@@ -49,7 +49,7 @@ public class JsonStringEncoderTest {
         assertEquals(expected, actual);
     }
 
-    @Test void testEncodeEWithNoFields() {
+    @Test void testEncodingEWithNoFields() {
         E e = new E();
 
         String expected = "{}";
