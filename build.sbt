@@ -1,6 +1,6 @@
 // === Project Definition ===
 
-description          in ThisBuild := "A zero-dependency micro library to model errors"
+description          in ThisBuild := "A zero-dependency micro library for handling errors"
 homepage             in ThisBuild := Some(url("https://github.com/makiftutuncu/e"))
 startYear            in ThisBuild := Some(2019)
 licenses             in ThisBuild := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
@@ -21,8 +21,8 @@ lazy val e = project
     `e-kotlin`,
     `e-circe`,
     `e-play-json`,
-    /*
     `e-gson`,
+    /*
     `e-zio`
     */
   )
@@ -69,19 +69,19 @@ lazy val `e-play-json` = project
     )
   )
 
-/*
 lazy val `e-gson` = project
-  .in(file("gson"))
-  .dependsOn(`e-core`)
-  .settings(javaSettings)
+  .in(file("e-gson"))
+  .dependsOn(`e-java`)
+  .settings(Settings.javaSettings)
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.gson
     )
   )
 
+/*
 lazy val `e-zio` = project
-  .in(file("zio"))
+  .in(file("e-zio"))
   .dependsOn(`e-scala`)
   .settings(scalaSettings)
   .settings(
@@ -115,8 +115,8 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("e-kotlin/publishSigned"),
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
-  /*
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
+  /*
   releaseStepCommandAndRemaining("+e-zio/publishSigned"),
   */
   setNextVersion,
