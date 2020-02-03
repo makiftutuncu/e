@@ -1,27 +1,50 @@
 package e.kotlin
 
-sealed class Maybe<out A>(open val a: A?) {
+sealed class Maybe<out A>(open val e: E?, open val a: A?) {
     fun isFailure(): Boolean = this is Failure<A>
     fun isSuccess(): Boolean = this is Success<A>
 
     inline fun <B> map(f: (A) -> B): Maybe<B> =
         when (this) {
             is Failure<A> -> Failure(e)
-            is Success<A> -> Success(f.invoke(a))
+            is Success<A> -> Success(f(a))
         }
 
     inline fun <B> flatMap(f: (A) -> Maybe<B>): Maybe<B> =
         when (this) {
             is Failure<A> -> Failure(e)
-            is Success<A> -> f.invoke(a)
+            is Success<A> -> f(a)
         }
+
+    inline fun <B> fold(ifFailure: (E) -> B, ifSuccess: (A) -> B): B =
+        when (this) {
+            is Failure<A> -> ifFailure(e)
+            is Success<A> -> ifSuccess(a)
+        }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Maybe<*>) return false
+
+        if ((this is Failure<*> && other !is Failure<*>) || (this is Success<*> && other !is Success<*>)) return false
+
+        return this.e == other.e && this.a == other.a
+    }
+
+    override fun hashCode(): Int {
+        var result = e?.hashCode() ?: 0
+        result = 31 * result + (a?.hashCode() ?: 0)
+        return result
+    }
+
+
 }
 
-data class Failure<out A>(val e: E): Maybe<A>(null)
+data class Failure<out A>(override val e: E): Maybe<A>(e, null)
 
-data class Success<out A>(override val a: A): Maybe<A>(a)
+data class Success<out A>(override val a: A): Maybe<A>(null, a)
 
-fun <A> E.maybe(e: E): Maybe<A> = Failure(e)
+fun <A> E.maybe(): Maybe<A> = Failure(this)
 
 fun <A> A.maybe(): Maybe<A> = Success(this)
 
