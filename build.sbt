@@ -22,9 +22,7 @@ lazy val e = project
     `e-circe`,
     `e-play-json`,
     `e-gson`,
-    /*
     `e-zio`
-    */
   )
   .enablePlugins(MdocPlugin)
   .settings(Settings.mdocSettings)
@@ -79,17 +77,15 @@ lazy val `e-gson` = project
     )
   )
 
-/*
 lazy val `e-zio` = project
   .in(file("e-zio"))
   .dependsOn(`e-scala`)
-  .settings(scalaSettings)
+  .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.zio
     )
   )
-*/
 
 // === Release Settings ===
 
@@ -116,9 +112,7 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
   releaseStepCommandAndRemaining("e-gson/publishSigned"),
-  /*
   releaseStepCommandAndRemaining("+e-zio/publishSigned"),
-  */
   setNextVersion,
   commitNextVersion,
   pushChanges
