@@ -3,7 +3,7 @@ package dev.akif.e;
 import java.util.Map;
 import java.util.StringJoiner;
 
-public final class JsonStringEncoder extends AbstractJsonStringEncoder<Map<String, String>> {
+public final class JsonStringEncoder extends AbstractJsonStringEncoder<Throwable, Map<String, String>> {
     private static JsonStringEncoder instance;
 
     private JsonStringEncoder() {}
@@ -14,6 +14,11 @@ public final class JsonStringEncoder extends AbstractJsonStringEncoder<Map<Strin
         }
 
         return instance;
+    }
+
+    @Override protected String encodeCause(Throwable cause)
+    {
+        return cause == null ? "null" : String.format("\"%s\"", escape(cause.getMessage()));
     }
 
     @Override protected String encodeData(Map<String, String> data) {
