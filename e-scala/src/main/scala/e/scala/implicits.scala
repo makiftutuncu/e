@@ -17,6 +17,9 @@ object implicits {
   implicit class MaybeExtensions[A](private val maybe: Maybe[A]) {
     val isFailure: Boolean = maybe.isLeft
     val isSuccess: Boolean = maybe.isRight
+
+    val e: Option[E]     = maybe.left.toOption
+    val value: Option[A] = maybe.toOption
   }
 
   implicit class MaybeSyntaxE(private val e: E) {
