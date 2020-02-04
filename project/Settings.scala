@@ -9,8 +9,6 @@ object Settings {
   lazy val crossCompiledScalaVersions = Seq("2.12.10", latestScalaVersion)
 
   lazy val commonSettings = Seq(
-    javacOptions ++= Seq("-source", "11"),
-
     resolvers += Resolver.jcenterRepo
   )
 
