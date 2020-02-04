@@ -71,7 +71,7 @@ public class ETest {
         Exception actual1   = e1.toException();
 
         assertEquals(expected1.getMessage(), actual1.getMessage());
-        assertNull(expected1.getCause());
+        assertNull(actual1.getCause());
 
         E e2 = e1.cause(cause);
 

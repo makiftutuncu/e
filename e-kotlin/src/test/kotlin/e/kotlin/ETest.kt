@@ -67,7 +67,7 @@ object ETest {
         val actual1   = e1.toException()
 
         assertEquals(expected1.message, actual1.message)
-        assertNull(expected1.cause)
+        assertNull(actual1.cause)
 
         val e2 = e1.cause(cause)
 

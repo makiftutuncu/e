@@ -11,14 +11,14 @@ object MaybeTest {
 
         assertTrue(maybe1.isFailure())
         assertFalse(maybe1.isSuccess())
-        assertNull(maybe1.a)
+        assertNull(maybe1.value)
         assertEquals(maybe1.e, e)
 
         val maybe2: Maybe<Int> = e.maybe()
 
         assertTrue(maybe2.isFailure())
         assertFalse(maybe2.isSuccess())
-        assertNull(maybe2.a)
+        assertNull(maybe2.value)
         assertEquals(maybe2.e, e)
     }
 
@@ -30,7 +30,7 @@ object MaybeTest {
 
         assertTrue(maybe.isFailure())
         assertFalse(maybe.isSuccess())
-        assertNull(maybe.a)
+        assertNull(maybe.value)
         assertEquals(maybe.e, e)
     }
 
@@ -39,14 +39,14 @@ object MaybeTest {
 
         assertFalse(maybe1.isFailure())
         assertTrue(maybe1.isSuccess())
-        assertEquals(maybe1.a, "test")
+        assertEquals(maybe1.value, "test")
         assertNull(maybe1.e)
 
         val maybe2: Maybe<Int> = 42.maybe()
 
         assertFalse(maybe2.isFailure())
         assertTrue(maybe2.isSuccess())
-        assertEquals(maybe2.a, 42)
+        assertEquals(maybe2.value, 42)
         assertNull(maybe2.e)
     }
 
