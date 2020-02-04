@@ -1,7 +1,7 @@
 package e.kotlin
 
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 object MaybeTest {
     @Test fun `test constructing a Failure`() {

@@ -8,7 +8,7 @@ package object playjson {
   implicit val readsE: Reads[E] =
     Reads { json =>
       CodecForPlayJson.decodeEither(json).fold(
-        decodingFailure => JsError(JsPath(), decodingFailure.toString),
+        decodingFailure => JsError(decodingFailure.toString),
         decoded         => JsSuccess(decoded)
       )
     }
