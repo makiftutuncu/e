@@ -13,7 +13,7 @@ object CodecForCirceJson extends Codec[Json] {
           name    = "decoding-failure",
           message = "Input is not a Json object!",
           cause   = Some(cause),
-          data    = Map("input" -> json.toString())
+          data    = Map("input" -> json.noSpaces)
         )
 
         DecodingResult.fail(e)
