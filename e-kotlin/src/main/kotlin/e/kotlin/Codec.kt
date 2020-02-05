@@ -15,7 +15,7 @@ fun <IN> Decoder<IN>.decodeMaybe(input: IN): Maybe<E> {
     val e      = result.get()
 
     return when {
-        !result.isSuccess -> Failure(e)
-        else              -> Success(e)
+        !result.isSuccess -> Maybe.failure(e)
+        else              -> Maybe.success(e)
     }
 }

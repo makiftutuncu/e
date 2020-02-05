@@ -9,7 +9,9 @@ object Settings {
   lazy val crossCompiledScalaVersions = Seq("2.12.10", latestScalaVersion)
 
   lazy val commonSettings = Seq(
-    resolvers += Resolver.jcenterRepo
+    resolvers               += Resolver.jcenterRepo,
+    Compile / compileOrder  := CompileOrder.JavaThenScala,
+    javacOptions           ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
   )
 
   lazy val mdocSettings = Seq(

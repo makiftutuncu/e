@@ -14,9 +14,9 @@ object JsonStringEncoderTest {
     }
 
     @Test fun `test encoding E with all fields`() {
-        val e = E(1, "test-name", "Test Message", cause, data)
+        val e = E("test-name", "Test Message", 1, cause, data)
 
-        val expected = """{"code":1,"name":"test-name","message":"Test Message","cause":"Test Exception","data":{"test":"data"}}"""
+        val expected = """{"name":"test-name","message":"Test Message","code":1,"cause":"Test Exception","data":{"test":"data"}}"""
         val actual   = JsonStringEncoder.encode(e)
 
         assertEquals(expected, actual)

@@ -32,9 +32,9 @@ public class GsonAdapterForE implements Codec<JsonElement>, JsonSerializer<E>, J
     @Override public JsonElement encode(E e) {
         JsonObject obj = new JsonObject();
 
-        if (e.hasCode())    obj.addProperty("code",    e.code());
         if (e.hasName())    obj.addProperty("name",    e.name());
         if (e.hasMessage()) obj.addProperty("message", e.message());
+        if (e.hasCode())    obj.addProperty("code",    e.code());
         if (e.hasCause())   obj.addProperty("cause",   e.cause().getMessage());
         if (e.hasData())    obj.add("data", encodeData(e.data()));
 
@@ -44,24 +44,20 @@ public class GsonAdapterForE implements Codec<JsonElement>, JsonSerializer<E>, J
     @Override public DecodingResult<E> decode(JsonElement json) {
         try {
             JsonObject obj            = json.getAsJsonObject();
-            JsonPrimitive codeJson    = obj.getAsJsonPrimitive("code");
             JsonPrimitive nameJson    = obj.getAsJsonPrimitive("name");
             JsonPrimitive messageJson = obj.getAsJsonPrimitive("message");
+            JsonPrimitive codeJson    = obj.getAsJsonPrimitive("code");
             JsonObject dataJson       = obj.getAsJsonObject("data");
 
-            int code                  = codeJson    != null ? codeJson.getAsInt()       : 0;
             String name               = nameJson    != null ? nameJson.getAsString()    : "";
             String message            = messageJson != null ? messageJson.getAsString() : "";
+            int code                  = codeJson    != null ? codeJson.getAsInt()       : 0;
             Map<String, String> data  = dataJson    != null ? decodeData(dataJson)      : new HashMap<>();
 
             // Cannot know cause field because it isn't possible to construct the causing exception from just a serialized message string
-            return DecodingResult.succeed(new E(code, name, message, null, data));
+            return DecodingResult.succeed(new E(name, message, code, null, data));
         } catch (Exception cause) {
-            E e = E.empty()
-                   .name("decoding-failure")
-                   .message("Cannot decode as E!")
-                   .cause(cause)
-                   .data("input", json.toString());
+            E e = new E("decoding-failure", "Cannot decode as E!").cause(cause).data("input", json.toString());
 
             return DecodingResult.fail(e);
         }

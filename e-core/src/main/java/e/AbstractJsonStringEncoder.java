@@ -9,9 +9,9 @@ public abstract class AbstractJsonStringEncoder<Cause, Data> implements Abstract
     @Override public String encode(AbstractE<Cause, Data> e) {
         StringJoiner joiner = new StringJoiner(",", "{", "}");
 
-        if (e.hasCode())    joiner.add(String.format("\"code\":%d",        e.code()));;
         if (e.hasName())    joiner.add(String.format("\"name\":\"%s\"",    escape(e.name())));
         if (e.hasMessage()) joiner.add(String.format("\"message\":\"%s\"", escape(e.message())));
+        if (e.hasCode())    joiner.add(String.format("\"code\":%d",        e.code()));;
         if (e.hasCause())   joiner.add(String.format("\"cause\":%s",       encodeCause(e.cause())));
         if (e.hasData())    joiner.add(String.format("\"data\":%s",        encodeData(e.data())));
 

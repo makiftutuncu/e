@@ -17,15 +17,15 @@ package object playjson {
 
   implicit def writesMaybe[A: Writes]: Writes[Maybe[A]] =
     Writes {
-      case Left(e)  => writesE.writes(e)
-      case Right(a) => Json.toJson(a)
+      case Maybe.Failure(e) => writesE.writes(e)
+      case Maybe.Success(a) => Json.toJson(a)
     }
 
   implicit class JsValueExtensions(private val json: JsValue) {
-    def readOrE[A](makeE: JsError => E)(implicit readsA: Reads[A]): Maybe[A] =
+    def readMaybe[A](ifFailure: JsError => E)(implicit readsA: Reads[A]): Maybe[A] =
       readsA.reads(json) match {
-        case e: JsError      => makeE(e).maybe[A]
-        case JsSuccess(a, _) => a.maybe
+        case e: JsError      => ifFailure(e).toMaybe[A]
+        case JsSuccess(a, _) => a.toMaybe
       }
   }
 }

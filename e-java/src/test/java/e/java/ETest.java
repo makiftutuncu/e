@@ -23,16 +23,16 @@ public class ETest {
     }
 
     @Test void testConstructingEWithAllFields() {
-        E e = new E(1, "test-name", "Test Message", cause, data);
-
-        assertTrue(e.hasCode());
-        assertEquals(1, e.code());
+        E e = new E("test-name", "Test Message", 1, cause, data);
 
         assertTrue(e.hasName());
         assertEquals("test-name", e.name());
 
         assertTrue(e.hasMessage());
         assertEquals("Test Message", e.message());
+
+        assertTrue(e.hasCode());
+        assertEquals(1, e.code());
 
         assertTrue(e.hasCause());
         assertEquals("Test Exception", e.cause().getMessage());
@@ -45,14 +45,14 @@ public class ETest {
     @Test void testConstructingEWithNoFields() {
         E e = new E();
 
-        assertFalse(e.hasCode());
-        assertEquals(E.EMPTY_CODE, e.code());
-
         assertFalse(e.hasName());
         assertEquals("", e.name());
 
         assertFalse(e.hasMessage());
         assertEquals("", e.message());
+
+        assertFalse(e.hasCode());
+        assertEquals(E.EMPTY_CODE, e.code());
 
         assertFalse(e.hasCause());
         assertNull(e.cause());
@@ -69,7 +69,7 @@ public class ETest {
     }
 
     @Test void testConvertingToException() {
-        E e1 = new E(1, "test-name", "Test Message");
+        E e1 = new E("test-name", "Test Message", 1);
 
         Exception expected1 = new Exception("Test Message");
         Exception actual1   = e1.toException();
@@ -86,28 +86,37 @@ public class ETest {
         assertEquals(expected2.getCause(),   actual2.getCause());
     }
 
+    @Test void testConvertingToMaybe() {
+        E e = new E("test-name", "Test Message", 1);
+
+        Maybe<String> expected = Maybe.failure(e);
+        Maybe<String> actual   = e.toMaybe();
+
+        assertEquals(expected, actual);
+    }
+
     @Test void testEquality() {
-        E e = new E(1, "test-name", "Test Message", cause, data);
+        E e = new E("test-name", "Test Message", 1, cause, data);
         Map<String, String> otherData = new LinkedHashMap<>();
         otherData.put("foo", "bar");
 
-        assertEquals(e,    new E(1, "test-name", "Test Message", cause,                data));
-        assertNotEquals(e, new E(2, "test-name", "Test Message", cause,                data));
-        assertNotEquals(e, new E(1, "foo",       "Test Message", cause,                data));
-        assertNotEquals(e, new E(1, "test-name", "bar",          cause,                data));
-        assertNotEquals(e, new E(1, "test-name", "Test Message", new Exception("baz"), data));
-        assertNotEquals(e, new E(1, "test-name", "Test Message", cause,                otherData));
+        assertEquals(e,    new E("test-name", "Test Message", 1, cause,                data));
+        assertNotEquals(e, new E("test-name", "Test Message", 2, cause,                data));
+        assertNotEquals(e, new E("foo",       "Test Message", 1, cause,                data));
+        assertNotEquals(e, new E("test-name", "bar",          1, cause,                data));
+        assertNotEquals(e, new E("test-name", "Test Message", 1, new Exception("baz"), data));
+        assertNotEquals(e, new E("test-name", "Test Message", 1, cause,                otherData));
     }
 
     @Test void testHashCodeGeneration() {
-        E e = new E(1, "test-name", "Test Message", cause, data);
+        E e = new E("test-name", "Test Message", 1, cause, data);
         Map<String, String> otherData = new LinkedHashMap<>();
         otherData.put("foo", "bar");
 
-        assertNotEquals(e.hashCode(), new E(2, "test-name", "Test Message", cause,                data).hashCode());
-        assertNotEquals(e.hashCode(), new E(1, "foo",       "Test Message", cause,                data).hashCode());
-        assertNotEquals(e.hashCode(), new E(1, "test-name", "bar",          cause,                data).hashCode());
-        assertNotEquals(e.hashCode(), new E(1, "test-name", "Test Message", new Exception("baz"), data).hashCode());
-        assertNotEquals(e.hashCode(), new E(1, "test-name", "Test Message", cause,                otherData).hashCode());
+        assertNotEquals(e.hashCode(), new E("test-name", "Test Message", 2, cause,                data).hashCode());
+        assertNotEquals(e.hashCode(), new E("foo",       "Test Message", 1, cause,                data).hashCode());
+        assertNotEquals(e.hashCode(), new E("test-name", "bar",          1, cause,                data).hashCode());
+        assertNotEquals(e.hashCode(), new E("test-name", "Test Message", 1, new Exception("baz"), data).hashCode());
+        assertNotEquals(e.hashCode(), new E("test-name", "Test Message", 1, cause,                otherData).hashCode());
     }
 }

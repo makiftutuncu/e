@@ -12,11 +12,7 @@ class CirceSpec extends AnyWordSpec with Matchers {
     "fail when input is not a JsonObject" in {
       val json = Json.arr(1.asJson, 2.asJson)
 
-      val expected = E(
-        name    = "decoding-failure",
-        message = "Input is not a Json object!",
-        data    = Map("input" -> "[1,2]")
-      )
+      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
 
       val actual = CodecForCirceJson.decodeEither(json).left.map(_.cause(None))
 
@@ -25,19 +21,14 @@ class CirceSpec extends AnyWordSpec with Matchers {
 
     "succeed and decode input into an E" in {
       val json = Json.obj(
-        "code"    := 1,
         "name"    := "test-name",
         "message" := "Test Message",
+        "code"    := 1,
         "cause"   := "Test Exception",
         "data"    := Map("test" -> "data")
       )
 
-      val expected = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = None,
-        data    = Map("test" -> "data")
+      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data")
       )
 
       val actual = CodecForCirceJson.decodeEither(json)
@@ -48,18 +39,12 @@ class CirceSpec extends AnyWordSpec with Matchers {
 
   "Encoding using Codec" should {
     "encode an E as Json" in {
-      val e = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = Some(new Exception("Test Exception")),
-        data    = Map("test" -> "data")
-      )
+      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
 
       val expected = Json.obj(
-        "code"    := 1,
         "name"    := "test-name",
         "message" := "Test Message",
+        "code"    := 1,
         "cause"   := "Test Exception",
         "data"    := Map("test" -> "data")
       )
@@ -74,12 +59,7 @@ class CirceSpec extends AnyWordSpec with Matchers {
     "fail when input is not a JsonObject" in {
       val json = Json.arr(1.asJson, 2.asJson)
 
-      val expected = E(
-        name    = "decoding-failure",
-        message = "Input is not a Json object!",
-        cause   = Some(new Exception("JsonObject")),
-        data    = Map("input" -> "[1,2]")
-      )
+      val expected = E("decoding-failure", "Input is not a Json object!").cause(new Exception("JsonObject")).data("input" -> "[1,2]")
 
       val actual = json.as[E].left.map(_.getMessage())
 
@@ -88,20 +68,14 @@ class CirceSpec extends AnyWordSpec with Matchers {
 
     "succeed and decode input into an E" in {
       val json = Json.obj(
-        "code"    := 1,
         "name"    := "test-name",
         "message" := "Test Message",
+        "code"    := 1,
         "cause"   := "Test Exception",
         "data"    := Map("test" -> "data")
       )
 
-      val expected = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = None,
-        data    = Map("test" -> "data")
-      )
+      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
 
       val actual = json.as[E]
 
@@ -111,18 +85,12 @@ class CirceSpec extends AnyWordSpec with Matchers {
 
   "Encoding using circe" should {
     "encode an E as Json" in {
-      val e = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = Some(new Exception("Test Exception")),
-        data    = Map("test" -> "data")
-      )
+      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
 
       val expected = Json.obj(
-        "code"    := 1,
         "name"    := "test-name",
         "message" := "Test Message",
+        "code"    := 1,
         "cause"   := "Test Exception",
         "data"    := Map("test" -> "data")
       )
@@ -133,23 +101,17 @@ class CirceSpec extends AnyWordSpec with Matchers {
     }
 
     "encode a failure Maybe as Json" in {
-      val e = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = Some(new Exception("Test Exception")),
-        data    = Map("test" -> "data")
-      )
+      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
 
       val expected = Json.obj(
-        "code"    := 1,
         "name"    := "test-name",
         "message" := "Test Message",
+        "code"    := 1,
         "cause"   := "Test Exception",
         "data"    := Map("test" -> "data")
       )
 
-      val actual = e.maybe[String].asJson
+      val actual = e.toMaybe[String].asJson
 
       actual shouldBe expected
     }
@@ -157,7 +119,7 @@ class CirceSpec extends AnyWordSpec with Matchers {
     "encode a success Maybe as Json" in {
       val expected = Json.obj("test" := "data")
 
-      val actual = Map("test" -> "data").maybe.asJson
+      val actual = Map("test" -> "data").toMaybe.asJson
 
       actual shouldBe expected
     }
@@ -167,36 +129,25 @@ class CirceSpec extends AnyWordSpec with Matchers {
     "fail when input is not a JsonObject" in {
       val json = Json.arr(1.asJson, 2.asJson)
 
-      val expected = E(
-        name    = "decoding-failure",
-        message = "Input is not a Json object!",
-        cause   = Some(new Exception("JsonObject")),
-        data    = Map("input" -> "[1,2]")
-      )
+      val expected = E("decoding-failure", "Input is not a Json object!").cause(new Exception("JsonObject")).data("input" -> "[1,2]")
 
-      val actual = json.decodeOrE(df => E(message = df.getMessage)).e.map(_.toString).getOrElse("")
+      val actual = json.decodeMaybe(df => E(message = df.getMessage)).eOpt.map(_.toString).getOrElse("")
 
       actual shouldBe E(message = expected.toString).toString
     }
 
     "succeed and decode input into an E" in {
       val json = Json.obj(
-        "code"    := 1,
         "name"    := "test-name",
         "message" := "Test Message",
+        "code"    := 1,
         "cause"   := "Test Exception",
         "data"    := Map("test" -> "data")
       )
 
-      val expected = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = None,
-        data    = Map("test" -> "data")
-      )
+      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
 
-      val actual = json.decodeOrE(df => E(message = df.getMessage)).value.map(_.toString).getOrElse("")
+      val actual = json.decodeMaybe(df => E(message = df.getMessage)).valueOpt.map(_.toString).getOrElse("")
 
       actual shouldBe expected.toString
     }

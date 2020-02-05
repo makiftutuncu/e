@@ -13,11 +13,7 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
     "fail when input is not a JsObject" in {
       val json = Json.arr(1, 2)
 
-      val expected = E(
-        name    = "decoding-failure",
-        message = "Input is not a Json object!",
-        data    = Map("input" -> "[1,2]")
-      )
+      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
 
       val actual = CodecForPlayJson.decodeEither(json)
 
@@ -26,20 +22,14 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
 
     "succeed and decode input into an E" in {
       val json = Json.obj(
-        "code"    -> 1,
         "name"    -> "test-name",
         "message" -> "Test Message",
+        "code"    -> 1,
         "cause"   -> "Test Exception",
         "data"    -> Map("test" -> "data")
       )
 
-      val expected = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = None,
-        data    = Map("test" -> "data")
-      )
+      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
 
       val actual = CodecForPlayJson.decodeEither(json)
 
@@ -49,18 +39,12 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
 
   "Encoding using Codec" should {
     "encode an E as Json" in {
-      val e = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = Some(new Exception("Test Exception")),
-        data    = Map("test" -> "data")
-      )
+      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
 
       val expected = Json.obj(
-        "code"    -> 1,
         "name"    -> "test-name",
         "message" -> "Test Message",
+        "code"    -> 1,
         "cause"   -> "Test Exception",
         "data"    -> Map("test" -> "data")
       )
@@ -75,11 +59,7 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
     "fail when input is not a JsObject" in {
       val json = Json.arr(1, 2)
 
-      val expected = E(
-        name    = "decoding-failure",
-        message = "Input is not a Json object!",
-        data    = Map("input" -> "[1,2]")
-      )
+      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
 
       val actual = Try(json.as[E]).failed.map {
         case jse: JsResultException => jse.errors.head._2.head.message
@@ -90,20 +70,14 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
 
     "succeed and read input as an E" in {
       val json = Json.obj(
-        "code"    -> 1,
         "name"    -> "test-name",
         "message" -> "Test Message",
+        "code"    -> 1,
         "cause"   -> "Test Exception",
         "data"    -> Map("test" -> "data")
       )
 
-      val expected = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = None,
-        data    = Map("test" -> "data")
-      )
+      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
 
       val actual = json.as[E]
 
@@ -113,18 +87,12 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
 
   "Writing using play-json" should {
     "write an E as Json" in {
-      val e = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = Some(new Exception("Test Exception")),
-        data    = Map("test" -> "data")
-      )
+      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
 
       val expected = Json.obj(
-        "code"    -> 1,
         "name"    -> "test-name",
         "message" -> "Test Message",
+        "code"    -> 1,
         "cause"   -> "Test Exception",
         "data"    -> Map("test" -> "data")
       )
@@ -135,23 +103,17 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
     }
 
     "write a failure Maybe as Json" in {
-      val e = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = Some(new Exception("Test Exception")),
-        data    = Map("test" -> "data")
-      )
+      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
 
       val expected = Json.obj(
-        "code"    -> 1,
         "name"    -> "test-name",
         "message" -> "Test Message",
+        "code"    -> 1,
         "cause"   -> "Test Exception",
         "data"    -> Map("test" -> "data")
       )
 
-      val actual = Json.toJson(e.maybe[String])
+      val actual = Json.toJson(e.toMaybe[String])
 
       actual shouldBe expected
     }
@@ -159,7 +121,7 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
     "write a success Maybe as Json" in {
       val expected = Json.obj("test" -> "data")
 
-      val actual = Json.toJson(Map("test" -> "data").maybe)
+      val actual = Json.toJson(Map("test" -> "data").toMaybe)
 
       actual shouldBe expected
     }
@@ -169,35 +131,25 @@ class PlayJsonSpec extends AnyWordSpec with Matchers {
     "fail when input is not a JsObject" in {
       val json = Json.arr(1, 2)
 
-      val expected = E(
-        name    = "decoding-failure",
-        message = "Input is not a Json object!",
-        data    = Map("input" -> "[1,2]")
-      )
+      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
 
-      val actual = json.readOrE(jse => E(message = jse.errors.head._2.head.message)).e.map(_.toString).getOrElse("")
+      val actual = json.readMaybe(jse => E(message = jse.errors.head._2.head.message)).eOpt.map(_.toString).getOrElse("")
 
       actual shouldBe E(message = expected.toString).toString
     }
 
     "succeed and read input into an E" in {
       val json = Json.obj(
-        "code"    -> 1,
         "name"    -> "test-name",
         "message" -> "Test Message",
+        "code"    -> 1,
         "cause"   -> "Test Exception",
         "data"    -> Map("test" -> "data")
       )
 
-      val expected = E(
-        code    = 1,
-        name    = "test-name",
-        message = "Test Message",
-        cause   = None,
-        data    = Map("test" -> "data")
-      )
+      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
 
-      val actual = json.readOrE(jse => E(message = jse.errors.head._2.head.message)).value.map(_.toString).getOrElse("")
+      val actual = json.readMaybe(jse => E(message = jse.errors.head._2.head.message)).valueOpt.map(_.toString).getOrElse("")
 
       actual shouldBe expected.toString
     }

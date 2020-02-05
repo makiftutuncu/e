@@ -2,7 +2,8 @@ package e.scala
 
 import e.AbstractDecoder
 
-import scala.util.{Failure, Success, Try}
+import scala.language.implicitConversions
+import scala.util.Try
 
 object implicits {
   implicit class DecoderExtensions[A](private val decoder: AbstractDecoder[A, E]) {
@@ -14,43 +15,21 @@ object implicits {
     }
   }
 
-  implicit class MaybeExtensions[A](private val maybe: Maybe[A]) {
-    val isFailure: Boolean = maybe.isLeft
-    val isSuccess: Boolean = maybe.isRight
+  implicit def eitherToMaybe[A](either: Either[E, A]): Maybe[A] = Maybe.fromEither[E, A](either, identity)
 
-    val e: Option[E]     = maybe.left.toOption
-    val value: Option[A] = maybe.toOption
-  }
-
-  implicit class MaybeSyntaxE(private val e: E) {
-    def maybe[A]: Maybe[A] = Left(e)
-  }
-
-  implicit class MaybeSyntax[+A](private val a: A) {
-    def maybe: Maybe[A] = Right(a)
+  implicit class MaybeSyntax[A](private val a: A) {
+    def toMaybe: Maybe[A] = Maybe.success(a)
   }
 
   implicit class OptionExtensions[A](private val option: Option[A]) {
-    def orE(e: => E): Maybe[A] =
-      option match {
-        case None    => Left(e)
-        case Some(a) => Right(a)
-      }
+    def toMaybe(e: => E): Maybe[A] = Maybe.fromOption(option, e)
   }
 
   implicit class EitherExtensions[L, R](private val either: Either[L, R]) {
-    def orE(makeE: L => E): Maybe[R] =
-      either match {
-        case Left(l)  => Left(makeE(l))
-        case Right(r) => Right(r)
-      }
+    def toMaybe(makeE: L => E): Maybe[R] = Maybe.fromEither(either, makeE)
   }
 
   implicit class TryExtensions[A](private val t: Try[A]) {
-    def orE(makeE: Throwable => E): Maybe[A] =
-      t match {
-        case Failure(t) => Left(makeE(t))
-        case Success(a) => Right(a)
-      }
+    def toMaybe(makeE: Throwable => E): Maybe[A] = Maybe.fromTry(t, makeE)
   }
 }

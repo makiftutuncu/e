@@ -14,15 +14,15 @@ package object circe {
 
   implicit def circeEncoderMaybe[A: Encoder]: Encoder[Maybe[A]] =
     Encoder.instance[Maybe[A]] {
-      case Left(e)  => circeEncoderE.apply(e)
-      case Right(a) => a.asJson
+      case Maybe.Failure(e) => circeEncoderE.apply(e)
+      case Maybe.Success(a) => a.asJson
     }
 
   implicit class JsonExtensions(private val json: Json) {
-    def decodeOrE[A](makeE: DecodingFailure => E)(implicit circeDecoderA: Decoder[A]): Maybe[A] =
+    def decodeMaybe[A](ifFailure: DecodingFailure => E)(implicit circeDecoderA: Decoder[A]): Maybe[A] =
       circeDecoderA.decodeJson(json).fold(
-        df => makeE(df).maybe[A],
-        a  => a.maybe
+        df => ifFailure(df).toMaybe[A],
+        a  => a.toMaybe
       )
   }
 }
