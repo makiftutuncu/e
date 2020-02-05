@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test
 object DecoderTest {
     @Test fun `test decoding as Maybe`() {
         val input           = "test"
-        val decodingFailure = E(name = "decoding-failure")
-        val decoded         = E(name = "decoded-e")
+        val decodingFailure = E("decoding-failure")
+        val decoded         = E("decoded-e")
 
         val result1 = failingDecoder(decodingFailure).decode(input)
 

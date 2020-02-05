@@ -8,64 +8,64 @@ import java.util.Objects;
 import e.AbstractE;
 
 public final class E extends AbstractE<Throwable, Map<String, String>>  {
-    public E(int code, String name, String message, Throwable cause, Map<String, String> data) {
+    public E(String name, String message, int code, Throwable cause, Map<String, String> data) {
         super(
-            code,
             isBlankString(name) ? "" : name,
             isBlankString(message) ? "" : message,
+            code,
             cause,
             data == null ? new LinkedHashMap<>() : data
         );
     }
 
-    public E(int code, String name, String message, Throwable cause) {
-        this(code, name, message, cause, null);
+    public E(String name, String message, int code, Throwable cause) {
+        this(name, message, code, cause, null);
     }
 
-    public E(int code, String name, String message) {
-        this(code, name, message, null, null);
+    public E(String name, String message, int code) {
+        this(name, message, code, null, null);
     }
 
-    public E(int code, String name) {
-        this(code, name, null, null, null);
+    public E(String name, String message) {
+        this(name, message, EMPTY_CODE, null, null);
     }
 
-    public E(int code) {
-        this(code, null, null, null, null);
+    public E(String name) {
+        this(name, null, EMPTY_CODE, null, null);
     }
 
     public E() {
-        this(EMPTY_CODE, null, null, null, null);
+        this(null, null, EMPTY_CODE, null, null);
     }
 
     public static E empty() {
         return new E();
     }
 
-    @Override public E code(int code) {
-        return new E(code, name(), message(), cause(), data());
-    }
-
     @Override public E name(String name) {
-        return new E(code(), name, message(), cause(), data());
+        return new E(name, message(), code(), cause(), data());
     }
 
     @Override public E message(String message) {
-        return new E(code(), name(), message, cause(), data());
+        return new E(name(), message, code(), cause(), data());
+    }
+
+    @Override public E code(int code) {
+        return new E(name(), message(), code, cause(), data());
     }
 
     @Override public E cause(Throwable cause) {
-        return new E(code(), name(), message(), cause, data());
+        return new E(name(), message(), code(), cause, data());
     }
 
     @Override public E data(Map<String, String> data) {
-        return new E(code(), name(), message(), cause(), data);
+        return new E(name(), message(), code(), cause(), data);
     }
 
     public E data(String key, String value) {
         Map<String, String> data = new LinkedHashMap<>(data());
         data.put(key, value);
-        return new E(code(), name(), message(), cause(), data);
+        return new E(name(), message(), code(), cause(), data);
     }
 
     @Override public Map<String, String> data() {
@@ -84,21 +84,25 @@ public final class E extends AbstractE<Throwable, Map<String, String>>  {
         return new Exception(message(), cause());
     }
 
+    public <A> Maybe<A> toMaybe() {
+        return Maybe.failure(this);
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AbstractE<?, ?>)) return false;
 
         AbstractE<?, ?> that = (AbstractE<?, ?>) o;
 
-        return this.code() == that.code() &&
-               this.name().equals(that.name()) &&
+        return this.name().equals(that.name()) &&
                this.message().equals(that.message()) &&
+               this.code() == that.code() &&
                Objects.equals(this.cause(), that.cause()) &&
                Objects.equals(this.data(), that.data());
     }
 
     @Override public int hashCode() {
-        return Objects.hash(code(), name(), message(), cause(), data());
+        return Objects.hash(name(), message(), code(), cause(), data());
     }
 
     @Override public String toString() {

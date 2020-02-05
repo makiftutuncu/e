@@ -5,18 +5,16 @@ import org.junit.jupiter.api.Test
 
 object MaybeTest {
     @Test fun `test constructing a Failure`() {
-        val e = E(name = "test-name")
+        val e = E("test-name")
 
-        val maybe1: Maybe<String> = Failure(e)
+        val maybe1: Maybe<String> = Maybe.failure(e)
 
-        assertTrue(maybe1.isFailure())
         assertFalse(maybe1.isSuccess())
         assertNull(maybe1.value)
         assertEquals(maybe1.e, e)
 
-        val maybe2: Maybe<Int> = e.maybe()
+        val maybe2: Maybe<Int> = e.toMaybe()
 
-        assertTrue(maybe2.isFailure())
         assertFalse(maybe2.isSuccess())
         assertNull(maybe2.value)
         assertEquals(maybe2.e, e)
@@ -24,89 +22,113 @@ object MaybeTest {
 
     @Test fun `test constructing a Failure on nullable values`() {
         val s: String? = null
-        val e = E(name = "test-name")
+        val e = E("test-name")
 
-        val maybe: Maybe<String> = s.orE(e)
+        val maybe1: Maybe<String> = Maybe.fromNullable(s, e)
 
-        assertTrue(maybe.isFailure())
-        assertFalse(maybe.isSuccess())
-        assertNull(maybe.value)
-        assertEquals(maybe.e, e)
+        assertFalse(maybe1.isSuccess())
+        assertNull(maybe1.value)
+        assertEquals(maybe1.e, e)
+
+        val maybe2: Maybe<String> = s.toMaybe(e)
+
+        assertFalse(maybe2.isSuccess())
+        assertNull(maybe2.value)
+        assertEquals(maybe2.e, e)
+    }
+
+    @Test fun `test constructing by catching`() {
+        val e = E("test-name")
+
+        val maybe1: Maybe<String> = Maybe.catching({ throw Exception("Test Exception") }, { cause -> e.cause(cause) })
+
+        assertFalse(maybe1.isSuccess())
+        assertNull(maybe1.value)
+        assertEquals(maybe1.e?.cause()?.message, "Test Exception")
+
+        val maybe2: Maybe<String> = Maybe.catching({ "test" }, { cause -> e.cause(cause) })
+
+        assertTrue(maybe2.isSuccess())
+        assertEquals(maybe2.value, "test")
+        assertNull(maybe2.e)
     }
 
     @Test fun `test constructing a Success`() {
-        val maybe1: Maybe<String> = Success("test")
+        val maybe1: Maybe<String> = Maybe.success("test")
 
-        assertFalse(maybe1.isFailure())
         assertTrue(maybe1.isSuccess())
         assertEquals(maybe1.value, "test")
         assertNull(maybe1.e)
 
-        val maybe2: Maybe<Int> = 42.maybe()
+        val maybe2: Maybe<Int> = 42.toMaybe()
 
-        assertFalse(maybe2.isFailure())
         assertTrue(maybe2.isSuccess())
         assertEquals(maybe2.value, 42)
         assertNull(maybe2.e)
     }
 
     @Test fun `test mapping a Maybe`() {
-        val e = E(name = "test-name")
+        val e = E("test-name")
 
-        val maybe1: Maybe<Int> = Failure(e)
-        val maybe2: Maybe<Int> = Success(42)
+        val maybe1: Maybe<Int> = e.toMaybe()
+        val maybe2: Maybe<Int> = 42.toMaybe()
 
-        assertEquals(e.maybe<String>(), maybe1.map { it.toString() })
-        assertEquals("42".maybe(),      maybe2.map { it.toString() })
+        assertEquals(e.toMaybe<String>(), maybe1.map { it.toString() })
+        assertEquals("42".toMaybe(),      maybe2.map { it.toString() })
     }
 
-    @Test fun `test flatmapping a Maybe`() {
-        val e1 = E(name = "test-name")
+    @Test fun `test flat mapping a Maybe`() {
+        val e1 = E("test-name")
         val e2 = E(message = "Test Message")
 
-        val maybe1: Maybe<Int> = Failure(e1)
-        val maybe2: Maybe<Int> = Success(42)
+        val maybe1: Maybe<Int> = e1.toMaybe()
+        val maybe2: Maybe<Int> = 42.toMaybe()
 
-        assertEquals(e1.maybe<String>(), maybe1.flatMap { e2.maybe<String>() })
-        assertEquals(e1.maybe<String>(), maybe1.flatMap { it.toString().maybe() })
+        assertEquals(e1.toMaybe<String>(), maybe1.flatMap { e2.toMaybe<String>() })
+        assertEquals(e1.toMaybe<String>(), maybe1.flatMap { it.toString().toMaybe() })
 
-        assertEquals(e2.maybe<String>(), maybe2.flatMap { e2.maybe<String>() })
-        assertEquals("42".maybe(),       maybe2.flatMap { it.toString().maybe() })
+        assertEquals(e2.toMaybe<String>(), maybe2.flatMap { e2.toMaybe<String>() })
+        assertEquals("42".toMaybe(),       maybe2.flatMap { it.toString().toMaybe() })
     }
 
     @Test fun `test folding a Maybe`() {
-        val e = E(name = "test-name")
+        val e = E("test-name")
 
-        val maybe1: Maybe<Int> = Failure(e)
-        val maybe2: Maybe<Int> = Success(42)
+        val maybe1: Maybe<Int> = e.toMaybe()
+        val maybe2: Maybe<Int> = 42.toMaybe()
 
         assertEquals("0",  maybe1.fold({ "0" }) { it.toString() })
         assertEquals("42", maybe2.fold({ "0" }) { it.toString() })
     }
 
     @Test fun `test equality`() {
-        val e1 = E(name = "test-name")
+        val e1 = E("test-name")
         val e2 = E(message = "Test Message")
 
-        assertEquals(e1.maybe<String>(),    e1.maybe<String>())
-        assertNotEquals(e1.maybe<String>(), e2.maybe<String>())
-        assertNotEquals(e1.maybe<String>(), "42".maybe())
+        assertEquals(e1.toMaybe<String>(),    e1.toMaybe<String>())
+        assertNotEquals(e1.toMaybe<String>(), e2.toMaybe<String>())
+        assertNotEquals(e1.toMaybe<String>(), "42".toMaybe())
 
-        assertEquals("42".maybe(), "42".maybe())
-        assertNotEquals("42".maybe(), "43".maybe())
-        assertNotEquals("42".maybe(), e1.maybe<String>())
+        assertEquals("42".toMaybe(), "42".toMaybe())
+        assertNotEquals("42".toMaybe(), "43".toMaybe())
+        assertNotEquals("42".toMaybe(), e1.toMaybe<String>())
     }
 
     @Test fun `test hash code generation`() {
-        val e1 = E(name = "test-name")
+        val e1 = E("test-name")
         val e2 = E(message = "Test Message")
 
-        assertEquals(e1.maybe<String>().hashCode(),    e1.maybe<String>().hashCode())
-        assertNotEquals(e1.maybe<String>().hashCode(), e2.maybe<String>().hashCode())
-        assertNotEquals(e1.maybe<String>().hashCode(), "42".maybe().hashCode())
+        assertEquals(e1.toMaybe<String>().hashCode(),    e1.toMaybe<String>().hashCode())
+        assertNotEquals(e1.toMaybe<String>().hashCode(), e2.toMaybe<String>().hashCode())
+        assertNotEquals(e1.toMaybe<String>().hashCode(), "42".toMaybe().hashCode())
 
-        assertEquals("42".maybe().hashCode(), "42".maybe().hashCode())
-        assertNotEquals("42".maybe().hashCode(), "43".maybe().hashCode())
-        assertNotEquals("42".maybe().hashCode(), e1.maybe<String>().hashCode())
+        assertEquals("42".toMaybe().hashCode(), "42".toMaybe().hashCode())
+        assertNotEquals("42".toMaybe().hashCode(), "43".toMaybe().hashCode())
+        assertNotEquals("42".toMaybe().hashCode(), e1.toMaybe<String>().hashCode())
+    }
+
+    @Test fun `test toString`() {
+        assertEquals(E("test-name").toMaybe<String>().toString(), """{"name":"test-name"}""")
+        assertEquals("42".toMaybe().toString(),                   "42")
     }
 }

@@ -15,16 +15,16 @@ object ETest {
     }
 
     @Test fun `test constructing E with all fields`() {
-        val e = E(1, "test-name", "Test Message", cause, data)
-
-        assertTrue(e.hasCode())
-        assertEquals(1, e.code())
+        val e = E("test-name", "Test Message", 1, cause, data)
 
         assertTrue(e.hasName())
         assertEquals("test-name", e.name())
 
         assertTrue(e.hasMessage())
         assertEquals("Test Message", e.message())
+
+        assertTrue(e.hasCode())
+        assertEquals(1, e.code())
 
         assertTrue(e.hasCause())
         assertEquals("Test Exception", e.cause()?.message)
@@ -37,14 +37,14 @@ object ETest {
     @Test fun `test constructing E with no fields`() {
         val e = E()
 
-        assertFalse(e.hasCode())
-        assertEquals(EMPTY_CODE, e.code())
-
         assertFalse(e.hasName())
         assertEquals("", e.name())
 
         assertFalse(e.hasMessage())
         assertEquals("", e.message())
+
+        assertFalse(e.hasCode())
+        assertEquals(EMPTY_CODE, e.code())
 
         assertFalse(e.hasCause())
         assertNull(e.cause())
@@ -61,7 +61,7 @@ object ETest {
     }
 
     @Test fun `test converting to exception`() {
-        val e1 = E(1, "test-name", "Test Message")
+        val e1 = E("test-name", "Test Message")
 
         val expected1 = Exception("Test Message")
         val actual1   = e1.toException()
@@ -78,24 +78,33 @@ object ETest {
         assertEquals(expected2.cause,   actual2.cause)
     }
 
-    @Test fun `test equality`() {
-        val e = E(1, "test-name", "Test Message", cause, data)
+    @Test fun `test converting to a Maybe`() {
+        val e = E("test-name", "Test Message")
 
-        assertEquals(e,    E(1, "test-name", "Test Message", cause,            data))
-        assertNotEquals(e, E(2, "test-name", "Test Message", cause,            data))
-        assertNotEquals(e, E(1, "foo",       "Test Message", cause,            data))
-        assertNotEquals(e, E(1, "test-name", "bar",          cause,            data))
-        assertNotEquals(e, E(1, "test-name", "Test Message", Exception("baz"), data))
-        assertNotEquals(e, E(1, "test-name", "Test Message", cause,            mapOf("foo" to "bar")))
+        val expected = Maybe.failure<String>(e)
+        val actual   = e.toMaybe<String>()
+
+        assertEquals(expected, actual)
+    }
+
+    @Test fun `test equality`() {
+        val e = E("test-name", "Test Message", 1, cause, data)
+
+        assertEquals(e,    E("test-name", "Test Message", 1, cause,            data))
+        assertNotEquals(e, E("test-name", "Test Message", 2, cause,            data))
+        assertNotEquals(e, E("foo",       "Test Message", 1, cause,            data))
+        assertNotEquals(e, E("test-name", "bar",          1, cause,            data))
+        assertNotEquals(e, E("test-name", "Test Message", 1, Exception("baz"), data))
+        assertNotEquals(e, E("test-name", "Test Message", 1, cause,            mapOf("foo" to "bar")))
     }
 
     @Test fun `test hash code generation`() {
-        val e = E(1, "test-name", "Test Message", cause, data)
+        val e = E("test-name", "Test Message", 1, cause, data)
 
-        assertNotEquals(e.hashCode(), E(2, "test-name", "Test Message", cause,            data).hashCode())
-        assertNotEquals(e.hashCode(), E(1, "foo",       "Test Message", cause,            data).hashCode())
-        assertNotEquals(e.hashCode(), E(1, "test-name", "bar",          cause,            data).hashCode())
-        assertNotEquals(e.hashCode(), E(1, "test-name", "Test Message", Exception("baz"), data).hashCode())
-        assertNotEquals(e.hashCode(), E(1, "test-name", "Test Message", cause,            mapOf("foo" to "bar")).hashCode())
+        assertNotEquals(e.hashCode(), E("test-name", "Test Message", 2, cause,            data).hashCode())
+        assertNotEquals(e.hashCode(), E("foo",       "Test Message", 1, cause,            data).hashCode())
+        assertNotEquals(e.hashCode(), E("test-name", "bar",          1, cause,            data).hashCode())
+        assertNotEquals(e.hashCode(), E("test-name", "Test Message", 1, Exception("baz"), data).hashCode())
+        assertNotEquals(e.hashCode(), E("test-name", "Test Message", 1, cause,            mapOf("foo" to "bar")).hashCode())
     }
 }

@@ -10,9 +10,9 @@ class JsonStringEncoderSpec extends AnyWordSpec with Matchers {
   "Encoding an E as Json String" should {
     "create correct result" when {
       "E has all the fields" in {
-        val e = E(1, "test-name", "Test Message", Some(cause), data)
+        val e = E("test-name", "Test Message", 1, Some(cause), data)
 
-        val expected = """{"code":1,"name":"test-name","message":"Test Message","cause":"Test Exception","data":{"test":"data"}}"""
+        val expected = """{"name":"test-name","message":"Test Message","code":1,"cause":"Test Exception","data":{"test":"data"}}"""
         val actual   = JsonStringEncoder.encode(e)
 
         actual shouldBe expected

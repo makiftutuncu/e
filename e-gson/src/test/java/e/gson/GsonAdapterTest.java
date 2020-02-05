@@ -1,6 +1,9 @@
 package e.gson;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,10 +27,7 @@ public class GsonAdapterTest {
         json.add(1);
         json.add(2);
 
-        E expected = E.empty()
-                      .name("decoding-failure")
-                      .message("Cannot decode as E!")
-                      .data("input", json.toString());
+        E expected = new E("decoding-failure", "Cannot decode as E!").data("input", json.toString());
 
         DecodingResult<E> result = adapter.decode(json);
         E decoded                = result.get();
@@ -42,12 +42,12 @@ public class GsonAdapterTest {
         data.add("test", new JsonPrimitive("data"));
 
         JsonObject json = new JsonObject();
-        json.add("code", new JsonPrimitive(1));
         json.add("name", new JsonPrimitive("test-name"));
         json.add("message", new JsonPrimitive("Test Message"));
+        json.add("code", new JsonPrimitive(1));
         json.add("data", data);
 
-        E expected = new E(1, "test-name", "Test Message").data("test", "data");
+        E expected = new E("test-name", "Test Message", 1).data("test", "data");
 
         DecodingResult<E> result = adapter.decode(json);
 
@@ -56,15 +56,15 @@ public class GsonAdapterTest {
     }
 
     @Test void testEncoding() {
-        E e = new E(1, "test-name", "Test Message", new Exception("Test Exception")).data("test", "data");
+        E e = new E("test-name", "Test Message", 1, new Exception("Test Exception")).data("test", "data");
 
         JsonObject data = new JsonObject();
         data.add("test", new JsonPrimitive("data"));
 
         JsonObject expected = new JsonObject();
-        expected.add("code", new JsonPrimitive(1));
         expected.add("name", new JsonPrimitive("test-name"));
         expected.add("message", new JsonPrimitive("Test Message"));
+        expected.add("code", new JsonPrimitive(1));
         expected.add("cause", new JsonPrimitive("Test Exception"));
         expected.add("data", data);
 
@@ -86,27 +86,27 @@ public class GsonAdapterTest {
         data.add("test", new JsonPrimitive("data"));
 
         JsonObject json = new JsonObject();
-        json.add("code", new JsonPrimitive(1));
         json.add("name", new JsonPrimitive("test-name"));
         json.add("message", new JsonPrimitive("Test Message"));
+        json.add("code", new JsonPrimitive(1));
         json.add("data", data);
 
-        E expected = new E(1, "test-name", "Test Message").data("test", "data");
+        E expected = new E("test-name", "Test Message", 1).data("test", "data");
         E actual   = gson.fromJson(json, E.class);
 
         assertEquals(expected, actual);
     }
 
     @Test void testSerializing() {
-        E e = new E(1, "test-name", "Test Message", new Exception("Test Exception")).data("test", "data");
+        E e = new E("test-name", "Test Message", 1, new Exception("Test Exception")).data("test", "data");
 
         JsonObject data = new JsonObject();
         data.add("test", new JsonPrimitive("data"));
 
         JsonObject expected = new JsonObject();
-        expected.add("code", new JsonPrimitive(1));
         expected.add("name", new JsonPrimitive("test-name"));
         expected.add("message", new JsonPrimitive("Test Message"));
+        expected.add("code", new JsonPrimitive(1));
         expected.add("cause", new JsonPrimitive("Test Exception"));
         expected.add("data", data);
 

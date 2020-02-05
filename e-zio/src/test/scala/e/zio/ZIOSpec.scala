@@ -13,7 +13,7 @@ class ZIOSpec extends AnyWordSpec with Matchers {
 
   def divide(a: Int, b: Int): MaybeZ[Int] =
     if (b == 0) {
-      E(name = "divide-by-zero", message = s"Cannot divide by 0!", data = Map("input" -> a.toString)).maybeZ
+      E("divide-by-zero", "Cannot divide by 0!", data = Map("input" -> a.toString)).maybeZ
     } else {
       (a / b).maybeZ
     }
@@ -40,7 +40,7 @@ class ZIOSpec extends AnyWordSpec with Matchers {
 
   "MaybeZR" should {
     "fail with E" in {
-      test(divideWithEnvironment(3, 0), E(name = "divide-by-zero", message = s"Cannot divide by 0!", data = Map("input" -> "3")))
+      test(divideWithEnvironment(3, 0), E("divide-by-zero", "Cannot divide by 0!", data = Map("input" -> "3")))
     }
 
     "succeed with a value" in {
@@ -50,7 +50,7 @@ class ZIOSpec extends AnyWordSpec with Matchers {
 
   "MaybeZ" should {
     "fail with E" in {
-      test(divide(3, 0), E(name = "divide-by-zero", message = s"Cannot divide by 0!", data = Map("input" -> "3")))
+      test(divide(3, 0), E("divide-by-zero", "Cannot divide by 0!", data = Map("input" -> "3")))
     }
 
     "succeed with a value" in {

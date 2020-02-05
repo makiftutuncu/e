@@ -1,22 +1,21 @@
 package e.kotlin
 
 sealed class Maybe<out A>(open val e: E?, open val value: A?) {
-    fun isFailure(): Boolean = this is Failure<A>
-    fun isSuccess(): Boolean = this is Success<A>
+    fun isSuccess(): Boolean = this is Success<A> && e == null && value != null
 
-    inline fun <B> map(f: (A) -> B): Maybe<B> =
+    fun <B> map(f: (A) -> B): Maybe<B> =
         when (this) {
-            is Failure<A> -> Failure(e)
-            is Success<A> -> Success(f(value))
+            is Failure<A> -> failure(e)
+            is Success<A> -> success(f(value))
         }
 
-    inline fun <B> flatMap(f: (A) -> Maybe<B>): Maybe<B> =
+    fun <B> flatMap(f: (A) -> Maybe<B>): Maybe<B> =
         when (this) {
-            is Failure<A> -> Failure(e)
+            is Failure<A> -> failure(e)
             is Success<A> -> f(value)
         }
 
-    inline fun <B> fold(ifFailure: (E) -> B, ifSuccess: (A) -> B): B =
+    fun <B> fold(ifFailure: (E) -> B, ifSuccess: (A) -> B): B =
         when (this) {
             is Failure<A> -> ifFailure(e)
             is Success<A> -> ifSuccess(value)
@@ -25,8 +24,6 @@ sealed class Maybe<out A>(open val e: E?, open val value: A?) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Maybe<*>) return false
-
-        if ((this is Failure<*> && other !is Failure<*>) || (this is Success<*> && other !is Success<*>)) return false
 
         return this.e == other.e && this.value == other.value
     }
@@ -37,19 +34,36 @@ sealed class Maybe<out A>(open val e: E?, open val value: A?) {
         return result
     }
 
+    override fun toString(): String = fold({ it.toString() }, { it.toString() })
 
+    companion object {
+        private data class Failure<out A>(override val e: E): Maybe<A>(e, null) {
+            override fun toString(): String = e.toString()
+        }
+
+        private data class Success<out A>(override val value: A): Maybe<A>(null, value) {
+            override fun toString(): String = value.toString()
+        }
+
+        fun <A> failure(e: E): Maybe<A> = Failure(e)
+
+        fun <A> success(value: A): Maybe<A> = Success(value)
+
+        fun <A> fromNullable(value: A?, ifNull: E): Maybe<A> =
+            when (value) {
+                null -> failure(ifNull)
+                else -> success(value)
+            }
+
+        fun <A> catching(action: () -> A, ifFailure: (Throwable) -> E): Maybe<A> =
+            try {
+                success(action())
+            } catch (t: Throwable) {
+                failure(ifFailure(t))
+            }
+    }
 }
 
-data class Failure<out A>(override val e: E): Maybe<A>(e, null)
+fun <A> A.toMaybe(): Maybe<A> = Maybe.success(this)
 
-data class Success<out A>(override val value: A): Maybe<A>(null, value)
-
-fun <A> E.maybe(): Maybe<A> = Failure(this)
-
-fun <A> A.maybe(): Maybe<A> = Success(this)
-
-fun <A> A?.orE(e: E): Maybe<A> =
-    when (this) {
-        null -> Failure(e)
-        else -> Success(this)
-    }
+fun <A> A?.toMaybe(ifNull: E): Maybe<A> = Maybe.fromNullable(this, ifNull)

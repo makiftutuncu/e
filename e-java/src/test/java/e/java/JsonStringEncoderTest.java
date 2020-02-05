@@ -21,9 +21,9 @@ public class JsonStringEncoderTest {
     }
 
     @Test void testEncodingEWithAllFields() {
-        E e = new E(1, "test-name", "Test Message", cause, data);
+        E e = new E("test-name", "Test Message", 1, cause, data);
 
-        String expected = "{\"code\":1,\"name\":\"test-name\",\"message\":\"Test Message\",\"cause\":\"Test Exception\",\"data\":{\"test\":\"data\"}}";
+        String expected = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":1,\"cause\":\"Test Exception\",\"data\":{\"test\":\"data\"}}";
         String actual   = encoder.encode(e);
 
         assertEquals(expected, actual);
