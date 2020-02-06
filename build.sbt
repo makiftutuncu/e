@@ -14,17 +14,13 @@ scmInfo              in ThisBuild := Some(ScmInfo(url("https://github.com/makift
 
 lazy val e = project
   .in(file("."))
-  .aggregate(
-    `e-core`,
-    `e-java`,
-    `e-scala`,
-    `e-kotlin`,
-    `e-circe`,
-    `e-play-json`,
-    `e-gson`,
-    `e-zio`
-  )
+  .aggregate(`e-core`, `e-java`, `e-scala`, `e-kotlin`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+
+lazy val `e-docs` = project
+  .in(file("e-docs"))
+  .dependsOn(`e-core`, `e-java`, `e-scala`, `e-kotlin`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
   .enablePlugins(MdocPlugin)
+  .settings(Settings.scalaSettings)
   .settings(Settings.mdocSettings)
 
 lazy val `e-core` = project
@@ -102,7 +98,7 @@ releaseProcess := Seq[ReleaseStep](
   runClean,
   runTest,
   setReleaseVersion,
-  releaseStepCommandAndRemaining("e/mdoc"),
+  releaseStepCommandAndRemaining("e-docs/mdoc"),
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("e-core/publishSigned"),
