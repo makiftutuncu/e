@@ -31,5 +31,9 @@ public interface AbstractDecoder<IN, E extends AbstractE<?, ?>> {
         public E get() {
             return e;
         }
+
+        @Override public String toString() {
+            return e.toString();
+        }
     }
 }

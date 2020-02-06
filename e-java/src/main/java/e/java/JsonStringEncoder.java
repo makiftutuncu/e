@@ -3,9 +3,7 @@ package e.java;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import e.AbstractJsonStringEncoder;
-
-public final class JsonStringEncoder extends AbstractJsonStringEncoder<Throwable, Map<String, String>> {
+public final class JsonStringEncoder implements Encoder<String> {
     private static JsonStringEncoder instance;
 
     private JsonStringEncoder() {}
@@ -18,17 +16,33 @@ public final class JsonStringEncoder extends AbstractJsonStringEncoder<Throwable
         return instance;
     }
 
-    @Override protected String encodeCause(Throwable cause) {
-        return cause == null ? "null" : String.format("\"%s\"", escape(cause.getMessage()));
-    }
-
-    @Override protected String encodeData(Map<String, String> data) {
+    @Override public String encode(E e) {
         StringJoiner joiner = new StringJoiner(",", "{", "}");
 
-        for (Map.Entry<String, String> entry : data.entrySet()) {
+        if (e.hasName())    joiner.add(String.format("\"name\":\"%s\"",    escape(e.name())));
+        if (e.hasMessage()) joiner.add(String.format("\"message\":\"%s\"", escape(e.message())));
+        if (e.hasCode())    joiner.add(String.format("\"code\":%d",        e.code()));;
+        if (e.hasCause())   joiner.add(String.format("\"cause\":%s",       encodeCause(e)));
+        if (e.hasData())    joiner.add(String.format("\"data\":%s",        encodeData(e)));
+
+        return joiner.toString();
+    }
+
+    private String encodeData(E e) {
+        StringJoiner joiner = new StringJoiner(",", "{", "}");
+
+        for (Map.Entry<String, String> entry : e.data().entrySet()) {
             joiner.add(String.format("\"%s\":\"%s\"", escape(entry.getKey()), escape(entry.getValue())));
         }
 
         return joiner.toString();
+    }
+
+    private String encodeCause(E e) {
+        return e.cause() == null ? "null" : String.format("\"%s\"", escape(e.cause().getMessage()));
+    }
+
+    private String escape(String s) {
+        return s.replace("\"", "\\\"");
     }
 }

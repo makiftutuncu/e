@@ -3,4 +3,306 @@
 
 # e-scala
 
-TODO
+This module contains implementation of `e-core` written in Scala.
+
+## E
+
+[`E`](src/main/scala/e/scala/E.scala) provides a concrete implementation of `AbstractE` as an immutable case class. Any modifications on an `E` instance return a new instance.
+
+Here are some examples:
+
+```scala mdoc
+import e.scala._
+
+/***********************/
+/* Empty E definitions */
+/***********************/
+
+E.empty
+
+E()
+
+/**********************************************************************************/
+/* Constructing an E, mix and match constuctor and builder methods as you see fit */
+/**********************************************************************************/
+
+val ae = new java.lang.ArithmeticException()
+
+E(name = "arithmetic-error", message = "Cannot divide number by 0!", code = 1, cause = Some(ae), data = Map("input" -> "5"))
+
+E.empty.name("arithmetic-error").message("Cannot divide number by 0!").code(1).cause(ae).data("input" -> "5")
+
+E("arithmetic-error", "Cannot divide number by 0!").cause(ae).data("input", "5")
+
+/****************************************/
+/* Checking existence of fields of an E */
+/****************************************/
+
+val errorContainsCode = E("error").hasCode
+
+/****************************/
+/* Accessing fields of an E */
+/****************************/
+
+val errorContainsInput = E(data = Map("input" -> "test")).data.get("input").isDefined
+
+/*************************************************************/
+/* Converting E to an Exception, for throwing stuff (unsafe) */
+/*************************************************************/
+
+E(message = "test").toException
+
+/*******************************************************/
+/* Converting E to a Maybe, for returning stuff (safe) */
+/*******************************************************/
+
+E("error").toMaybe[Int]
+
+```
+
+## Maybe
+
+[`Maybe`](src/main/scala/e/scala/Maybe.scala) provides a type safe way to denote a value that can contain an `E`. `Maybe[A]` wraps `Either[E, A]`. It can either be a [`Maybe.Failure`](src/main/scala/e/scala/Maybe.scala) containing an `E` or a [`Maybe.Success`](src/main/scala/e/scala/Maybe.scala) containing a value.
+
+Here are some examples:
+
+```scala mdoc
+import e.scala._
+
+// for conversions and syntax extensions
+import e.scala.implicits._
+
+/********************************/
+/* Constructing a success Maybe */
+/********************************/
+
+val maybe1: Maybe[Int] = Maybe.Success(5)
+
+val maybe2 = Maybe.success("foo")
+
+val maybe3 = true.toMaybe
+
+/********************************/
+/* Constructing a failure Maybe */
+/********************************/
+
+val maybe4: Maybe[Int] = Maybe.Failure(E("e-1"))
+
+val maybe5 = Maybe.failure[String](E("e-2"))
+
+val maybe6 = E("e-3").toMaybe[Boolean]
+
+/*******************************/
+/* Checking content of a Maybe */
+/*******************************/
+
+5.toMaybe.isSuccess
+
+E("error").toMaybe[Int].isSuccess
+
+5.toMaybe.eOpt
+
+E("error").toMaybe[Int].eOpt
+
+5.toMaybe.valueOpt
+
+E("error").toMaybe[Int].valueOpt
+
+true.toMaybe match {
+  case Maybe.Failure(e)     => "false"
+  case Maybe.Success(value) => value.toString
+}
+
+E("error").toMaybe[Boolean] match {
+  case Maybe.Failure(e)     => "failure"
+  case Maybe.Success(value) => "success"
+}
+
+/*******************/
+/* Mapping a Maybe */
+/*******************/
+
+E("error").toMaybe[Int].map(i => i * 2)
+
+5.toMaybe.map(i => i * 2)
+
+/************************/
+/* Flat mapping a Maybe */
+/************************/
+
+E("error").toMaybe[Int].flatMap(i => (i * 2).toMaybe)
+
+5.toMaybe.flatMap(i => E("error").toMaybe[Boolean])
+
+5.toMaybe.flatMap(i => (i * 2).toString.toMaybe)
+
+/*******************/
+/* Folding a Maybe */
+/*******************/
+
+E("error").toMaybe[Int].fold(e => "failure", value => "success")
+
+5.toMaybe.fold(e => "failure", value => "success")
+
+/**********************************************************/
+/* Getting value of a Maybe and providing a default value */
+/**********************************************************/
+
+E("error").toMaybe[Int].getOrElse(0)
+
+"test".toMaybe.getOrElse("")
+
+/************************************/
+/* Providing an alternative a Maybe */
+/************************************/
+
+E("error1").toMaybe[Int] orElse E("error2").toMaybe[Int]
+
+"test".toMaybe orElse E("error1").toMaybe[String]
+
+E("error1").toMaybe[Int] orElse "default".toMaybe
+
+/************************************/
+/* Constructing a Maybe from Option */
+/************************************/
+
+Maybe.fromOption(Option.empty[String], E("error"))
+
+Option.empty[String].toMaybe(E("error"))
+
+Maybe.fromOption(Some(3), E("error"))
+
+Some(3).toMaybe(E("error"))
+
+/************************************/
+/* Constructing a Maybe from Either */
+/************************************/
+
+Maybe.fromEither[Int, String](Left(1), left => E(code = left))
+
+Left[Int, String](1).toMaybe(left => E(code = left))
+
+Maybe.fromEither[Int, String](Right("test"), _ => E("error"))
+
+Right[Int, String]("test").toMaybe(_ => E("error"))
+
+// When Left is E, conversion is done implicitly
+
+val maybeFromEither1: Maybe[String] = Left[E, String](E("error"))
+
+val maybeFromEither2: Maybe[Int] = Right[E, Int](5)
+
+/*********************************/
+/* Constructing a Maybe from Try */
+/*********************************/
+
+Maybe.fromTry[Boolean](scala.util.Failure(new Exception("test")), t => E(cause = Some(t)))
+
+scala.util.Failure[Boolean](new Exception("test")).toMaybe(t => E(cause = Some(t)))
+
+Maybe.fromTry[Int](scala.util.Success(5), t => E(cause = Some(t)))
+
+scala.util.Success[Int](5).toMaybe(t => E(cause = Some(t)))
+
+```
+
+## Encoder
+
+[`Encoder[OUT]`](src/main/scala/e/scala/Codec.scala) provides encode functionality such that given `E` can be converted to another value of type `OUT`. There is [`JsonStringEncoder`](src/main/scala/e/scala/JsonStringEncoder.scala) as a default `Encoder[String]` implementation.
+
+```scala mdoc
+import e.scala._
+
+// for conversions and syntax extensions
+import e.scala.implicits._
+
+/*******************************/
+/* Default Json string encoder */
+/*******************************/
+
+val encoder: Encoder[String] = JsonStringEncoder
+
+encoder.encode(E())
+
+encoder.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), Map("test" -> "data")))
+
+/******************************************************/
+/* Custom CSV-like encoder for demonstration purposes */
+/******************************************************/
+
+val csv: Encoder[String] = { e: E =>
+  s""""name","message","code"
+     |"${e.name}","${e.message}","${e.code}"
+   """.stripMargin
+}
+
+csv.encode(E())
+
+csv.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), Map("test" -> "data")))
+
+```
+
+## Decoder
+
+[`Decoder[IN]`](src/main/scala/e/scala/Codec.scala) provides decode functionality such that given an input of type `IN`, an `E` can be constructed. Since decoding is usually includes parsing, it can possibly fail. `DecoderResult` exists for this purpose. It can either contain successfully decoded `E` or an `E` containing the error occurred during decoding.
+
+```scala mdoc
+import e.scala._
+
+// for conversions and syntax extensions
+import e.scala.implicits._
+
+import e.AbstractDecoder.DecodingResult
+
+/******************************************************/
+/* Custom CSV-like decoder for demonstration purposes */
+/******************************************************/
+
+val csvDecoder: Decoder[String] = new Decoder[String] {
+  override def decode(input: String): DecodingResult[E] = {
+    input.linesIterator.slice(1, 2).nextOption() match {
+      case None =>
+        DecodingResult.fail(E("decoding-failure", "Input did not have 2 columns!"))
+
+      case Some(line) =>
+        line.split(",") match {
+          case Array(rawName, rawMessage, rawCode) =>
+            val name    = unescape(rawName)
+            val message = unescape(rawMessage)
+
+            scala.util.Try(unescape(rawCode).toInt).fold(
+              c    => DecodingResult.fail(E("decoding-failure", "Invalid code!").cause(c).data("code" -> rawCode)),
+              code => DecodingResult.succeed(E(name, message, code))
+            )
+            
+          case _ =>
+            DecodingResult.fail(E("decoding-failure", "Input did not have 3 columns!"))
+        }
+    }
+  }
+
+  private def unescape(s: String): String =
+    if (s.startsWith("\"") && s.endsWith("\"")) s.drop(1).dropRight(1) else s
+}
+
+val result1 = csvDecoder.decode("foo")
+
+result1.isSuccess
+
+result1.get
+
+val result2 = csvDecoder.decode(
+  """"name","message","code"
+    |"test-name","Test Message","1"
+  """.stripMargin
+)
+
+result2.isSuccess
+
+result2.get
+
+```
+
+## Codec
+
+[`Codec[A]`](src/main/scala/e/scala/Codec.scala) is simply a combination of both `Encoder[A]` and `Decoder[A]` for the same type `A`.

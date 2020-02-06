@@ -24,26 +24,28 @@ It consists of different modules for different needs. You can find details, inst
 
 ## Modules
 
-| Name        | Details                                                                               | Documentation                 |
-| ----------- | ------------------------------------------------------------------------------------- | ----------------------------- |
-| e-core      | Core module for sharing common code between modules                                   | [Link](e-core/README.md)      |
-| e-java      | Java implementation                                                                   | [Link](e-java/README.md)      |
-| e-scala     | Scala implementation                                                                  | [Link](e-scala/README.md)     |
-| e-kotlin    | Kotlin implementation                                                                 | [Link](e-kotlin/README.md)    |
-| e-gson      | Extras for [gson](https://github.com/google/gson) based on `e-java`                   | [Link](e-gson/README.md)      |
-| e-circe     | Extras for [circe](https://circe.github.io/circe) based on `e-scala`                  | [Link](e-circe/README.md)     |
-| e-play-json | Extras for [play-json](https://github.com/playframework/play-json) based on `e-scala` | [Link](e-play-json/README.md) |
-| e-zio       | Extras for [ZIO](https://zio.dev) based on `e-scala`                                  | [Link](e-zio/README.md)       |
+| Name        | Platform | Details                                                            | Documentation             |
+| ----------- | -------- | ------------------------------------------------------------------ | ------------------------- |
+| e-core      | Java     | Core module for sharing common code between modules                | [Link](e-core/README.md)  |
+| e-java      | Java     | Java implementation                                                | Link                      |
+| e-scala     | Scala    | Scala implementation                                               | [Link](e-scala/README.md) |
+| e-kotlin    | Kotlin   | Kotlin implementation                                              | Link                      |
+| e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | Link                      |
+| e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)                  | Link                      |
+| e-play-json | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | Link                      |
+| e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                                  | Link                      |
 
 ## Installation
 
-* Replace `[MODULE]` below with a module name
-* Replace `[SCALA_VERSION]` below with your project's Scala version (for Scala based modules)
+* Replace `[MODULE]` with a module name and `[SCALA_VERSION]` with your project's Scala version (if applicable)
 * If you use SBT, add following to your `build.sbt` for each module you want to use
 ```scala
 libraryDependencies ++= Seq(
-  // Use % instead of %% for Java/Kotlin modules
-  "dev.akif" %% "[MODULE]" % "0.2.5-SNAPSHOT"
+  // Scala modules
+  "dev.akif" %% "[MODULE]" % "0.2.5-SNAPSHOT",
+
+  // Java/Kotlin modules
+  "dev.akif" % "[MODULE]" % "0.2.5-SNAPSHOT"
 )
 ```
 * If you use Maven, add following to your `pom.xml` for each module you want to use
@@ -69,7 +71,8 @@ libraryDependencies ++= Seq(
 ```javascript
 dependencies {
   // Scala modules
-  implementation('dev.akif:[MODULE]_[SCALA_VERSION]:0.2.5-SNAPSHOT')
+  implementation('dev.akif:[MODULE]_[SCALA_VERSION]:0.2.5-SNAPSHOT'),
+
   // Java/Kotlin modules
   implementation('dev.akif:[MODULE]:0.2.5-SNAPSHOT')
 }
@@ -89,7 +92,7 @@ Versions of Scala, SBT, plugins and external dependencies are kept up-to-date by
 
 ## Releases
 
-e packages are published to Maven Central and they are versioned according to [semantic versioning](https://semver.org) for package versions. Release process is managed by [sbt-release](https://github.com/sbt/sbt-release). 
+e packages are published to Maven Central and they are versioned according to [semantic versioning](https://semver.org). Release process is managed by [sbt-release](https://github.com/sbt/sbt-release). 
 
 ## Contributing
 
