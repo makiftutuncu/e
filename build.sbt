@@ -1,7 +1,7 @@
 // === Dependencies ===
 
-lazy val circeCore      = "io.circe"             %% "circe-core"        % "0.12.3"
-lazy val circeParser    = "io.circe"             %% "circe-parser"      % "0.12.3"
+lazy val circeCore      = "io.circe"             %% "circe-core"        % "0.13.0"
+lazy val circeParser    = "io.circe"             %% "circe-parser"      % "0.13.0"
 lazy val gson           = "com.google.code.gson"  % "gson"              % "2.8.6"
 lazy val playJson       = "com.typesafe.play"    %% "play-json"         % "2.8.1"
 lazy val zio            = "dev.zio"              %% "zio"               % "1.0.0-RC17"
