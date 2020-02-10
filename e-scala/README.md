@@ -291,7 +291,7 @@ import e.scala.implicits._
 /*******************************/
 
 val encoder: Encoder[String] = JsonStringEncoder
-// encoder: Encoder[String] = e.scala.JsonStringEncoder$@41021fca
+// encoder: Encoder[String] = e.scala.JsonStringEncoder$@535d71c6
 
 encoder.encode(E())
 // res39: String = "{}"
@@ -308,7 +308,7 @@ val csv: Encoder[String] = { e: E =>
      |"${e.name}","${e.message}","${e.code}"
    """.stripMargin
 }
-// csv: Encoder[String] = repl.Session$App$$anonfun$80@4eace1f1
+// csv: Encoder[String] = repl.Session$App$$anonfun$80@3c40b859
 
 csv.encode(E())
 // res41: String = """"name","message","code"
@@ -341,7 +341,7 @@ val csvDecoder: Decoder[String] = new Decoder[String] {
   override def decode(input: String): DecodingResult[E] = {
     input.linesIterator.slice(1, 2).nextOption() match {
       case None =>
-        DecodingResult.fail(E("decoding-failure", "Input did not have 2 columns!"))
+        DecodingResult.fail(E("decoding-failure", "Input did not have 2 rows!"))
 
       case Some(line) =>
         line.split(",") match {
@@ -363,10 +363,10 @@ val csvDecoder: Decoder[String] = new Decoder[String] {
   private def unescape(s: String): String =
     if (s.startsWith("\"") && s.endsWith("\"")) s.drop(1).dropRight(1) else s
 }
-// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@41b55dd9
+// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@619e4070
 
 val result1 = csvDecoder.decode("foo")
-// result1: DecodingResult[E] = {"name":"decoding-failure","message":"Input did not have 2 columns!"}
+// result1: DecodingResult[E] = {"name":"decoding-failure","message":"Input did not have 2 rows!"}
 
 result1.isSuccess
 // res43: Boolean = false
@@ -374,7 +374,7 @@ result1.isSuccess
 result1.get
 // res44: E = E(
 //   "decoding-failure",
-//   "Input did not have 2 columns!",
+//   "Input did not have 2 rows!",
 //   0,
 //   None,
 //   Map()
@@ -392,6 +392,26 @@ result2.isSuccess
 
 result2.get
 // res46: E = E("test-name", "Test Message", 1, None, Map())
+
+val either1 = csvDecoder.decodeEither("foo")
+// either1: Either[E, E] = Left(
+//   E("decoding-failure", "Input did not have 2 rows!", 0, None, Map())
+// )
+
+either1.isLeft
+// res47: Boolean = true
+
+val either2 = csvDecoder.decodeEither(
+  """"name","message","code"
+    |"test-name","Test Message","1"
+  """.stripMargin
+)
+// either2: Either[E, E] = Right(
+//   E("test-name", "Test Message", 1, None, Map())
+// )
+
+either2.isRight
+// res48: Boolean = true
 ```
 
 ## Codec

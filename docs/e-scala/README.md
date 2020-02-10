@@ -262,7 +262,7 @@ val csvDecoder: Decoder[String] = new Decoder[String] {
   override def decode(input: String): DecodingResult[E] = {
     input.linesIterator.slice(1, 2).nextOption() match {
       case None =>
-        DecodingResult.fail(E("decoding-failure", "Input did not have 2 columns!"))
+        DecodingResult.fail(E("decoding-failure", "Input did not have 2 rows!"))
 
       case Some(line) =>
         line.split(",") match {
@@ -300,6 +300,18 @@ val result2 = csvDecoder.decode(
 result2.isSuccess
 
 result2.get
+
+val either1 = csvDecoder.decodeEither("foo")
+
+either1.isLeft
+
+val either2 = csvDecoder.decodeEither(
+  """"name","message","code"
+    |"test-name","Test Message","1"
+  """.stripMargin
+)
+
+either2.isRight
 
 ```
 
