@@ -291,7 +291,7 @@ import e.scala.implicits._
 /*******************************/
 
 val encoder: Encoder[String] = JsonStringEncoder
-// encoder: Encoder[String] = e.scala.JsonStringEncoder$@7c1282fe
+// encoder: Encoder[String] = e.scala.JsonStringEncoder$@41021fca
 
 encoder.encode(E())
 // res39: String = "{}"
@@ -308,7 +308,7 @@ val csv: Encoder[String] = { e: E =>
      |"${e.name}","${e.message}","${e.code}"
    """.stripMargin
 }
-// csv: Encoder[String] = repl.Session$App$$anonfun$80@56e12c1b
+// csv: Encoder[String] = repl.Session$App$$anonfun$80@4eace1f1
 
 csv.encode(E())
 // res41: String = """"name","message","code"
@@ -323,7 +323,7 @@ csv.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), 
 
 ## Decoder
 
-[`Decoder[IN]`](src/main/scala/e/scala/Codec.scala) provides decode functionality such that given an input of type `IN`, an `E` can be constructed. Since decoding is usually includes parsing, it can possibly fail. `DecoderResult` exists for this purpose. It can either contain successfully decoded `E` or an `E` containing the error occurred during decoding.
+[`Decoder[IN]`](src/main/scala/e/scala/Codec.scala) provides decode functionality such that given an input of type `IN`, an `E` can be constructed. Since decoding often includes parsing, it can possibly fail. `DecoderResult` exists for this purpose. It can either contain successfully decoded `E` or an `E` describing the error occurred during decoding.
 
 ```scala
 import e.scala._
@@ -363,7 +363,7 @@ val csvDecoder: Decoder[String] = new Decoder[String] {
   private def unescape(s: String): String =
     if (s.startsWith("\"") && s.endsWith("\"")) s.drop(1).dropRight(1) else s
 }
-// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@47643609
+// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@41b55dd9
 
 val result1 = csvDecoder.decode("foo")
 // result1: DecodingResult[E] = {"name":"decoding-failure","message":"Input did not have 2 columns!"}

@@ -244,7 +244,7 @@ csv.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), 
 
 ## Decoder
 
-[`Decoder[IN]`](src/main/scala/e/scala/Codec.scala) provides decode functionality such that given an input of type `IN`, an `E` can be constructed. Since decoding is usually includes parsing, it can possibly fail. `DecoderResult` exists for this purpose. It can either contain successfully decoded `E` or an `E` containing the error occurred during decoding.
+[`Decoder[IN]`](src/main/scala/e/scala/Codec.scala) provides decode functionality such that given an input of type `IN`, an `E` can be constructed. Since decoding often includes parsing, it can possibly fail. `DecoderResult` exists for this purpose. It can either contain successfully decoded `E` or an `E` describing the error occurred during decoding.
 
 ```scala mdoc
 import e.scala._

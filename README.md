@@ -27,7 +27,7 @@ It consists of different modules for different needs. You can find details, inst
 | Name        | Platform | Details                                                            | Documentation             |
 | ----------- | -------- | ------------------------------------------------------------------ | ------------------------- |
 | e-core      | Java     | Core module for sharing common code between modules                | [Link](e-core/README.md)  |
-| e-java      | Java     | Java implementation                                                | Link                      |
+| e-java      | Java     | Java implementation                                                | [Link](e-java/README.md)  |
 | e-scala     | Scala    | Scala implementation                                               | [Link](e-scala/README.md) |
 | e-kotlin    | Kotlin   | Kotlin implementation                                              | Link                      |
 | e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | Link                      |
