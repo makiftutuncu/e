@@ -241,7 +241,7 @@ Decoder<String> csv = new Decoder<String>() {
     @Override public DecodingResult<E> decode(String input) {
         String[] rows = input.split("\n");
         if (rows.length < 2) {
-            return DecodingResult.fail(new E("decoding-failure", "Input did not have 2 columns!"));
+            return DecodingResult.fail(new E("decoding-failure", "Input did not have 2 rows!"));
         }
 
         String[] columns = rows[1].split(",");

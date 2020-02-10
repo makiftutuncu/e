@@ -24,16 +24,16 @@ It consists of different modules for different needs. You can find details, inst
 
 ## Modules
 
-| Name        | Platform | Details                                                            | Documentation             |
-| ----------- | -------- | ------------------------------------------------------------------ | ------------------------- |
-| e-core      | Java     | Core module for sharing common code between modules                | [Link](e-core/README.md)  |
-| e-java      | Java     | Java implementation                                                | [Link](e-java/README.md)  |
-| e-scala     | Scala    | Scala implementation                                               | [Link](e-scala/README.md) |
-| e-kotlin    | Kotlin   | Kotlin implementation                                              | Link                      |
-| e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | Link                      |
-| e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)                  | Link                      |
-| e-play-json | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | Link                      |
-| e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                                  | Link                      |
+| Name        | Platform | Details                                                            | Documentation              |
+| ----------- | -------- | ------------------------------------------------------------------ | -------------------------- |
+| e-core      | Java     | Core module for sharing common code between modules                | [Link](e-core/README.md)   |
+| e-java      | Java     | Java implementation                                                | [Link](e-java/README.md)   |
+| e-scala     | Scala    | Scala implementation                                               | [Link](e-scala/README.md)  |
+| e-kotlin    | Kotlin   | Kotlin implementation                                              | [Link](e-kotlin/README.md) |
+| e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | Link                       |
+| e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)                  | Link                       |
+| e-play-json | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | Link                       |
+| e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                                  | Link                       |
 
 ## Installation
 
