@@ -1,10 +1,10 @@
-package e
+package e.playjson
 
 import e.scala.implicits._
 import e.scala.{E, Maybe}
 import play.api.libs.json._
 
-package object playjson {
+object implicits {
   implicit val readsE: Reads[E] =
     Reads { json =>
       CodecForPlayJson.decodeEither(json).fold(
