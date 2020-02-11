@@ -3,4 +3,87 @@
 
 # e-play-json
 
-TODO
+This module contains [`CodecForPlayJson`](src/main/scala/e/playjson/CodecForPlayJson.scala) as a `Codec` implementation of `E` using [play-json](https://github.com/playframework/play-json).
+
+```scala mdoc
+import e.scala._
+import e.playjson._
+import e.scala.implicits._
+import e.playjson.implicits._
+import play.api.libs.json._
+
+val e1 = E.empty
+
+val e2 = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
+
+/*************************/
+/* Encoding E as JsValue */
+/*************************/
+
+CodecForPlayJson.encode(e1).toString()
+
+CodecForPlayJson.encode(e2).toString()
+
+/*************************/
+/* Decoding JsValue as E */
+/*************************/
+
+CodecForPlayJson.decode(Json.arr(1, 2))
+
+CodecForPlayJson.decode(
+  Json.obj(
+    "name"    -> "test-name",
+    "message" -> "Test Message",
+    "code"    -> 1,
+    "cause"   -> "Test Exception",
+    "data"    -> Map("test" -> "data")
+  )
+)
+
+/*****************************/
+/* Decoding JsValue as Maybe */
+/*****************************/
+
+Json.obj("foo" -> "bar").readMaybe[List[String]] { jsError =>
+  E(message = jsError.toString)
+}
+
+/******************************/
+/* Decoding JsValue as Either */
+/******************************/
+
+CodecForPlayJson.decodeEither(Json.arr(1, 2))
+
+CodecForPlayJson.decodeEither(
+  Json.obj(
+    "name"    -> "test-name",
+    "message" -> "Test Message",
+    "code"    -> 1,
+    "cause"   -> "Test Exception",
+    "data"    -> Map("test" -> "data")
+  )
+)
+
+/**************************************/
+/* Using play-json's Reads and Writes */
+/**************************************/
+
+Json.toJson(e1).toString()
+
+Json.toJson(e2).toString()
+
+Json.toJson(e2.toMaybe[String]).toString()
+
+Json.toJson(Map("test" -> "data").toMaybe).toString()
+
+Json.arr(1, 2).validate[E]
+
+Json.obj(
+  "name"    -> "test-name",
+  "message" -> "Test Message",
+  "code"    -> 1,
+  "cause"   -> "Test Exception",
+  "data"    -> Map("test" -> "data")
+).as[E]
+
+``` 

@@ -2,6 +2,7 @@ package e.playjson
 
 import e.scala.E
 import e.scala.implicits._
+import e.playjson.implicits._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsResultException, Json}
