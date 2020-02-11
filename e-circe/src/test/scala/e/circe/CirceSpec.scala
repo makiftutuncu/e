@@ -1,5 +1,6 @@
 package e.circe
 
+import e.circe.implicits._
 import e.scala.E
 import e.scala.implicits._
 import io.circe._
@@ -14,9 +15,9 @@ class CirceSpec extends AnyWordSpec with Matchers {
 
       val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
 
-      val actual = CodecForCirceJson.decodeEither(json).left.map(_.cause(None))
+      val actual = CodecForCirceJson.decode(json).get().cause(None)
 
-      actual shouldBe Left(expected)
+      actual shouldBe expected
     }
 
     "succeed and decode input into an E" in {
@@ -31,9 +32,9 @@ class CirceSpec extends AnyWordSpec with Matchers {
       val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data")
       )
 
-      val actual = CodecForCirceJson.decodeEither(json)
+      val actual = CodecForCirceJson.decode(json).get()
 
-      actual shouldBe Right(expected)
+      actual shouldBe expected
     }
   }
 
