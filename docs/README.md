@@ -30,10 +30,10 @@ It consists of different modules for different needs. You can find details, inst
 | e-java      | Java     | Java implementation                                                | [Link](e-java/README.md)   |
 | e-scala     | Scala    | Scala implementation                                               | [Link](e-scala/README.md)  |
 | e-kotlin    | Kotlin   | Kotlin implementation                                              | [Link](e-kotlin/README.md) |
-| e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | Link                       |
-| e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)                  | Link                       |
+| e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)                  | [Link](e-circe/README.md)  |
 | e-play-json | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | Link                       |
 | e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                                  | Link                       |
+| e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | Link                       |
 
 ## Installation
 

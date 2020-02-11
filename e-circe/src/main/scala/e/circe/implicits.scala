@@ -1,11 +1,11 @@
-package e
+package e.circe
 
 import e.scala.implicits._
 import e.scala.{E, Maybe}
 import io.circe.syntax._
 import io.circe.{Decoder, DecodingFailure, Encoder, Json}
 
-package object circe {
+object implicits {
   implicit val circeEncoderE: Encoder[E] =
     Encoder.instance(CodecForCirceJson.encode)
 

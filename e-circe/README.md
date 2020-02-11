@@ -3,4 +3,122 @@
 
 # e-circe
 
-TODO
+This module contains [`CodecForCirceJson`](src/main/scala/e/circe/CodecForCirceJson.scala) as a `Codec` implementation of `E` using [circe](https://circe.github.io/circe).
+
+```scala
+import e.scala._
+import e.circe._
+import io.circe._
+import e.scala.implicits._
+import e.circe.implicits._
+import io.circe.syntax._
+
+val e1 = E.empty
+// e1: E = E("", "", 0, None, Map())
+
+val e2 = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
+// e2: E = E(
+//   "test-name",
+//   "Test Message",
+//   1,
+//   Some(java.lang.Exception: Test Exception),
+//   Map("test" -> "data")
+// )
+
+/**********************/
+/* Encoding E as Json */
+/**********************/
+
+CodecForCirceJson.encode(e1).noSpaces
+// res0: String = "{}"
+
+CodecForCirceJson.encode(e2).noSpaces
+// res1: String = "{\"data\":{\"test\":\"data\"},\"cause\":\"Test Exception\",\"code\":1,\"message\":\"Test Message\",\"name\":\"test-name\"}"
+
+/**********************/
+/* Decoding Json as E */
+/**********************/
+
+CodecForCirceJson.decode(Json.arr(1.asJson, 2.asJson))
+// res2: e.AbstractDecoder.DecodingResult[E] = {"name":"decoding-failure","message":"Input is not a Json object!","cause":"JsonObject","data":{"input":"[1,2]"}}
+
+CodecForCirceJson.decode(
+  Json.obj(
+    "name"    := "test-name",
+    "message" := "Test Message",
+    "code"    := 1,
+    "cause"   := "Test Exception",
+    "data"    := Map("test" -> "data")
+  )
+)
+// res3: e.AbstractDecoder.DecodingResult[E] = {"name":"test-name","message":"Test Message","code":1,"data":{"test":"data"}}
+
+/**************************/
+/* Decoding Json as Maybe */
+/**************************/
+
+Json.obj("foo" := "bar").decodeMaybe[List[String]] { df =>
+  E(message = df.getMessage)
+}
+// res4: Maybe[List[String]] = Failure(E("", "C[A]", 0, None, Map()))
+
+/**************************/
+/* Decoding Json as Either */
+/**************************/
+
+CodecForCirceJson.decodeEither(Json.arr(1.asJson, 2.asJson))
+// res5: Either[E, E] = Left(
+//   E(
+//     "decoding-failure",
+//     "Input is not a Json object!",
+//     0,
+//     Some(DecodingFailure(JsonObject, List())),
+//     Map("input" -> "[1,2]")
+//   )
+// )
+
+CodecForCirceJson.decodeEither(
+  Json.obj(
+    "name"    := "test-name",
+    "message" := "Test Message",
+    "code"    := 1,
+    "cause"   := "Test Exception",
+    "data"    := Map("test" -> "data")
+  )
+)
+// res6: Either[E, E] = Right(
+//   E("test-name", "Test Message", 1, None, Map("test" -> "data"))
+// )
+
+/*************************************/
+/* Using circe's Encoder and Decoder */
+/*************************************/
+
+e1.asJson.noSpaces
+// res7: String = "{}"
+
+e2.asJson.noSpaces
+// res8: String = "{\"data\":{\"test\":\"data\"},\"cause\":\"Test Exception\",\"code\":1,\"message\":\"Test Message\",\"name\":\"test-name\"}"
+
+e2.toMaybe[String].asJson.noSpaces
+// res9: String = "{\"data\":{\"test\":\"data\"},\"cause\":\"Test Exception\",\"code\":1,\"message\":\"Test Message\",\"name\":\"test-name\"}"
+
+Map("test" -> "data").toMaybe.asJson.noSpaces
+// res10: String = "{\"test\":\"data\"}"
+
+Json.arr(1.asJson, 2.asJson).as[E]
+// res11: Decoder.Result[E] = Left(
+//   DecodingFailure({"name":"decoding-failure","message":"Input is not a Json object!","cause":"JsonObject","data":{"input":"[1,2]"}}, List())
+// )
+
+Json.obj(
+  "name"    := "test-name",
+  "message" := "Test Message",
+  "code"    := 1,
+  "cause"   := "Test Exception",
+  "data"    := Map("test" -> "data")
+).as[E]
+// res12: Decoder.Result[E] = Right(
+//   E("test-name", "Test Message", 1, None, Map("test" -> "data"))
+// )
+``` 
