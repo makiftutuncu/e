@@ -32,7 +32,7 @@ It consists of different modules for different needs. You can find details, inst
 | e-kotlin    | Kotlin   | Kotlin implementation                                              | [Link](e-kotlin/README.md)    |
 | e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)                  | [Link](e-circe/README.md)     |
 | e-play-json | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | [Link](e-play-json/README.md) |
-| e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                                  | Link                          |
+| e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                                  | [Link](e-zio/README.md)       |
 | e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | [Link](e-gson/README.md)      |
 
 ## Installation
