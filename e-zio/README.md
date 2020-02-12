@@ -3,4 +3,93 @@
 
 # e-zio
 
-TODO
+This module contains aliases [`MaybeZ`](src/main/scala/e/zio/package.scala) and [`MaybeZR`](src/main/scala/e/zio/package.scala) for [ZIO](https://zio.dev). They fix the `E` type parameter of `ZIO[R, E, A]` to [`e.scala.E`](../e-scala/src/main/scala/e/scala/E.scala).
+
+```scala
+import e.scala._
+import e.scala.implicits._
+import e.zio._
+import e.zio.implicits._
+import zio.ZIO
+import zio.internal.PlatformLive
+
+/****************/
+/* Using MaybeZ */
+/****************/
+
+val runtime1 = zio.Runtime((), PlatformLive.Default)
+// runtime1: zio.Runtime[Unit] = zio.Runtime$$anon$1@1c13b7f1
+
+def divide(a: Int, b: Int): MaybeZ[Int] =
+  if (b == 0) {
+    E("divide-by-zero", "Cannot divide by 0!", data = Map("input" -> a.toString)).maybeZ
+  } else {
+    (a / b).maybeZ
+  }
+
+runtime1.unsafeRunSync(divide(4, 0))
+// res0: zio.Exit[E, Int] = Failure(
+//   Traced(
+//     Fail(
+//       E("divide-by-zero", "Cannot divide by 0!", 0, None, Map("input" -> "4"))
+//     ),
+//     ZTrace(Id(1581496439209L, 3L), List(), List(), None)
+//   )
+// )
+
+runtime1.unsafeRunSync(divide(4, 2))
+// res1: zio.Exit[E, Int] = Success(2)
+
+/*****************/
+/* Using MaybeZR */
+/*****************/
+
+type Divider = (Int, Int) => MaybeZ[Int]
+
+val divider: Divider = (a: Int, b: Int) => divide(a, b)
+// divider: (Int, Int) => MaybeZ[Int] = <function2>
+
+val runtime2: zio.Runtime[Divider] = zio.Runtime(divider, PlatformLive.Default)
+// runtime2: zio.Runtime[(Int, Int) => MaybeZ[Int]] = zio.Runtime$$anon$1@73880bf1
+
+def divideWithEnvironment(a: Int, b: Int): MaybeZR[Divider, Int] =
+  for {
+    divider <- ZIO.environment[Divider]
+    result  <- divider(a, b)
+  } yield {
+    result
+  }
+
+runtime2.unsafeRunSync(divideWithEnvironment(4, 0))
+// res2: zio.Exit[E, Int] = Failure(
+//   Traced(
+//     Fail(
+//       E("divide-by-zero", "Cannot divide by 0!", 0, None, Map("input" -> "4"))
+//     ),
+//     ZTrace(
+//       Id(1581496439217L, 5L),
+//       List(
+//         SourceLocation(
+//           "README.md",
+//           "repl.Session$App$$anonfun$divideWithEnvironment$1",
+//           "apply",
+//           52
+//         ),
+//         SourceLocation(
+//           "ZIO.scala",
+//           "zio.ZIO$AccessPartiallyApplied$",
+//           "apply",
+//           2697
+//         )
+//       ),
+//       List(
+//         SourceLocation("README.md", "repl.Session$App$$anonfun$11", "apply", 61)
+//       ),
+//       None
+//     )
+//   )
+// )
+
+runtime2.unsafeRunSync(divideWithEnvironment(4, 2))
+// res3: zio.Exit[E, Int] = Success(2)
+``` 
