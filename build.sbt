@@ -1,6 +1,6 @@
 // === Project Definition ===
 
-description          in ThisBuild := "A zero-dependency micro library for handling errors"
+description          in ThisBuild := "A zero-dependency micro library to deal with errors"
 homepage             in ThisBuild := Some(url("https://github.com/makiftutuncu/e"))
 startYear            in ThisBuild := Some(2019)
 licenses             in ThisBuild := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
