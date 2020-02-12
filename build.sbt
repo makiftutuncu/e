@@ -92,13 +92,21 @@ pomIncludeRepository in ThisBuild := { _ => false }
 publishMavenStyle    in ThisBuild := true
 publishTo            in ThisBuild := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
 
+val updateDocumentation = ReleaseStep(
+  releaseStepCommand("e-docs/mdoc") andThen { st =>
+    import sys.process._
+    "git add -A".!
+    st
+  }
+)
+
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
   runClean,
   runTest,
+  updateDocumentation,
   setReleaseVersion,
-  releaseStepCommandAndRemaining("e-docs/mdoc"),
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("e-core/publishSigned"),

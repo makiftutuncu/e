@@ -3,11 +3,11 @@ package e.scala
 object JsonStringEncoder extends Encoder[String] {
   override def encode(e: E): String =
     List(
-      Option.when(e.hasName)("name" -> s""""${escape(e.name)}""""),
-      Option.when(e.hasMessage)("message" -> s""""${escape(e.message)}""""),
-      Option.when(e.hasCode)("code" -> s"${e.code}"),
+      if (e.hasName) Some("name" -> s""""${escape(e.name)}"""") else None,
+      if (e.hasMessage) Some("message" -> s""""${escape(e.message)}"""") else None,
+      if (e.hasCode) Some("code" -> s"${e.code}") else None,
       encodeCause(e.cause).map(c => "cause" -> c),
-      Option.when(e.hasData)("data" -> s"${encodeData(e.data)}")
+      if (e.hasData) Some("data" -> s"${encodeData(e.data)}") else None
     ).collect {
       case Some((k, v)) => s""""$k":$v"""
     }.mkString("{", ",", "}")

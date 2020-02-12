@@ -25,11 +25,11 @@ object CodecForCirceJson extends Codec[Json] {
 
   override def encode(e: E): Json = {
     val jsons = List(
-      Option.when(e.hasName)(Json.obj("name" := e.name)),
-      Option.when(e.hasMessage)(Json.obj("message" := e.message)),
-      Option.when(e.hasCode)(Json.obj("code" := e.code)),
-      e.cause.fold[Option[Json]](None)(c => Some(Json.obj("cause" := c.getMessage))),
-      Option.when(e.hasData)(Json.obj("data" := e.data)),
+      if (e.hasName) Some (Json.obj("name" := e.name)) else None,
+      if (e.hasMessage) Some (Json.obj("message" := e.message)) else None,
+      if (e.hasCode) Some (Json.obj("code" := e.code)) else None,
+      e.cause.map(c => Json.obj("cause" := c.getMessage)),
+      if (e.hasData) Some (Json.obj("data" := e.data)) else None
     )
 
     jsons.foldLeft(Json.obj()) {
