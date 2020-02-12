@@ -11,8 +11,7 @@ object Settings {
 
   lazy val commonSettings = Seq(
     resolvers               += Resolver.jcenterRepo,
-    Compile / compileOrder  := CompileOrder.JavaThenScala,
-    javacOptions           ++= Seq("-source", javaVersion, "-target", javaVersion, "-Xlint")
+    Compile / compileOrder  := CompileOrder.JavaThenScala
   )
 
   lazy val mdocSettings = Seq(

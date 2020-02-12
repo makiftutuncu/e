@@ -1,6 +1,6 @@
 // === Project Definition ===
 
-description          in ThisBuild := "A zero-dependency micro library for handling errors"
+description          in ThisBuild := "A zero-dependency micro library to deal with errors"
 homepage             in ThisBuild := Some(url("https://github.com/makiftutuncu/e"))
 startYear            in ThisBuild := Some(2019)
 licenses             in ThisBuild := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
@@ -92,13 +92,21 @@ pomIncludeRepository in ThisBuild := { _ => false }
 publishMavenStyle    in ThisBuild := true
 publishTo            in ThisBuild := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
 
+val updateDocumentation = ReleaseStep(
+  releaseStepCommand("e-docs/mdoc") andThen { st =>
+    import sys.process._
+    "git add -A".!
+    st
+  }
+)
+
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
   runClean,
   runTest,
   setReleaseVersion,
-  releaseStepCommandAndRemaining("e-docs/mdoc"),
+  updateDocumentation,
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("e-core/publishSigned"),
