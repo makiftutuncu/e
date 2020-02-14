@@ -20,6 +20,28 @@ object MaybeTest {
         assertEquals(maybe2.e, e)
     }
 
+    @Test fun `test constructing a Success`() {
+        val maybe1: Maybe<String> = Maybe.success("test")
+
+        assertTrue(maybe1.isSuccess())
+        assertEquals(maybe1.value, "test")
+        assertNull(maybe1.e)
+
+        val maybe2: Maybe<Int> = 42.toMaybe()
+
+        assertTrue(maybe2.isSuccess())
+        assertEquals(maybe2.value, 42)
+        assertNull(maybe2.e)
+    }
+
+    @Test fun `test constructing unit`() {
+        val maybe: Maybe<Unit> = Maybe.unit()
+
+        assertTrue(maybe.isSuccess())
+        assertEquals(maybe.value, Unit)
+        assertNull(maybe.e)
+    }
+
     @Test fun `test constructing a Failure on nullable values`() {
         val s: String? = null
         val e = E("test-name")
@@ -53,18 +75,26 @@ object MaybeTest {
         assertNull(maybe2.e)
     }
 
-    @Test fun `test constructing a Success`() {
-        val maybe1: Maybe<String> = Maybe.success("test")
+    @Test fun `test constructing by catching Maybe`() {
+        val e = E("test-name")
 
-        assertTrue(maybe1.isSuccess())
-        assertEquals(maybe1.value, "test")
-        assertNull(maybe1.e)
+        val maybe1: Maybe<String> = Maybe.catchingMaybe({ throw Exception("Test Exception") }, { cause -> e.cause(cause) })
 
-        val maybe2: Maybe<Int> = 42.toMaybe()
+        assertFalse(maybe1.isSuccess())
+        assertNull(maybe1.value)
+        assertEquals(maybe1.e?.cause()?.message, "Test Exception")
 
-        assertTrue(maybe2.isSuccess())
-        assertEquals(maybe2.value, 42)
-        assertNull(maybe2.e)
+        val maybe2: Maybe<String> = Maybe.catchingMaybe({ e.toMaybe<String>() }, { cause -> e.cause(cause) })
+
+        assertFalse(maybe2.isSuccess())
+        assertNull(maybe2.value)
+        assertEquals(maybe2.e, e)
+
+        val maybe3: Maybe<String> = Maybe.catchingMaybe({ "test".toMaybe() }, { cause -> e.cause(cause) })
+
+        assertTrue(maybe3.isSuccess())
+        assertEquals(maybe3.value, "test")
+        assertNull(maybe3.e)
     }
 
     @Test fun `test mapping a Maybe`() {

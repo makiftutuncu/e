@@ -100,7 +100,7 @@ Maybe<String> maybe2 = Maybe.failure(new E("e-2"));
 /*****************************/
 
 Maybe<Void> unit = Maybe.unit();
-// {}
+// unit
 
 boolean unitEOptional = unit.eOptional().isPresent();
 // false
