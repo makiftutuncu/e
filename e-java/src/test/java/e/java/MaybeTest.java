@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +14,8 @@ import e.AbstractE;
 
 public class MaybeTest {
     @Test void testConstructingFailure() {
+        assertThrows(IllegalArgumentException.class, () -> Maybe.failure(null));
+
         E e = new E("test");
 
         Maybe<String> maybe1 = Maybe.failure(e);
@@ -24,6 +29,24 @@ public class MaybeTest {
         assertFalse(maybe2.isSuccess());
         assertEquals(maybe2.eOptional().orElse(null), e);
         assertFalse(maybe2.valueOptional().isPresent());
+    }
+
+    @Test void testConstructingSuccess() {
+        assertThrows(IllegalArgumentException.class, () -> Maybe.success(null));
+
+        Maybe<String> maybe = Maybe.success("test");
+
+        assertTrue(maybe.isSuccess());
+        assertFalse(maybe.eOptional().isPresent());
+        assertEquals(maybe.valueOptional().orElse(""), "test");
+    }
+
+    @Test void testConstructingUnit() {
+        Maybe<Void> maybe = Maybe.unit();
+
+        assertTrue(maybe.isSuccess());
+        assertFalse(maybe.eOptional().isPresent());
+        assertFalse(maybe.valueOptional().isPresent());
     }
 
     @Test void testConstructingByCatching() {
@@ -42,12 +65,42 @@ public class MaybeTest {
         assertEquals(maybe2.valueOptional().orElse(""), "test");
     }
 
-    @Test void testConstructingSuccess() {
-        Maybe<String> maybe = Maybe.success("test");
+    @Test void testConstructingByCatchingMaybe() {
+        E e = new E("test");
 
-        assertTrue(maybe.isSuccess());
-        assertFalse(maybe.eOptional().isPresent());
-        assertEquals(maybe.valueOptional().orElse(""), "test");
+        Maybe<String> maybe1 = Maybe.catchingMaybe(() -> { throw new Exception("Test Exception"); }, e::cause);
+
+        assertFalse(maybe1.isSuccess());
+        assertEquals(maybe1.eOptional().map(e2 -> e2.cause().getMessage()).orElse(""), "Test Exception");
+        assertFalse(maybe1.valueOptional().isPresent());
+
+        Maybe<String> maybe2 = Maybe.catchingMaybe(() -> Maybe.failure(e), e::cause);
+
+        assertFalse(maybe2.isSuccess());
+        assertEquals(maybe2.eOptional(), Optional.of(e));
+        assertFalse(maybe2.valueOptional().isPresent());
+
+        Maybe<String> maybe3 = Maybe.catchingMaybe(() -> Maybe.success("test"), e::cause);
+
+        assertTrue(maybe3.isSuccess());
+        assertFalse(maybe3.eOptional().isPresent());
+        assertEquals(maybe3.valueOptional().orElse(""), "test");
+    }
+
+    @Test void testConstructingByNullable() {
+        E e = new E("test");
+
+        Maybe<String> maybe1 = Maybe.nullable(null, () -> e);
+
+        assertFalse(maybe1.isSuccess());
+        assertEquals(maybe1.eOptional(), Optional.of(e));
+        assertFalse(maybe1.valueOptional().isPresent());
+
+        Maybe<String> maybe2 = Maybe.nullable("test", () -> e);
+
+        assertTrue(maybe2.isSuccess());
+        assertFalse(maybe2.eOptional().isPresent());
+        assertEquals(maybe2.valueOptional().orElse(""), "test");
     }
 
     @Test void testMapping() {

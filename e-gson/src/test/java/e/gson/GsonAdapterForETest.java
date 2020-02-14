@@ -18,7 +18,7 @@ import com.google.gson.JsonPrimitive;
 import e.AbstractDecoder.DecodingResult;
 import e.java.E;
 
-public class GsonAdapterTest {
+public class GsonAdapterForETest {
     private final GsonAdapterForE adapter = GsonAdapterForE.get();
     private final Gson gson = new GsonBuilder().registerTypeAdapter(E.class, adapter).create();
 
