@@ -36,6 +36,14 @@ class MaybeSpec extends AnyWordSpec with Matchers {
       maybe2.valueOpt  shouldBe Some("test")
     }
 
+    "be unit" in {
+      val maybe: Maybe[Unit] = Maybe.unit
+
+      maybe.isSuccess shouldBe true
+      maybe.eOpt      shouldBe None
+      maybe.valueOpt  shouldBe Some(())
+    }
+
     "be mapped" in {
       val maybe1: Maybe[String] = E("test").toMaybe
       val maybe2: Maybe[String] = "test".toMaybe
@@ -164,6 +172,34 @@ class MaybeSpec extends AnyWordSpec with Matchers {
     "produce a success Maybe when it is Success" in {
       Maybe.fromTry(TrySuccess[String]("test"), c => E().cause(c)) shouldBe "test".toMaybe
       TrySuccess[String]("test").toMaybe(c => E().cause(c))        shouldBe "test".toMaybe
+    }
+  }
+
+  "Constructing a Maybe by catching lambda" should {
+    "produce a failure Maybe when an exception is thrown" in {
+      val cause = new Exception()
+
+      Maybe.catching(c => E().cause(c)) { throw cause } shouldBe E().cause(cause).toMaybe[String]
+    }
+
+    "produce a success Maybe when a value is produced" in {
+      Maybe.catching(c => E().cause(c)) { "test" } shouldBe "test".toMaybe
+    }
+  }
+
+  "Constructing a Maybe by catching Maybe lambda" should {
+    "produce a failure Maybe when an exception is thrown" in {
+      val cause = new Exception()
+
+      Maybe.catchingMaybe(c => E().cause(c)) { throw cause } shouldBe E().cause(cause).toMaybe[String]
+    }
+
+    "produce a success Maybe when a failure Maybe is produced" in {
+      Maybe.catchingMaybe(c => E().cause(c)) { E().toMaybe[String] } shouldBe E().toMaybe[String]
+    }
+
+    "produce a success Maybe when a success Maybe is produced" in {
+      Maybe.catchingMaybe(c => E().cause(c)) { "test".toMaybe } shouldBe "test".toMaybe
     }
   }
 }
