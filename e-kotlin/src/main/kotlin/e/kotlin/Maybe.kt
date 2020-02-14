@@ -1,7 +1,7 @@
 package e.kotlin
 
 sealed class Maybe<out A>(open val e: E?, open val value: A?) {
-    fun isSuccess(): Boolean = this is Success<A> && e == null && value != null
+    fun isSuccess(): Boolean = e == null
 
     fun <B> map(f: (A) -> B): Maybe<B> =
         when (this) {
@@ -49,6 +49,8 @@ sealed class Maybe<out A>(open val e: E?, open val value: A?) {
 
         fun <A> success(value: A): Maybe<A> = Success(value)
 
+        fun unit(): Maybe<Unit> = Success(Unit)
+
         fun <A> fromNullable(value: A?, ifNull: E): Maybe<A> =
             when (value) {
                 null -> failure(ifNull)
@@ -58,6 +60,13 @@ sealed class Maybe<out A>(open val e: E?, open val value: A?) {
         fun <A> catching(action: () -> A, ifFailure: (Throwable) -> E): Maybe<A> =
             try {
                 success(action())
+            } catch (t: Throwable) {
+                failure(ifFailure(t))
+            }
+
+        fun <A> catchingMaybe(action: () -> Maybe<A>, ifFailure: (Throwable) -> E): Maybe<A> =
+            try {
+                action()
             } catch (t: Throwable) {
                 failure(ifFailure(t))
             }

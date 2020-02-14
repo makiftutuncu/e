@@ -22,7 +22,7 @@ E()
 // {}
 
 /**********************************************************************************/
-/* Constructing an E, mix and match constuctor and builder methods as you see fit */
+/* Constructing an E, mix and match constructor and builder methods as you see fit */
 /**********************************************************************************/
 
 val ae = java.lang.ArithmeticException()
@@ -90,6 +90,16 @@ val maybe2 = true.toMaybe()
 
 val maybe3: Maybe<Int> = Maybe.failure(E("e-1"))
 // {"name":"e-1"}
+
+val maybe4 = E("e-2").toMaybe<Boolean>()
+// {"name":"e-2"}
+
+/********************************/
+/* Constructing a unit Maybe */
+/********************************/
+
+Maybe.unit()
+// kotlin.Unit
 
 val maybe4 = E("e-2").toMaybe<Boolean>()
 // {"name":"e-2"}
@@ -174,6 +184,19 @@ Maybe.catching<Boolean>({throw Exception("test")}, t => E(cause = t))
 // {"cause":"test"}
 
 Maybe.catching<Int>({5}, t => E(cause = t))
+// 5
+
+/***********************************************************/
+/* Constructing a Maybe from a Maybe lambda that can throw */
+/***********************************************************/
+
+Maybe.catchingMaybe<Boolean>({throw Exception("test")}, t => E(cause = t))
+// {"cause":"test"}
+
+Maybe.catchingMaybe<Int>({E().toMaybe<Int>()}, t => E(cause = t))
+// {}
+
+Maybe.catchingMaybe<Int>({5.toMaybe()}, t => E(cause = t))
 // 5
 ```
 

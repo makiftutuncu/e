@@ -116,6 +116,6 @@ public class Maybe<A> {
     }
 
     @Override public String toString() {
-        return isSuccess() ? value.toString() : e.toString();
+        return isSuccess() ? (value == null ? "unit" : value.toString()) : e.toString();
     }
 }
