@@ -43,6 +43,8 @@ object Maybe {
 
   def success[A](value: A): Maybe[A] = Success(value)
 
+  def unit: Maybe[Unit] = Success(())
+
   def fromOption[A](option: Option[A], ifEmpty: => E): Maybe[A] =
     option match {
       case None    => Failure(ifEmpty)
@@ -60,4 +62,13 @@ object Maybe {
       case TryFailure(t) => Failure(ifFailure(t))
       case TrySuccess(a) => Success(a)
     }
+
+  def catching[A](ifFailure: Throwable => E)(f: => A): Maybe[A] =
+    fromTry(Try(f), ifFailure)
+
+  def catchingMaybe[A](ifFailure: Throwable => E)(f: => Maybe[A]): Maybe[A] =
+    Try(f).fold(
+      t => failure(ifFailure(t)),
+      identity
+    )
 }

@@ -125,127 +125,134 @@ val maybe5 = Maybe.failure[String](E("e-2"))
 val maybe6 = E("e-3").toMaybe[Boolean]
 // maybe6: Maybe[Boolean] = Failure(E("e-3", "", 0, None, Map()))
 
+/*****************************/
+/* Constructing a unit Maybe */
+/*****************************/
+
+Maybe.unit
+// res7: Maybe[Unit] = Success(())
+
 /*******************************/
 /* Checking content of a Maybe */
 /*******************************/
 
 5.toMaybe.isSuccess
-// res7: Boolean = true
+// res8: Boolean = true
 
 E("error").toMaybe[Int].isSuccess
-// res8: Boolean = false
+// res9: Boolean = false
 
 5.toMaybe.eOpt
-// res9: Option[E] = None
+// res10: Option[E] = None
 
 E("error").toMaybe[Int].eOpt
-// res10: Option[E] = Some(E("error", "", 0, None, Map()))
+// res11: Option[E] = Some(E("error", "", 0, None, Map()))
 
 5.toMaybe.valueOpt
-// res11: Option[Int] = Some(5)
+// res12: Option[Int] = Some(5)
 
 E("error").toMaybe[Int].valueOpt
-// res12: Option[Int] = None
+// res13: Option[Int] = None
 
 true.toMaybe match {
   case Maybe.Failure(e)     => "false"
   case Maybe.Success(value) => value.toString
 }
-// res13: String = "true"
+// res14: String = "true"
 
 E("error").toMaybe[Boolean] match {
   case Maybe.Failure(e)     => "failure"
   case Maybe.Success(value) => "success"
 }
-// res14: String = "failure"
+// res15: String = "failure"
 
 /*******************/
 /* Mapping a Maybe */
 /*******************/
 
 E("error").toMaybe[Int].map(i => i * 2)
-// res15: Maybe[Int] = Failure(E("error", "", 0, None, Map()))
+// res16: Maybe[Int] = Failure(E("error", "", 0, None, Map()))
 
 5.toMaybe.map(i => i * 2)
-// res16: Maybe[Int] = Success(10)
+// res17: Maybe[Int] = Success(10)
 
 /************************/
 /* Flat mapping a Maybe */
 /************************/
 
 E("error").toMaybe[Int].flatMap(i => (i * 2).toMaybe)
-// res17: Maybe[Int] = Failure(E("error", "", 0, None, Map()))
+// res18: Maybe[Int] = Failure(E("error", "", 0, None, Map()))
 
 5.toMaybe.flatMap(i => E("error").toMaybe[Boolean])
-// res18: Maybe[Boolean] = Failure(E("error", "", 0, None, Map()))
+// res19: Maybe[Boolean] = Failure(E("error", "", 0, None, Map()))
 
 5.toMaybe.flatMap(i => (i * 2).toString.toMaybe)
-// res19: Maybe[String] = Success("10")
+// res20: Maybe[String] = Success("10")
 
 /*******************/
 /* Folding a Maybe */
 /*******************/
 
 E("error").toMaybe[Int].fold(e => "failure", value => "success")
-// res20: String = "failure"
+// res21: String = "failure"
 
 5.toMaybe.fold(e => "failure", value => "success")
-// res21: String = "success"
+// res22: String = "success"
 
 /**********************************************************/
 /* Getting value of a Maybe and providing a default value */
 /**********************************************************/
 
 E("error").toMaybe[Int].getOrElse(0)
-// res22: Int = 0
+// res23: Int = 0
 
 "test".toMaybe.getOrElse("")
-// res23: String = "test"
+// res24: String = "test"
 
 /************************************/
 /* Providing an alternative a Maybe */
 /************************************/
 
 E("error1").toMaybe[Int] orElse E("error2").toMaybe[Int]
-// res24: Maybe[Int] = Failure(E("error2", "", 0, None, Map()))
+// res25: Maybe[Int] = Failure(E("error2", "", 0, None, Map()))
 
 "test".toMaybe orElse E("error1").toMaybe[String]
-// res25: Maybe[String] = Success("test")
+// res26: Maybe[String] = Success("test")
 
 E("error1").toMaybe[Int] orElse "default".toMaybe
-// res26: Maybe[Any] = Success("default")
+// res27: Maybe[Any] = Success("default")
 
 /************************************/
 /* Constructing a Maybe from Option */
 /************************************/
 
 Maybe.fromOption(Option.empty[String], E("error"))
-// res27: Maybe[String] = Failure(E("error", "", 0, None, Map()))
-
-Option.empty[String].toMaybe(E("error"))
 // res28: Maybe[String] = Failure(E("error", "", 0, None, Map()))
 
+Option.empty[String].toMaybe(E("error"))
+// res29: Maybe[String] = Failure(E("error", "", 0, None, Map()))
+
 Maybe.fromOption(Some(3), E("error"))
-// res29: Maybe[Int] = Success(3)
+// res30: Maybe[Int] = Success(3)
 
 Some(3).toMaybe(E("error"))
-// res30: Maybe[Int] = Success(3)
+// res31: Maybe[Int] = Success(3)
 
 /************************************/
 /* Constructing a Maybe from Either */
 /************************************/
 
 Maybe.fromEither[Int, String](Left(1), left => E(code = left))
-// res31: Maybe[String] = Failure(E("", "", 1, None, Map()))
-
-Left[Int, String](1).toMaybe(left => E(code = left))
 // res32: Maybe[String] = Failure(E("", "", 1, None, Map()))
 
+Left[Int, String](1).toMaybe(left => E(code = left))
+// res33: Maybe[String] = Failure(E("", "", 1, None, Map()))
+
 Maybe.fromEither[Int, String](Right("test"), _ => E("error"))
-// res33: Maybe[String] = Success("test")
+// res34: Maybe[String] = Success("test")
 
 Right[Int, String]("test").toMaybe(_ => E("error"))
-// res34: Maybe[String] = Success("test")
+// res35: Maybe[String] = Success("test")
 
 // When Left is E, conversion is done implicitly
 
@@ -260,20 +267,47 @@ val maybeFromEither2: Maybe[Int] = Right[E, Int](5)
 /*********************************/
 
 Maybe.fromTry[Boolean](scala.util.Failure(new Exception("test")), t => E(cause = Some(t)))
-// res35: Maybe[Boolean] = Failure(
-//   E("", "", 0, Some(java.lang.Exception: test), Map())
-// )
-
-scala.util.Failure[Boolean](new Exception("test")).toMaybe(t => E(cause = Some(t)))
 // res36: Maybe[Boolean] = Failure(
 //   E("", "", 0, Some(java.lang.Exception: test), Map())
 // )
 
+scala.util.Failure[Boolean](new Exception("test")).toMaybe(t => E(cause = Some(t)))
+// res37: Maybe[Boolean] = Failure(
+//   E("", "", 0, Some(java.lang.Exception: test), Map())
+// )
+
 Maybe.fromTry[Int](scala.util.Success(5), t => E(cause = Some(t)))
-// res37: Maybe[Int] = Success(5)
+// res38: Maybe[Int] = Success(5)
 
 scala.util.Success[Int](5).toMaybe(t => E(cause = Some(t)))
-// res38: Maybe[Int] = Success(5)
+// res39: Maybe[Int] = Success(5)
+
+/*******************************************/
+/* Constructing a Maybe by catching lambda */
+/*******************************************/
+
+Maybe.catching(c => E().cause(c)) { throw new Exception() }
+// res40: Maybe[Nothing] = Failure(
+//   E("", "", 0, Some(java.lang.Exception), Map())
+// )
+
+Maybe.catching(c => E().cause(c)) { "test" }
+// res41: Maybe[String] = Success("test")
+
+/*************************************************/
+/* Constructing a Maybe by catching Maybe lambda */
+/*************************************************/
+
+Maybe.catchingMaybe(c => E().cause(c)) { throw new Exception() }
+// res42: Maybe[Nothing] = Failure(
+//   E("", "", 0, Some(java.lang.Exception), Map())
+// )
+
+Maybe.catchingMaybe(c => E().cause(c)) { E().toMaybe[String] }
+// res43: Maybe[String] = Failure(E("", "", 0, None, Map()))
+
+Maybe.catchingMaybe(c => E().cause(c)) { "test".toMaybe }
+// res44: Maybe[String] = Success("test")
 ```
 
 ## Encoder
@@ -291,13 +325,13 @@ import e.scala.implicits._
 /*******************************/
 
 val encoder: Encoder[String] = JsonStringEncoder
-// encoder: Encoder[String] = e.scala.JsonStringEncoder$@2491bd0a
+// encoder: Encoder[String] = e.scala.JsonStringEncoder$@7ab1b4e2
 
 encoder.encode(E())
-// res39: String = "{}"
+// res45: String = "{}"
 
 encoder.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), Map("test" -> "data")))
-// res40: String = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":3,\"cause\":\"Test Cause\",\"data\":{\"test\":\"data\"}}"
+// res46: String = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":3,\"cause\":\"Test Cause\",\"data\":{\"test\":\"data\"}}"
 
 /******************************************************/
 /* Custom CSV-like encoder for demonstration purposes */
@@ -308,15 +342,15 @@ val csv: Encoder[String] = { e: E =>
      |"${e.name}","${e.message}","${e.code}"
    """.stripMargin
 }
-// csv: Encoder[String] = repl.Session$App$$anonfun$80@21cd5bd9
+// csv: Encoder[String] = repl.Session$App$$anonfun$96@4b1d57bc
 
 csv.encode(E())
-// res41: String = """"name","message","code"
+// res47: String = """"name","message","code"
 // "","","0"
 //    """
 
 csv.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), Map("test" -> "data")))
-// res42: String = """"name","message","code"
+// res48: String = """"name","message","code"
 // "test-name","Test Message","3"
 //    """
 ```
@@ -363,16 +397,16 @@ val csvDecoder: Decoder[String] = new Decoder[String] {
   private def unescape(s: String): String =
     if (s.startsWith("\"") && s.endsWith("\"")) s.drop(1).dropRight(1) else s
 }
-// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@1af5e404
+// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@6956671
 
 val result1 = csvDecoder.decode("foo")
 // result1: DecodingResult[E] = {"name":"decoding-failure","message":"Input did not have 2 rows!"}
 
 result1.isSuccess
-// res43: Boolean = false
+// res49: Boolean = false
 
 result1.get
-// res44: E = E(
+// res50: E = E(
 //   "decoding-failure",
 //   "Input did not have 2 rows!",
 //   0,
@@ -388,10 +422,10 @@ val result2 = csvDecoder.decode(
 // result2: DecodingResult[E] = {"name":"test-name","message":"Test Message","code":1}
 
 result2.isSuccess
-// res45: Boolean = true
+// res51: Boolean = true
 
 result2.get
-// res46: E = E("test-name", "Test Message", 1, None, Map())
+// res52: E = E("test-name", "Test Message", 1, None, Map())
 
 val either1 = csvDecoder.decodeEither("foo")
 // either1: Either[E, E] = Left(
@@ -399,7 +433,7 @@ val either1 = csvDecoder.decodeEither("foo")
 // )
 
 either1.isLeft
-// res47: Boolean = true
+// res53: Boolean = true
 
 val either2 = csvDecoder.decodeEither(
   """"name","message","code"
@@ -411,7 +445,7 @@ val either2 = csvDecoder.decodeEither(
 // )
 
 either2.isRight
-// res48: Boolean = true
+// res54: Boolean = true
 ```
 
 ## Codec

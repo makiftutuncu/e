@@ -92,6 +92,12 @@ val maybe5 = Maybe.failure[String](E("e-2"))
 
 val maybe6 = E("e-3").toMaybe[Boolean]
 
+/*****************************/
+/* Constructing a unit Maybe */
+/*****************************/
+
+Maybe.unit
+
 /*******************************/
 /* Checking content of a Maybe */
 /*******************************/
@@ -203,6 +209,24 @@ scala.util.Failure[Boolean](new Exception("test")).toMaybe(t => E(cause = Some(t
 Maybe.fromTry[Int](scala.util.Success(5), t => E(cause = Some(t)))
 
 scala.util.Success[Int](5).toMaybe(t => E(cause = Some(t)))
+
+/*******************************************/
+/* Constructing a Maybe by catching lambda */
+/*******************************************/
+
+Maybe.catching(c => E().cause(c)) { throw new Exception() }
+
+Maybe.catching(c => E().cause(c)) { "test" }
+
+/*************************************************/
+/* Constructing a Maybe by catching Maybe lambda */
+/*************************************************/
+
+Maybe.catchingMaybe(c => E().cause(c)) { throw new Exception() }
+
+Maybe.catchingMaybe(c => E().cause(c)) { E().toMaybe[String] }
+
+Maybe.catchingMaybe(c => E().cause(c)) { "test".toMaybe }
 
 ```
 
