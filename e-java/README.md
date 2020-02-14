@@ -95,12 +95,51 @@ Maybe<Integer> maybe1 = Maybe.success(5);
 Maybe<String> maybe2 = Maybe.failure(new E("e-2"));
 // {"name":"e-2"}
 
+/*****************************/
+/* Constructing a unit Maybe */
+/*****************************/
+
+Maybe<Void> unit = Maybe.unit();
+// {}
+
+boolean unitEOptional = unit.eOptional().isPresent();
+// false
+
+boolean unitValueOptional = unit.valueOptional().isPresent();
+// false
+
 /*****************************************************/
 /* Constructing a Maybe from a lambda that can throw */
 /*****************************************************/
 
-Maybe<Integer> maybe3 = Maybe.catching(() -> 3 / 0, t -> new E("divide-by-zero").cause(t));
-// {"name":"divide-by-zero","cause":"..."}
+Maybe<Integer> maybe3 = Maybe.catching(() -> 3 / 0, t -> new E("divide-error").cause(t));
+// {"name":"divide-error","cause":"..."}
+
+Maybe<Integer> maybe4 = Maybe.catching(() -> 3 / 2, t -> new E("divide-error").cause(t));
+// 1
+
+/***********************************************************/
+/* Constructing a Maybe from a Maybe lambda that can throw */
+/***********************************************************/
+
+Maybe<Integer> maybe5 = Maybe.catchingMaybe(() -> Maybe.failure(new E()), t -> new E("divide-error").cause(t));
+// {}
+
+Maybe<Integer> maybe6 = Maybe.catchingMaybe(() -> Maybe.success(3 / 0), t -> new E("divide-error").cause(t));
+// {"name":"divide-error","cause":"..."}
+
+Maybe<Integer> maybe7 = Maybe.catchingMaybe(() -> Maybe.success(3 / 2), t -> new E("divide-error").cause(t));
+// 1
+
+/**************************************/
+/* Constructing a Maybe from nullable */
+/**************************************/
+
+Maybe<String> maybe8 = Maybe.nullable(null, () -> new E("null-value"));
+// {"name":"null-value"}
+
+Maybe<String> maybe9 = Maybe.nullable("test", () -> new E("null-value"));
+// test
 
 /*******************************/
 /* Checking content of a Maybe */

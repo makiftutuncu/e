@@ -1,6 +1,6 @@
 # e-gson
 
-This module contains [`GsonAdapterForE`](src/main/java/e/gson/GsonAdapterForE.java) as a `Codec` implementation of `E` using [gson](https://github.com/google/gson).
+This module contains [`GsonAdapterForE`](src/main/java/e/gson/GsonAdapterForE.java) as a `Codec` implementation of `E` using [gson](https://github.com/google/gson). There is also [`GsonSerializerForMaybe`](src/main/java/e/gson/GsonSerializerForMaybe.java) for serializing as `E` or the value itself depending on whether the `Maybe` is failure or not.
 
 ```java
 import e.AbstractDecoder.DecoderResult;
@@ -9,7 +9,12 @@ import e.gson.GsonAdapterForE;
 import com.google.gson.*;
 
 GsonAdapterForE adapter = GsonAdapterForE.get();
-Gson gson = new GsonBuilder().registerTypeAdapter(E.class, adapter).create();
+GsonSerializerForMaybe serializer = GsonSerializerForMaybe.get();
+Gson gson = new GsonBuilder()
+            .serializeNulls()
+            .registerTypeAdapter(E.class, adapter)
+            .registerTypeAdapterFactory(TreeTypeAdapter.newTypeHierarchyFactory(Maybe.class, serializer)
+            .create();
 
 E empty = E.empty();
 
@@ -57,9 +62,9 @@ boolean isSuccess2 = result2.isSuccess;
 E decoded2 = result2.get();
 // {"name":"test-name","message":"Test Message","code":1,"cause":"Test Exception","data":{"test":"data"}}
 
-/******************/
-/* Serializing E  */
-/******************/
+/*****************/
+/* Serializing E */
+/*****************/
 
 JsonElement serialized1 = gson.toJsonTree(empty);
 String toJson1 = gson.toJson(empty);
@@ -69,9 +74,9 @@ JsonElement serialized2 = gson.toJsonTree(e);
 String toJson2 = gson.toJson(e);
 // {"name":"test-name","message":"Test Message","code":1,"cause":"Test Exception","data":{"test":"data"}}
 
-/********************/
-/* Deserializing E  */
-/********************/
+/*******************/
+/* Deserializing E */
+/*******************/
 
 JsonArray arr2 = new JsonArray();
 arr2.add(1);
@@ -90,4 +95,20 @@ json2.add("data", data2);
 
 E deserialized2 = gson.fromJson(json2, E.class);
 // {"name":"test-name","message":"Test Message","code":1,"cause":"Test Exception","data":{"test":"data"}}
+
+/*********************/
+/* Serializing Maybe */
+/*********************/
+
+Maybe<String> maybe1 = Maybe.failure(e);
+JsonElement serialized3 = gson.toJsonTree(maybe1);
+String toJson3 = gson.toJson(maybe1);
+// {"name":"test-name","message":"Test Message","code":1,"cause":"Test Exception","data":{"test":"data"}}
+
+Map<String, String> map = new HashMap<>();
+map.put("foo", "bar");
+Maybe<Map<String, String>> maybe2 = Maybe.success(map);
+JsonElement serialized4 = gson.toJsonTree(maybe2);
+String toJson4 = gson.toJson(maybe2);
+// {"foo":"bar"}
 ```

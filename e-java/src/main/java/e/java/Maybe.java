@@ -3,25 +3,38 @@ package e.java;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Maybe<A> {
     private static final class Failure<A> extends Maybe<A> {
         public Failure(E e) {
-            super(e, null);
+            super(e);
         }
     }
 
     private static final class Success<A> extends Maybe<A> {
         public Success(A value) {
-            super(null, value);
+            super(value);
         }
     }
 
     private final E e;
     private final A value;
 
-    protected Maybe(E e, A value) {
+    private Maybe(E e, A value) {
         this.e     = e;
+        this.value = value;
+    }
+
+    protected Maybe(E e) {
+        if (e == null) throw new IllegalArgumentException("E cannot be null!");
+        this.e     = e;
+        this.value = null;
+    }
+
+    protected Maybe(A value) {
+        if (value == null) throw new IllegalArgumentException("Value cannot be null!");
+        this.e     = null;
         this.value = value;
     }
 
@@ -33,6 +46,10 @@ public class Maybe<A> {
         return new Success<>(value);
     }
 
+    public static Maybe<Void> unit() {
+        return new Maybe<>(null, null);
+    }
+
     public static <A> Maybe<A> catching(ThrowingSupplier<A> action, Function<Throwable, E> ifFailure) {
         try {
             return new Success<>(action.get());
@@ -41,8 +58,20 @@ public class Maybe<A> {
         }
     }
 
+    public static <A> Maybe<A> catchingMaybe(ThrowingSupplier<Maybe<A>> action, Function<Throwable, E> ifFailure) {
+        try {
+            return action.get();
+        } catch (Throwable t) {
+            return new Failure<>(ifFailure.apply(t));
+        }
+    }
+
+    public static <A> Maybe<A> nullable(A value, Supplier<E> ifNull) {
+        return value == null ? new Failure<>(ifNull.get()) : new Success<>(value);
+    }
+
     public boolean isSuccess() {
-        return e == null && value != null;
+        return e == null;
     }
 
     public Optional<E> eOptional() {
