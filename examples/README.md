@@ -31,7 +31,7 @@ public <A> A one(List<A> list) {
     }
   
     if (list.size() != 1) {
-      throw new IllegalArgumentException("List has" + list.size() + " items");
+      throw new IllegalArgumentException("List has " + list.size() + " items");
     }
     
     return list.get(0);
@@ -109,6 +109,6 @@ TODO: Example code
 
 ## 4. Validating User Input
 
-User input is never to be trusted and must always be validated. The result of an invalid user input is naturally an error, usually an expected one. Representing these as `E`s and using `Maybe` help you deal with this.
+User input is never to be trusted and must always be validated. The result of an invalid user input is naturally an error, usually an expected one. Representing these as `E`s and using `Maybe` can help you deal with this.
 
 TODO: Example code
