@@ -201,6 +201,28 @@ E("error1").toMaybe<Int>().andThen { "default".toMaybe() }
 "test-1".toMaybe().andThen { "test-2".toMaybe() }
 // test-2
 
+/*********************/
+/* Filtering a Maybe */
+/*********************/
+
+E("error").toMaybe<Int>().filter { it < 4 }
+// {"name":"error"}
+
+E("error").toMaybe<Int>().filter({ it < 4 }, { E("error-2").data("value" to it) })
+// {"name":"error"}
+
+5.toMaybe().filter { it < 4 }
+// {"name":"predicate-failed","message":"Value did not satisfy predicate!","data":{"value":"5"}}
+
+5.toMaybe().filter({ it < 4 }, { E("error-2").data("value" to it) })
+// {"name":"error-2","data":{"value":"5"}}
+
+5.toMaybe().filter { it > 4 }
+// 5
+
+5.toMaybe().filter({ it > 4 }, { E("error-2").data("value" to it) })
+// 5
+
 /****************************************/
 /* Constructing a Maybe from a nullable */
 /****************************************/

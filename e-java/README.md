@@ -235,6 +235,28 @@ Maybe<Integer> andThen3 = Maybe.success(5).andThen(() -> new E("error").toMaybe<
 Maybe<String> andThen4 = Maybe.success("test-1").andThen(() -> Maybe.success<String>("test-2"))
 // test-2
 
+/*********************/
+/* Filtering a Maybe */
+/*********************/
+
+Maybe<Integer> filtered1 = Maybe.failure(new E("error")).filter(i -> i < 4));
+// {"name":"error"}
+
+Maybe<Integer> filtered2 = Maybe.failure(new E("error")).filter(i -> i < 4, i -> new E("error-2").data("value", i)));
+// {"name":"error"}
+
+Maybe<Integer> filtered3 = Maybe.success(5).filter(i -> i < 4));
+// {"name":"predicate-failed","message":"Value did not satisfy predicate!","data":{"value":"5"}}
+
+Maybe<Integer> filtered4 = Maybe.success(5).filter(i -> i < 4, i -> new E("error-2").data("value", i)));
+// {"name":"error-2","data":{"value":"5"}}
+
+Maybe<Integer> filtered5 = Maybe.success(5).filter(i -> i > 4));
+// 5
+
+Maybe<Integer> filtered6 = Maybe.success(5).filter(i -> i > 4, i -> new E("error-2").data("value", i)));
+// 5
+
 ```
 
 ## Encoder
