@@ -198,6 +198,22 @@ E("error").toMaybe[Int].filter(_ < 4, i => E("error").data("value", i))
 
 5.toMaybe.filter(_ > 4, i => E("error").data("value", i))
 
+/******************************************/
+/* Using a Maybe to perform a side effect */
+/******************************************/
+
+val sb1 = new StringBuilder
+
+val sb2 = new StringBuilder
+
+E("error").toMaybe[String].foreach(s => sb1.append(s))
+
+"test".toMaybe.foreach(s => sb2.append(s))
+
+sb1.toString()
+
+sb2.toString()
+
 /************************************/
 /* Constructing a Maybe from Option */
 /************************************/

@@ -257,6 +257,22 @@ Maybe<Integer> filtered5 = Maybe.success(5).filter(i -> i > 4));
 Maybe<Integer> filtered6 = Maybe.success(5).filter(i -> i > 4, i -> new E("error-2").data("value", i)));
 // 5
 
+/******************************************/
+/* Using a Maybe to perform a side effect */
+/******************************************/
+
+StringBuilder sb1 = new StringBuilder();
+StringBuilder sb2 = new StringBuilder();
+
+E("error").toMaybe<String>().forEach(s -> sb1.append(s));
+"test".toMaybe().forEach(s -> sb2.append(s));
+
+String forEach1 = sb1.toString();
+// ""
+
+String forEach2 = sb2.toString();
+// "test"
+
 ```
 
 ## Encoder
