@@ -273,6 +273,50 @@ String forEach1 = sb1.toString();
 String forEach2 = sb2.toString();
 // "test"
 
+/*****************************/
+/* Handling error of a Maybe */
+/*****************************/
+
+Maybe<Integer> handled1 = new E("error").toMaybe().handleError(e -> 0);
+// 0
+
+Maybe<Integer> handled2 = new E("error").code(1).toMaybe().handleError(AbstracE::code);
+// 1
+
+Maybe<Integer> handled3 = Maybe.success(5).handleError(e -> 0);
+// 5
+
+Maybe<Integer> handled4 = Maybe.success(5).handleError(AbstractE::code);
+// 5
+
+/************************************************/
+/* Handling error of a Maybe with another Maybe */
+/************************************************/
+
+Maybe<Integer> handledWith1 = new E("error-1").toMaybe().handleErrorWith(e -> new E().toMaybe());
+// {}
+
+Maybe<Integer> handledWith2 = new E("error-1").toMaybe().handleErrorWith(e -> Maybe.success(5));
+// 5
+
+Maybe<Integer> handledWith3 = new E("error-1").toMaybe().handleErrorWith(e -> e.code(1).toMaybe());
+// {"name":"error-1","code":1}
+
+Maybe<Integer> handledWith4 = new E("error-1").code(1).toMaybe().handleErrorWith(e -> Maybe.success(e.code()));
+// 1
+
+Maybe<Integer> handledWith5 = Maybe.success(5).handleErrorWith(e -> new E().toMaybe());
+// 5
+
+Maybe<Integer> handledWith5 = Maybe.success(5).handleErrorWith(e -> new E("error-1").toMaybe());
+// 5
+
+Maybe<Integer> handledWith5 = Maybe.success(5).handleErrorWith(e -> e.code(1).toMaybe());
+// 5
+
+Maybe<Integer> handledWith5 = Maybe.success(5).handleErrorWith(e -> Maybe.success(e.code()));
+// 5
+
 ```
 
 ## Encoder

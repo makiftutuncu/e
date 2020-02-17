@@ -62,16 +62,18 @@ sealed abstract class Maybe[+A](private val either: Either[E, A]) { self =>
       case Maybe.Success(value) if predicate(value)  => value.toMaybe
     }
 
-  def handleErrorWith[AA >: A](f: E => Maybe[AA]): Maybe[AA] =
+  def handleErrorWith[AA >: A](f: PartialFunction[E, Maybe[AA]]): Maybe[AA] =
     self match {
-      case Maybe.Failure(e)     => f(e)
-      case Maybe.Success(value) => value.toMaybe
+      case Maybe.Failure(e) if f.isDefinedAt(e) => f(e)
+      case Maybe.Failure(e)                     => e.toMaybe
+      case Maybe.Success(value)                 => value.toMaybe
     }
 
-  def handleError[AA >: A](f: E => AA): Maybe[AA] =
+  def handleError[AA >: A](f: PartialFunction[E, AA]): Maybe[AA] =
     self match {
-      case Maybe.Failure(e)     => f(e).toMaybe
-      case Maybe.Success(value) => value.toMaybe
+      case Maybe.Failure(e) if f.isDefinedAt(e) => f(e).toMaybe
+      case Maybe.Failure(e)                     => e.toMaybe
+      case Maybe.Success(value)                 => value.toMaybe
     }
 
   override def equals(other: Any): Boolean =

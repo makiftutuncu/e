@@ -178,6 +178,33 @@ public class MaybeTest {
         assertEquals("test", sb2.toString());
     }
 
+    @Test void testHandlingWithAnotherMaybe() {
+        Maybe<Integer> maybe1 = new E("error-1").code(1).toMaybe();
+        Maybe<Integer> maybe2 = new E().toMaybe();
+        Maybe<Integer> maybe3 = Maybe.success(5);
+
+        assertEquals(maybe2,                             maybe1.handleErrorWith(e -> maybe2));
+        assertEquals(maybe3,                             maybe1.handleErrorWith(e -> maybe3));
+        assertEquals(new E("error-1").code(2).toMaybe(), maybe1.handleErrorWith(e -> e.code(2).toMaybe()));
+        assertEquals(Maybe.success(1),                   maybe1.handleErrorWith(e -> Maybe.success(e.code())));
+
+        assertEquals(maybe3, maybe3.handleErrorWith(e -> maybe2));
+        assertEquals(maybe3, maybe3.handleErrorWith(e -> maybe1));
+        assertEquals(maybe3, maybe3.handleErrorWith(e -> e.code(1).toMaybe()));
+        assertEquals(maybe3, maybe3.handleErrorWith(e -> Maybe.success(e.code())));
+    }
+
+    @Test void testHandling() {
+        Maybe<Integer> maybe1 = new E("error").code(1).toMaybe();
+        Maybe<Integer> maybe2 = Maybe.success(5);
+
+        assertEquals(Maybe.success(0), maybe1.handleError(e -> 0));
+        assertEquals(Maybe.success(1), maybe1.handleError(AbstractE::code));
+
+        assertEquals(maybe2, maybe2.handleError(e -> 0));
+        assertEquals(maybe2, maybe2.handleError(AbstractE::code));
+    }
+
     @Test void testEquality() {
         Maybe<String> maybe1 = Maybe.failure(new E("test-1"));
         Maybe<String> maybe2 = Maybe.failure(new E("test-1"));
