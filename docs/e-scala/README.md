@@ -214,6 +214,44 @@ sb1.toString()
 
 sb2.toString()
 
+/*****************************/
+/* Handling error of a Maybe */
+/*****************************/
+
+E("error-1").toMaybe[Int].handleError { case _ => 0 }
+
+E("error-1").toMaybe[Int].handleError { case e if e.hasName => 0 }
+
+E().toMaybe[Int].handleError { case e if e.hasName => 0 }
+
+5.toMaybe.handleError { case _ => 0 }
+
+5.toMaybe.handleError { case e if e.hasName => 0 }
+
+/************************************************/
+/* Handling error of a Maybe with another Maybe */
+/************************************************/
+
+E("error-1").toMaybe[Int].handleErrorWith { case _ => E().toMaybe[Int] }
+
+E("error-1").toMaybe[Int].handleErrorWith { case _ => 5.toMaybe }
+
+E("error-1").toMaybe[Int].handleErrorWith { case e if e.hasName => 0.toMaybe }
+
+E("error-1").toMaybe[Int].handleErrorWith { case e if e.hasName => E().toMaybe[Int] }
+
+E().toMaybe[Int].handleErrorWith { case e if e.hasName => 0.toMaybe }
+
+E().toMaybe[Int].handleErrorWith { case e if e.hasName => E("error-1").toMaybe[Int] }
+
+5.toMaybe.handleErrorWith { case _ => E().toMaybe[Int] }
+
+5.toMaybe.handleErrorWith { case _ => 0.toMaybe }
+
+5.toMaybe.handleErrorWith { case e if e.hasName => E().toMaybe[Int] }
+
+5.toMaybe.handleErrorWith { case e if e.hasName => 0.toMaybe }
+
 /************************************/
 /* Constructing a Maybe from Option */
 /************************************/

@@ -239,6 +239,50 @@ sb1.toString()
 sb2.toString()
 // "test"
 
+/*****************************/
+/* Handling error of a Maybe */
+/*****************************/
+
+E("error").code(1).toMaybe<Int>().handleError { 0 }
+// 0
+
+E("error").code(1).toMaybe<Int>().handleError { e -> e.code() }
+// 1
+
+5.toMaybe().handleError { 0 }
+// 5
+
+5.toMaybe().handleError { e -> e.code() }
+// 5
+
+/************************************************/
+/* Handling error of a Maybe with another Maybe */
+/************************************************/
+
+E("error-1").code(1).toMaybe<Int>().handleErrorWith { E().toMaybe<Int>() }
+// {}
+
+E("error-1").code(1).toMaybe<Int>().handleErrorWith { 5.toMaybe() }
+// 5
+
+E("error-1").code(1).toMaybe<Int>().handleErrorWith { e -> e.code(2).toMaybe() }
+// {"name":"error-1","code":1}
+
+E("error-1").code(1).toMaybe<Int>().handleErrorWith { e -> e.code().toMaybe() }
+// 1
+
+5.toMaybe().handleErrorWith { E().toMaybe<Int>() }
+// 5
+
+5.toMaybe().handleErrorWith { E("error-1").code(1).toMaybe<Int>() }
+// 5
+
+5.toMaybe().handleErrorWith { e -> e.code(1).toMaybe() }
+// 5
+
+5.toMaybe().handleErrorWith { e -> e.code().toMaybe() }
+// 5
+
 /****************************************/
 /* Constructing a Maybe from a nullable */
 /****************************************/

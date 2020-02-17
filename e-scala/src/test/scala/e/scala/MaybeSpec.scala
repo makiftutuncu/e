@@ -123,6 +123,39 @@ class MaybeSpec extends AnyWordSpec with Matchers {
       sb2.toString() shouldBe "test"
     }
 
+    "be handled with another Maybe" in {
+      val maybe1 = E("error-1").toMaybe[Int]
+      val maybe2 = E().toMaybe[Int]
+      val maybe3 = 5.toMaybe
+
+      maybe1.handleErrorWith { case _ => maybe2 } shouldBe maybe2
+      maybe1.handleErrorWith { case _ => maybe3 } shouldBe maybe3
+
+      maybe1.handleErrorWith { case e if e.hasName => 0.toMaybe } shouldBe 0.toMaybe
+      maybe1.handleErrorWith { case e if e.hasName => maybe2 }    shouldBe maybe2
+      maybe2.handleErrorWith { case e if e.hasName => 0.toMaybe } shouldBe maybe2
+      maybe2.handleErrorWith { case e if e.hasName => maybe1 }    shouldBe maybe2
+
+      maybe3.handleErrorWith { case _ => maybe2 }                 shouldBe maybe3
+      maybe3.handleErrorWith { case _ => 0.toMaybe }              shouldBe maybe3
+      maybe3.handleErrorWith { case e if e.hasName => maybe2 }    shouldBe maybe3
+      maybe3.handleErrorWith { case e if e.hasName => 0.toMaybe } shouldBe maybe3
+    }
+
+    "be handled" in {
+      val maybe1 = E("error-1").toMaybe[Int]
+      val maybe2 = E().toMaybe[Int]
+      val maybe3 = 5.toMaybe
+
+      maybe1.handleError { case _ => 0 } shouldBe 0.toMaybe
+
+      maybe1.handleError { case e if e.hasName => 0 } shouldBe 0.toMaybe
+      maybe2.handleError { case e if e.hasName => 0 } shouldBe maybe2
+
+      maybe3.handleError { case _ => 0 }              shouldBe maybe3
+      maybe3.handleError { case e if e.hasName => 0 } shouldBe maybe3
+    }
+
     "be compared for equality" in {
       val maybe1: Maybe[String] = E("test-1").toMaybe
       val maybe2: Maybe[String] = E("test-1").toMaybe

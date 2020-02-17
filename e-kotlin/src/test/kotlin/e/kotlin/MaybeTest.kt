@@ -187,6 +187,33 @@ object MaybeTest {
         assertEquals("test", sb2.toString())
     }
 
+    @Test fun `test handling error of Maybe with another Maybe`() {
+        val maybe1 = E("error-1").code(1).toMaybe<Int>()
+        val maybe2 = E().toMaybe<Int>()
+        val maybe3 = 5.toMaybe()
+
+        assertEquals(maybe2,                              maybe1.handleErrorWith { maybe2 })
+        assertEquals(maybe3,                              maybe1.handleErrorWith { maybe3 })
+        assertEquals(E("error-1").code(2).toMaybe<Int>(), maybe1.handleErrorWith { e -> e.code(2).toMaybe() })
+        assertEquals(1.toMaybe(),                         maybe1.handleErrorWith { e -> e.code().toMaybe() })
+
+        assertEquals(maybe3, maybe3.handleErrorWith { maybe2 })
+        assertEquals(maybe3, maybe3.handleErrorWith { maybe1 })
+        assertEquals(maybe3, maybe3.handleErrorWith { e -> e.code(1).toMaybe() })
+        assertEquals(maybe3, maybe3.handleErrorWith { e -> e.code().toMaybe() })
+    }
+
+    @Test fun `test handling error of Maybe`() {
+        val maybe1 = E("error").code(1).toMaybe<Int>()
+        val maybe2 = 5.toMaybe()
+
+        assertEquals(0.toMaybe(), maybe1.handleError { 0 })
+        assertEquals(1.toMaybe(), maybe1.handleError { e -> e.code() })
+
+        assertEquals(maybe2, maybe2.handleError { 0 })
+        assertEquals(maybe2, maybe2.handleError { e -> e.code() })
+    }
+
     @Test fun `test equality`() {
         val e1 = E("test-name")
         val e2 = E(message = "Test Message")
