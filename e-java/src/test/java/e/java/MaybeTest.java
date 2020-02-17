@@ -117,7 +117,7 @@ public class MaybeTest {
 
         assertEquals(Maybe.failure(new E("test-1")), maybe1.flatMap(s -> Maybe.success(s.toUpperCase())));
         assertEquals(Maybe.failure(new E("test-2")), maybe2.flatMap(s -> Maybe.failure(new E("test-2"))));
-        assertEquals(Maybe.success("TEST"),   maybe2.flatMap(s -> Maybe.success(s.toUpperCase())));
+        assertEquals(Maybe.success("TEST"),          maybe2.flatMap(s -> Maybe.success(s.toUpperCase())));
     }
 
     @Test void testFolding() {
@@ -128,7 +128,7 @@ public class MaybeTest {
         assertEquals("test",  maybe2.fold(AbstractE::name, s -> s));
     }
 
-    @Test void testGettingWithDefault() {
+    @Test void testGetOrElse() {
         Maybe<String> maybe1 = Maybe.failure(new E("test"));
         Maybe<String> maybe2 = Maybe.success("test");
 
@@ -136,13 +136,23 @@ public class MaybeTest {
         assertEquals("test",  maybe2.getOrElse("error"));
     }
 
-    @Test void testGettingAlternative() {
+    @Test void testOrElse() {
         Maybe<String> maybe1 = Maybe.failure(new E("test-1"));
         Maybe<String> maybe2 = Maybe.failure(new E("test-2"));
         Maybe<String> maybe3 = Maybe.success("test");
 
         assertEquals(Maybe.failure(new E("test-2")), maybe1.orElse(maybe2));
         assertEquals(Maybe.success("test"),   maybe1.orElse(maybe3));
+    }
+
+    @Test void testAndThen() {
+        Maybe<String> maybe1 = Maybe.failure(new E("test"));
+        Maybe<String> maybe2 = Maybe.success("test-1");
+
+        assertEquals(Maybe.failure(new E("test")), maybe1.andThen(() -> Maybe.failure(new E("test-2"))));
+        assertEquals(Maybe.failure(new E("test")), maybe1.andThen(() -> Maybe.success("test")));
+        assertEquals(Maybe.failure(new E("test")), maybe2.andThen(() -> Maybe.failure(new E("test"))));
+        assertEquals(Maybe.success("test-2"),      maybe2.andThen(() -> Maybe.success("test-2")));
     }
 
     @Test void testEquality() {
