@@ -159,6 +159,32 @@ E("error").toMaybe<Int>().fold({e -> "failure"}, {value -> "success"})
 5.toMaybe().fold({e -> "failure"}, {value -> "success"})
 // success
 
+/**********************************************************/
+/* Getting value of a Maybe and providing a default value */
+/**********************************************************/
+
+E("error").toMaybe<Int>().getOrElse { 0 }
+// 0
+
+"test".toMaybe().getOrElse { "" }
+// "test"
+
+/***************************************/
+/* Providing an alternative to a Maybe */
+/***************************************/
+
+E("error1").toMaybe<Int>().orElse { E("error2").toMaybe<Int>() }
+// {"name":"error2"}
+
+E("error1").toMaybe<Int>().orElse { "default".toMaybe() }
+// "default"
+
+"test-1".toMaybe().orElse { E("error").toMaybe<String>() }
+// "test-1"
+
+"test-1".toMaybe().orElse { "test-2".toMaybe() }
+// "test-1"
+
 /****************************************/
 /* Constructing a Maybe from a nullable */
 /****************************************/
