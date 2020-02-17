@@ -6,6 +6,7 @@ import sbt._
 
 object Settings {
   lazy val javaVersion                = "1.8"
+  lazy val latestKotlinVersion        = "1.3.41"
   lazy val latestScalaVersion         = "2.13.1"
   lazy val crossCompiledScalaVersions = Seq("2.12.10", latestScalaVersion)
 
@@ -20,6 +21,7 @@ object Settings {
       "VERSION"              -> version.value,
       "JAVA_VERSION"         -> javaVersion,
       "SCALA_VERSION"        -> latestScalaVersion.split("\\.").take(2).mkString("."),
+      "KOTLIN_VERSION"       -> latestKotlinVersion,
       "CROSS_SCALA_VERSIONS" -> crossCompiledScalaVersions.map(_.split("\\.").take(2).mkString(".")).mkString(", "),
       "COPYRIGHT_YEAR"       -> "2020"
     ),
@@ -52,6 +54,6 @@ object Settings {
   lazy val kotlinSettings: Seq[Setting[_]] = javaSettings ++ Seq(
     kotlinLib("stdlib"),
 
-    kotlinVersion := "1.3.41"
+    kotlinVersion := latestKotlinVersion
   )
 }

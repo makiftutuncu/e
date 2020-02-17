@@ -7,9 +7,9 @@ e is a zero-dependency micro library for dealing with errors on JVM. It aims to 
 
 It consists of different modules for different needs. You can find details, instructions and documentation about each of them on their own pages.
 
-| Latest Version of e | Java Version          | Scala Versions          |
-| ------------------- | --------------------- | ----------------------- |
-| @VERSION@           | @JAVA_VERSION@        | @CROSS_SCALA_VERSIONS@  |
+| Latest Version of e | Java Version          | Scala Versions          | Kotlin Version   |
+| ------------------- | --------------------- | ----------------------- | ---------------- |
+| @VERSION@           | @JAVA_VERSION@        | @CROSS_SCALA_VERSIONS@  | @KOTLIN_VERSION@ |
 
 ## Table of Contents
 
