@@ -1,5 +1,6 @@
 package e.scala
 
+import e.scala.implicits._
 import scala.util.{Try, Failure => TryFailure, Success => TrySuccess}
 
 sealed abstract class Maybe[+A](private val either: Either[E, A]) { self =>
@@ -9,19 +10,68 @@ sealed abstract class Maybe[+A](private val either: Either[E, A]) { self =>
 
   val valueOpt: Option[A] = either.toOption
 
-  def map[B](f: A => B): Maybe[B] = flatMap(a => Maybe.Success(f(a)))
+  def map[B](f: A => B): Maybe[B] =
+    self match {
+      case Maybe.Failure(e)     => e.toMaybe
+      case Maybe.Success(value) => f(value).toMaybe
+    }
 
   def flatMap[B](f: A => Maybe[B]): Maybe[B] =
     self match {
-      case Maybe.Failure(e)     => Maybe.Failure(e)
+      case Maybe.Failure(e)     => e.toMaybe
       case Maybe.Success(value) => f(value)
     }
 
-  def fold[B](ifFailure: E => B, ifSuccess: A => B): B = either.fold(ifFailure, ifSuccess)
+  def fold[B](ifFailure: E => B, ifSuccess: A => B): B =
+    either match {
+      case Left(e)      => ifFailure(e)
+      case Right(value) => ifSuccess(value)
+    }
 
-  def getOrElse[AA >: A](default: => AA): AA = either.getOrElse(default)
+  def getOrElse[AA >: A](default: => AA): AA =
+    either match {
+      case Left(_)      => default
+      case Right(value) => value
+    }
 
   def orElse[AA >: A](alternative: => Maybe[AA]): Maybe[AA] = if (!isSuccess) alternative else self
+
+  def andThen[B](next: => Maybe[B]): Maybe[B] =
+    self match {
+      case Maybe.Failure(e) => e.toMaybe
+      case Maybe.Success(_) => next
+    }
+
+  def foreach[U](f: A => U): Unit =
+    self match {
+      case Maybe.Success(value) => f(value)
+    }
+
+  def filter(predicate: A => Boolean, ifPredicateFails: A => E): Maybe[A] =
+    self match {
+      case Maybe.Failure(e)                          => e.toMaybe
+      case Maybe.Success(value) if !predicate(value) => ifPredicateFails(value).toMaybe
+      case Maybe.Success(value) if predicate(value)  => value.toMaybe
+    }
+
+  def filter(predicate: A => Boolean): Maybe[A] =
+    self match {
+      case Maybe.Failure(e)                          => e.toMaybe
+      case Maybe.Success(value) if !predicate(value) => E("predicate-failed", "Value did not satisfy predicate!").data("value" -> value).toMaybe
+      case Maybe.Success(value) if predicate(value)  => value.toMaybe
+    }
+
+  def handleErrorWith[AA >: A](f: E => Maybe[AA]): Maybe[AA] =
+    self match {
+      case Maybe.Failure(e)     => f(e)
+      case Maybe.Success(value) => value.toMaybe
+    }
+
+  def handleError[AA >: A](f: E => AA): Maybe[AA] =
+    self match {
+      case Maybe.Failure(e)     => f(e).toMaybe
+      case Maybe.Success(value) => value.toMaybe
+    }
 
   override def equals(other: Any): Boolean =
     other match {
@@ -64,11 +114,14 @@ object Maybe {
     }
 
   def catching[A](ifFailure: Throwable => E)(f: => A): Maybe[A] =
-    fromTry(Try(f), ifFailure)
+    Try(f) match {
+      case TryFailure(t) => Failure(ifFailure(t))
+      case TrySuccess(a) => Success(a)
+    }
 
   def catchingMaybe[A](ifFailure: Throwable => E)(f: => Maybe[A]): Maybe[A] =
-    Try(f).fold(
-      t => failure(ifFailure(t)),
-      identity
-    )
+    Try(f) match {
+      case TryFailure(t)     => Failure(ifFailure(t))
+      case TrySuccess(maybe) => maybe
+    }
 }

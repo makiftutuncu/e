@@ -13,8 +13,8 @@ final case class E(override val name: String = "",
   override def cause(c: Option[Throwable]): E   = E(name, message, code, c,       data)
   def cause(c: Throwable): E                    = E(name, message, code, Some(c), data)
   override def data(d: Map[String, String]): E  = E(name, message, code, cause,   d)
-  def data(k: String, v: String): E             = E(name, message, code, cause,   data + (k -> v))
-  def data(tuple: (String, String)): E          = E(name, message, code, cause,   data + tuple)
+  def data(k: String, v: Any): E                = E(name, message, code, cause,   data + (k -> v.toString))
+  def data(tuple: (String, Any)): E             = E(name, message, code, cause,   data + (tuple._1 -> tuple._2.toString))
 
   override def hasCause: Boolean = cause.isDefined
 
