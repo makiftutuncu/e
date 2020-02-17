@@ -80,10 +80,13 @@ class MaybeSpec extends AnyWordSpec with Matchers {
     "be replaced with an alternative" in {
       val maybe1: Maybe[String] = E("test-1").toMaybe
       val maybe2: Maybe[String] = E("test-2").toMaybe
-      val maybe3: Maybe[String] = "test".toMaybe
+      val maybe3: Maybe[String] = "test-1".toMaybe
+      val maybe4: Maybe[String] = "test-2".toMaybe
 
       (maybe1 orElse maybe2) shouldBe E("test-2").toMaybe
-      (maybe1 orElse maybe3) shouldBe "test".toMaybe
+      (maybe1 orElse maybe3) shouldBe "test-1".toMaybe
+      (maybe3 orElse maybe1) shouldBe "test-1".toMaybe
+      (maybe3 orElse maybe4) shouldBe "test-1".toMaybe
     }
 
     "be compared for equality" in {

@@ -131,6 +131,28 @@ object MaybeTest {
         assertEquals("42", maybe2.fold({ "0" }) { it.toString() })
     }
 
+    @Test fun `test getting a Maybe with a default value`() {
+        val e = E("test-name")
+
+        val maybe1: Maybe<Int> = e.toMaybe()
+        val maybe2: Maybe<Int> = 42.toMaybe()
+
+        assertEquals(0,  maybe1.getOrElse { 0 })
+        assertEquals(42, maybe2.getOrElse { 0 })
+    }
+
+    @Test fun `test replacing a Maybe with an alternative`() {
+        val maybe1 = E("test-1").toMaybe<String>()
+        val maybe2 = E("test-2").toMaybe<String>()
+        val maybe3 = "test-1".toMaybe()
+        val maybe4 = "test-2".toMaybe()
+
+        assertEquals(E("test-2").toMaybe<String>(), maybe1.orElse { maybe2 })
+        assertEquals("test-1".toMaybe(),            maybe1.orElse { maybe3 })
+        assertEquals("test-1".toMaybe(),            maybe3.orElse { maybe1 })
+        assertEquals("test-1".toMaybe(),            maybe3.orElse { maybe4 })
+    }
+
     @Test fun `test equality`() {
         val e1 = E("test-name")
         val e2 = E(message = "Test Message")

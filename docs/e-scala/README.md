@@ -164,9 +164,11 @@ E("error").toMaybe[Int].getOrElse(0)
 
 E("error1").toMaybe[Int] orElse E("error2").toMaybe[Int]
 
-"test".toMaybe orElse E("error1").toMaybe[String]
+E("error1").toMaybe[Int] orElse  "default".toMaybe
 
-E("error1").toMaybe[Int] orElse "default".toMaybe
+"test-1".toMaybe orElse E("error").toMaybe[String]
+
+"test-1".toMaybe orElse "test-2".toMaybe
 
 /************************************/
 /* Constructing a Maybe from Option */
