@@ -1,9 +1,18 @@
-package dev.akif.espringexample.people;
+package dev.akif.espringexample.people.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Person {
+    @Id
+    @GeneratedValue
     private long id;
     private String name;
     private int age;
+
+    public Person() {}
 
     public Person(long id, String name, int age) {
         this.id = id;

@@ -1,4 +1,6 @@
-package dev.akif.espringexample.people;
+package dev.akif.espringexample.people.dto;
+
+import dev.akif.espringexample.people.model.Person;
 
 public class PersonDTOWithId extends PersonDTO {
     private Long id;

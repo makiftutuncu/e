@@ -1,65 +1,84 @@
 package dev.akif.espringexample.people;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import dev.akif.espringexample.app.Errors;
-import e.java.E;
+import dev.akif.espringexample.errors.Errors;
+import dev.akif.espringexample.crud.Repository;
+import dev.akif.espringexample.people.dto.PersonDTO;
+import dev.akif.espringexample.people.model.Person;
 import e.java.Maybe;
 
-@Repository
-public class PeopleRepository {
-    private static final Map<Long, Person> database = new LinkedHashMap<>();
-    private static long maxId = 0L;
+@Component
+public class PeopleRepository implements Repository<Person, PersonDTO> {
+    private final PeopleJPARepository jpa;
 
-    public PeopleRepository() {}
-
-    public Maybe<List<Person>> getAll() {
-        return Maybe.success(new ArrayList<>(database.values()));
+    @Autowired
+    public PeopleRepository(PeopleJPARepository jpa) {
+        this.jpa = jpa;
     }
 
-    public Maybe<Optional<Person>> getById(long id) {
-        return Maybe.success(Optional.ofNullable(database.get(id)));
+    @Override public Maybe<List<Person>> getAll() {
+        return Maybe.catching(
+            () -> toList(jpa.findAll()),
+            t  -> Errors.database.message("Cannot get all people!").cause(t)
+        );
     }
 
-    public Maybe<Person> create(PersonDTO personDTO) {
-        long nextId = maxId + 1;
-        Person person = personDTO.toPerson(nextId);
-        database.put(nextId, person);
-        maxId = nextId;
-        return Maybe.success(person);
+    @Override public Maybe<Optional<Person>> getById(long id) {
+        return Maybe.catching(
+            () -> jpa.findById(id),
+            t  -> Errors.database.message("Cannot get person by id!").cause(t).data("id", id)
+        );
     }
 
-    public Maybe<Person> update(long id, PersonDTO personDTO) {
-        Person person = database.get(id);
-
-        if (person == null) {
-            E e = Errors.notFound.message("Cannot find person to update!").data("id", String.valueOf(id));
-            return Maybe.failure(e);
-        }
-
-        Person updated = personDTO.updated(person);
-
-        database.put(id, updated);
-
-        return Maybe.success(updated);
+    @Override public Maybe<Person> create(PersonDTO personDTO) {
+        return Maybe.catching(
+            () -> {
+                Person person = personDTO.toPerson();
+                jpa.save(person);
+                return person;
+            },
+            t -> Errors.database
+                       .message("Cannot create person!")
+                       .cause(t)
+                       .data("name", personDTO.getName())
+                       .data("age",  personDTO.getAge())
+        );
     }
 
-    public Maybe<Person> delete(long id) {
-        Person person = database.get(id);
+    @Override public Maybe<Person> update(long id, PersonDTO personDTO) {
+        return Maybe.catchingMaybe(
+            () -> Maybe.nullable(
+                jpa.findById(id).orElse(null),
+                () -> Errors.notFound.message("Cannot find person to update!").data("id", id)
+            ).map(person ->
+                jpa.save(personDTO.updated(person))
+            ),
+            t -> Errors.database
+                       .message("Cannot update person!")
+                       .cause(t)
+                       .data("name", personDTO.getName())
+                       .data("age",  personDTO.getAge())
+        );
+    }
 
-        if (person == null) {
-            E e = Errors.notFound.message("Cannot find person to delete!").data("id", String.valueOf(id));
-            return Maybe.failure(e);
-        }
-
-        database.remove(id);
-
-        return Maybe.success(person);
+    @Override public Maybe<Person> delete(long id) {
+        return Maybe.catchingMaybe(
+            () -> Maybe.nullable(
+                jpa.findById(id).orElse(null),
+                () -> Errors.notFound.message("Cannot find person to delete!").data("id", id)
+            ).map(person -> {
+                jpa.delete(person);
+                return person;
+            }),
+            t -> Errors.database
+                       .message("Cannot delete person!")
+                       .cause(t)
+                       .data("id", id)
+        );
     }
 }

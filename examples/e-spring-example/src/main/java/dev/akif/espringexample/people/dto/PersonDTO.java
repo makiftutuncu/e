@@ -1,4 +1,6 @@
-package dev.akif.espringexample.people;
+package dev.akif.espringexample.people.dto;
+
+import dev.akif.espringexample.people.model.Person;
 
 public class PersonDTO {
     private String name;
@@ -31,8 +33,8 @@ public class PersonDTO {
         this.age = age;
     }
 
-    public Person toPerson(long id) {
-        return new Person(id, name, age);
+    public Person toPerson() {
+        return new Person(-1L, name, age);
     }
 
     public Person updated(Person person) {

@@ -1,4 +1,4 @@
-package dev.akif.espringexample.app;
+package dev.akif.espringexample;
 
 import java.util.Collections;
 import java.util.List;
