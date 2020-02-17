@@ -447,7 +447,7 @@ import e.scala.implicits._
 /*******************************/
 
 val encoder: Encoder[String] = JsonStringEncoder
-// encoder: Encoder[String] = e.scala.JsonStringEncoder$@5ef0f02a
+// encoder: Encoder[String] = e.scala.JsonStringEncoder$@1c0f73b1
 
 encoder.encode(E())
 // res75: String = "{}"
@@ -464,7 +464,7 @@ val csv: Encoder[String] = { e: E =>
      |"${e.name}","${e.message}","${e.code}"
    """.stripMargin
 }
-// csv: Encoder[String] = repl.Session$App$$anonfun$159@5dc1e88f
+// csv: Encoder[String] = repl.Session$App$$anonfun$159@7a50eca
 
 csv.encode(E())
 // res77: String = """"name","message","code"
@@ -519,7 +519,7 @@ val csvDecoder: Decoder[String] = new Decoder[String] {
   private def unescape(s: String): String =
     if (s.startsWith("\"") && s.endsWith("\"")) s.drop(1).dropRight(1) else s
 }
-// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@4fa654f1
+// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@1540a76
 
 val result1 = csvDecoder.decode("foo")
 // result1: DecodingResult[E] = {"name":"decoding-failure","message":"Input did not have 2 rows!"}

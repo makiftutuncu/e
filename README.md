@@ -9,7 +9,7 @@ It consists of different modules for different needs. You can find details, inst
 
 | Latest Version of e | Java Version          | Scala Versions          |
 | ------------------- | --------------------- | ----------------------- |
-| 1.1.1-SNAPSHOT           | 1.8        | 2.12, 2.13  |
+| 1.1.1           | 1.8        | 2.12, 2.13  |
 
 ## Table of Contents
 
@@ -42,10 +42,10 @@ It consists of different modules for different needs. You can find details, inst
 ```scala
 libraryDependencies ++= Seq(
   // Scala modules
-  "dev.akif" %% "[MODULE]" % "1.1.1-SNAPSHOT",
+  "dev.akif" %% "[MODULE]" % "1.1.1",
 
   // Java/Kotlin modules
-  "dev.akif" % "[MODULE]" % "1.1.1-SNAPSHOT"
+  "dev.akif" % "[MODULE]" % "1.1.1"
 )
 ```
 * If you use Maven, add following to your `pom.xml` for each module you want to use
@@ -55,14 +55,14 @@ libraryDependencies ++= Seq(
   <dependency>
     <groupId>dev.akif</groupId>
     <artifactId>[MODULE]_[SCALA_VERSION]</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
   </dependency>
 
   <!-- Java/Kotlin modules -->
   <dependency>
     <groupId>dev.akif</groupId>
     <artifactId>[MODULE]</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
   </dependency>
 </dependencies>
 ```
@@ -71,10 +71,10 @@ libraryDependencies ++= Seq(
 ```javascript
 dependencies {
   // Scala modules
-  implementation('dev.akif:[MODULE]_[SCALA_VERSION]:1.1.1-SNAPSHOT'),
+  implementation('dev.akif:[MODULE]_[SCALA_VERSION]:1.1.1'),
 
   // Java/Kotlin modules
-  implementation('dev.akif:[MODULE]:1.1.1-SNAPSHOT')
+  implementation('dev.akif:[MODULE]:1.1.1')
 }
 ```
 
