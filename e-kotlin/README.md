@@ -223,6 +223,22 @@ E("error").toMaybe<Int>().filter({ it < 4 }, { E("error-2").data("value" to it) 
 5.toMaybe().filter({ it > 4 }, { E("error-2").data("value" to it) })
 // 5
 
+/******************************************/
+/* Using a Maybe to perform a side effect */
+/******************************************/
+
+val sb1 = StringBuilder()
+val sb2 = StringBuilder()
+
+E("error").toMaybe<String>().forEach { s -> sb1.append(s) }
+"test".toMaybe().forEach { s -> sb2.append(s) }
+
+sb1.toString()
+// ""
+
+sb2.toString()
+// "test"
+
 /****************************************/
 /* Constructing a Maybe from a nullable */
 /****************************************/

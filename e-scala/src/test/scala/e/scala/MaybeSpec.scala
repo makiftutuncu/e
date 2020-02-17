@@ -112,6 +112,17 @@ class MaybeSpec extends AnyWordSpec with Matchers {
       maybe2.filter(_ > 4, i => E("error-2").data("value" -> i)) shouldBe maybe2
     }
 
+    "be used to perform side effect" in {
+      val sb1 = new StringBuilder
+      val sb2 = new StringBuilder
+
+      E("error").toMaybe[String].foreach(s => sb1.append(s))
+      "test".toMaybe.foreach(s => sb2.append(s))
+
+      sb1.toString() shouldBe ""
+      sb2.toString() shouldBe "test"
+    }
+
     "be compared for equality" in {
       val maybe1: Maybe[String] = E("test-1").toMaybe
       val maybe2: Maybe[String] = E("test-1").toMaybe

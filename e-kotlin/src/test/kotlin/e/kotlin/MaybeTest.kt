@@ -176,6 +176,17 @@ object MaybeTest {
         assertEquals(maybe2, maybe2.filter({ it > 4 }, { E("error-2").data("value" to it) }))
     }
 
+    @Test fun `test using Maybe to perform side effect`() {
+        val sb1 = StringBuilder()
+        val sb2 = StringBuilder()
+
+        E("error").toMaybe<String>().forEach { s -> sb1.append(s) }
+        "test".toMaybe().forEach { s -> sb2.append(s) }
+
+        assertEquals("",     sb1.toString())
+        assertEquals("test", sb2.toString())
+    }
+
     @Test fun `test equality`() {
         val e1 = E("test-name")
         val e2 = E(message = "Test Message")

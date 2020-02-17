@@ -167,6 +167,17 @@ public class MaybeTest {
         assertEquals(maybe2, maybe2.filter(i -> i > 4, i -> new E("error-2").data("value", i)));
     }
 
+    @Test void testForEach() {
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+
+        Maybe.failure(new E("error")).forEach(sb1::append);
+        Maybe.success("test").forEach(sb2::append);
+
+        assertEquals("",     sb1.toString());
+        assertEquals("test", sb2.toString());
+    }
+
     @Test void testEquality() {
         Maybe<String> maybe1 = Maybe.failure(new E("test-1"));
         Maybe<String> maybe2 = Maybe.failure(new E("test-1"));
