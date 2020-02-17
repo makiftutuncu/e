@@ -62,9 +62,9 @@ public final class E extends AbstractE<Throwable, Map<String, String>>  {
         return new E(name(), message(), code(), cause(), data);
     }
 
-    public E data(String key, String value) {
+    public E data(String key, Object value) {
         Map<String, String> data = new LinkedHashMap<>(data());
-        data.put(key, value);
+        data.put(key, String.valueOf(value));
         return new E(name(), message(), code(), cause(), data);
     }
 

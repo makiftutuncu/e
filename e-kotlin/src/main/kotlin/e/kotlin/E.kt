@@ -12,8 +12,8 @@ data class E(private val name: String = "",
     override fun code(c: Int): E                 = E(name(), message(), c     , cause(), data())
     override fun cause(c: Throwable?): E         = E(name(), message(), code(), c,   data())
     override fun data(d: Map<String, String>): E = E(name(), message(), code(), cause(), d)
-    fun data(key: String, value: String): E      = E(name(), message(), code(), cause(), data() + (key to value))
-    fun data(pair: Pair<String, String>): E      = E(name(), message(), code(), cause(), data() + pair)
+    fun <A> data(key: String, value: A): E       = E(name(), message(), code(), cause(), data() + (key to value.toString()))
+    fun <A> data(pair: Pair<String, A>): E       = E(name(), message(), code(), cause(), data() + (pair.first to pair.second.toString()))
 
     override fun hasCause(): Boolean = cause != null
 

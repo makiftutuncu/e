@@ -2,7 +2,9 @@ package e.java;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class Maybe<A> {
@@ -83,7 +85,7 @@ public class Maybe<A> {
     }
 
     public <B> Maybe<B> map(Function<A, B> f) {
-        return flatMap(value -> new Success<>(f.apply(value)));
+        return !isSuccess() ? new Failure<>(e) : new Success<>(f.apply(value));
     }
 
     public <B> Maybe<B> flatMap(Function<A, Maybe<B>> f) {
@@ -95,11 +97,45 @@ public class Maybe<A> {
     }
 
     public A getOrElse(A defaultValue) {
-        return fold(e -> defaultValue, value -> value);
+        return !isSuccess() ? defaultValue : value;
     }
 
     public Maybe<A> orElse(Maybe<A> alternative) {
         return !isSuccess() ? alternative : this;
+    }
+
+    public <B> Maybe<B> andThen(Supplier<Maybe<B>> next) {
+        return !isSuccess() ? new Failure<>(e) : next.get();
+    }
+
+    public void forEach(Consumer<A> f) {
+        if (isSuccess()) {
+            f.accept(value);
+        }
+    }
+
+    public Maybe<A> filter(Predicate<A> p, Function<A, E> ifPredicateFails) {
+        if (!isSuccess()) {
+            return new Failure<>(e);
+        }
+
+        return p.test(value) ? new Success<>(value) : new Failure<>(ifPredicateFails.apply(value));
+    }
+
+    public Maybe<A> filter(Predicate<A> p) {
+        if (!isSuccess()) {
+            return new Failure<>(e);
+        }
+
+        return p.test(value) ? new Success<>(value) : new Failure<>(new E("predicate-failed", "Value did not satisfy predicate!").data("value", value));
+    }
+
+    public Maybe<A> handleErrorWith(Function<E, Maybe<A>> f) {
+        return !isSuccess() ? f.apply(e) : new Success<>(value);
+    }
+
+    public Maybe<A> handleError(Function<E, A> f) {
+        return !isSuccess() ? new Success<>(f.apply(e)) : new Success<>(value);
     }
 
     @Override public boolean equals(Object o) {
@@ -116,6 +152,6 @@ public class Maybe<A> {
     }
 
     @Override public String toString() {
-        return isSuccess() ? (value == null ? "unit" : value.toString()) : e.toString();
+        return isSuccess() ? (value == null ? "unit" : value.toString()) : (e == null ? "" : e.toString());
     }
 }
