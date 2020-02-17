@@ -100,6 +100,18 @@ class MaybeSpec extends AnyWordSpec with Matchers {
       (maybe2 andThen maybe3)              shouldBe maybe3
     }
 
+    "be filtered" in {
+      val maybe1 = E("error").toMaybe[Int]
+      val maybe2 = 5.toMaybe
+
+      maybe1.filter(_ < 4)                                       shouldBe maybe1
+      maybe1.filter(_ < 4, i => E("error-2").data("value" -> i)) shouldBe maybe1
+      maybe2.filter(_ < 4)                                       shouldBe E("predicate-failed", "Value did not satisfy predicate!").data("value" -> 5).toMaybe[Int]
+      maybe2.filter(_ < 4, i => E("error-2").data("value" -> i)) shouldBe E("error-2").data("value" -> 5).toMaybe[Int]
+      maybe2.filter(_ > 4)                                       shouldBe maybe2
+      maybe2.filter(_ > 4, i => E("error-2").data("value" -> i)) shouldBe maybe2
+    }
+
     "be compared for equality" in {
       val maybe1: Maybe[String] = E("test-1").toMaybe
       val maybe2: Maybe[String] = E("test-1").toMaybe

@@ -155,6 +155,18 @@ public class MaybeTest {
         assertEquals(Maybe.success("test-2"),      maybe2.andThen(() -> Maybe.success("test-2")));
     }
 
+    @Test void testFiltering() {
+        Maybe<Integer> maybe1 = Maybe.failure(new E("error"));
+        Maybe<Integer> maybe2 = Maybe.success(5);
+
+        assertEquals(maybe1, maybe1.filter(i -> i < 4));
+        assertEquals(maybe1, maybe1.filter(i -> i < 4, i -> new E("error-2").data("value", i)));
+        assertEquals(new E("predicate-failed", "Value did not satisfy predicate!").data("value", 5).toMaybe(), maybe2.filter(i -> i < 4));
+        assertEquals(new E("error-2").data("value", 5).toMaybe(), maybe2.filter(i -> i < 4, i -> new E("error-2").data("value", i)));
+        assertEquals(maybe2, maybe2.filter(i -> i > 4));
+        assertEquals(maybe2, maybe2.filter(i -> i > 4, i -> new E("error-2").data("value", i)));
+    }
+
     @Test void testEquality() {
         Maybe<String> maybe1 = Maybe.failure(new E("test-1"));
         Maybe<String> maybe2 = Maybe.failure(new E("test-1"));

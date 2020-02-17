@@ -164,6 +164,18 @@ object MaybeTest {
         assertEquals(maybe3, maybe2.andThen { maybe3 })
     }
 
+    @Test fun `test filtering a Maybe`() {
+        val maybe1 = E("error").toMaybe<Int>()
+        val maybe2 = 5.toMaybe()
+
+        assertEquals(maybe1, maybe1.filter { it < 4 })
+        assertEquals(maybe1, maybe1.filter({ it < 4 }, { E("error-2").data("value" to it) }))
+        assertEquals(E("predicate-failed", "Value did not satisfy predicate!").data("value" to 5).toMaybe<Int>(), maybe2.filter { it < 4 })
+        assertEquals(E("error-2").data("value" to 5).toMaybe<Int>(), maybe2.filter({ it < 4 }, { E("error-2").data("value" to it) }))
+        assertEquals(maybe2, maybe2.filter { it > 4 })
+        assertEquals(maybe2, maybe2.filter({ it > 4 }, { E("error-2").data("value" to it) }))
+    }
+
     @Test fun `test equality`() {
         val e1 = E("test-name")
         val e2 = E(message = "Test Message")

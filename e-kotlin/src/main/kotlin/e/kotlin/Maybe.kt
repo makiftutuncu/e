@@ -41,6 +41,7 @@ sealed class Maybe<A>(open val e: E?, open val value: A?) {
 
     fun <U> forEach(f: (A) -> U): Unit {
         when (this) {
+            is Failure<A> -> Unit
             is Success<A> -> f(value)
         }
     }

@@ -18,7 +18,7 @@ import zio.internal.PlatformLive
 /****************/
 
 val runtime1 = zio.Runtime((), PlatformLive.Default)
-// runtime1: zio.Runtime[Unit] = zio.Runtime$$anon$1@5b70deeb
+// runtime1: zio.Runtime[Unit] = zio.Runtime$$anon$1@2d2cd0d3
 
 def divide(a: Int, b: Int): MaybeZ[Int] =
   if (b == 0) {
@@ -33,7 +33,7 @@ runtime1.unsafeRunSync(divide(4, 0))
 //     Fail(
 //       E("divide-by-zero", "Cannot divide by 0!", 0, None, Map("input" -> "4"))
 //     ),
-//     ZTrace(Id(1581940906629L, 0L), List(), List(), None)
+//     ZTrace(Id(1581943253053L, 0L), List(), List(), None)
 //   )
 // )
 
@@ -50,7 +50,7 @@ val divider: Divider = (a: Int, b: Int) => divide(a, b)
 // divider: (Int, Int) => MaybeZ[Int] = <function2>
 
 val runtime2: zio.Runtime[Divider] = zio.Runtime(divider, PlatformLive.Default)
-// runtime2: zio.Runtime[(Int, Int) => MaybeZ[Int]] = zio.Runtime$$anon$1@1918ab7a
+// runtime2: zio.Runtime[(Int, Int) => MaybeZ[Int]] = zio.Runtime$$anon$1@5b90637
 
 def divideWithEnvironment(a: Int, b: Int): MaybeZR[Divider, Int] =
   for {
@@ -67,7 +67,7 @@ runtime2.unsafeRunSync(divideWithEnvironment(4, 0))
 //       E("divide-by-zero", "Cannot divide by 0!", 0, None, Map("input" -> "4"))
 //     ),
 //     ZTrace(
-//       Id(1581940906678L, 2L),
+//       Id(1581943253107L, 2L),
 //       List(
 //         SourceLocation(
 //           "README.md",

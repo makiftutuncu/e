@@ -182,6 +182,22 @@ E("error1").toMaybe[Int] andThen "default".toMaybe
 
 "test-1".toMaybe andThen "test-2".toMaybe
 
+/*********************/
+/* Filtering a Maybe */
+/*********************/
+
+E("error").toMaybe[Int].filter(_ < 4)
+
+E("error").toMaybe[Int].filter(_ < 4, i => E("error").data("value", i))
+
+5.toMaybe.filter(_ < 4)
+
+5.toMaybe.filter(_ < 4, i => E("error").data("value", i))
+
+5.toMaybe.filter(_ > 4)
+
+5.toMaybe.filter(_ > 4, i => E("error").data("value", i))
+
 /************************************/
 /* Constructing a Maybe from Option */
 /************************************/
