@@ -37,16 +37,12 @@ public class PeopleRepository implements Repository<Person, PersonDTO> {
 
     @Override public Maybe<Person> create(PersonDTO personDTO) {
         return Maybe.catching(
-            () -> {
-                Person person = personDTO.toPerson();
-                jpa.save(person);
-                return person;
-            },
-            t -> Errors.database
-                       .message("Cannot create person!")
-                       .cause(t)
-                       .data("name", personDTO.getName())
-                       .data("age",  personDTO.getAge())
+            () -> jpa.save(personDTO.toPerson()),
+            t  -> Errors.database
+                        .message("Cannot create person!")
+                        .cause(t)
+                        .data("name", personDTO.getName())
+                        .data("age",  personDTO.getAge())
         );
     }
 
