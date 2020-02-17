@@ -15,12 +15,13 @@ It consists of different modules for different needs. You can find details, inst
 
 1. [Modules](#modules)
 2. [Installation](#installation)
-3. [Development and Testing](#development-and-testing)
-4. [Documentation](#documentation)
-5. [Dependencies](#dependencies)
-6. [Releases](#releases)
-7. [Contributing](#contributing)
-8. [License](#license)
+3. [Examples and Use Cases](#examples-and-use-cases)
+4. [Development and Testing](#development-and-testing)
+5. [Documentation](#documentation)
+6. [Dependencies](#dependencies)
+7. [Releases](#releases)
+8. [Contributing](#contributing)
+9. [License](#license)
 
 ## Modules
 
@@ -78,6 +79,10 @@ dependencies {
 }
 ```
 
+## Examples and Use Cases
+
+There are some example projects using e and some documented use cases where e can be helpful. You can find them in [examples](examples) folder.
+
 ## Development and Testing
 
 e is built with SBT. You can use `clean`, `compile`, `test` tasks for development and testing.
@@ -92,7 +97,7 @@ Versions of Scala, SBT, plugins and external dependencies are kept up-to-date by
 
 ## Releases
 
-e packages are published to Maven Central and they are versioned according to [semantic versioning](https://semver.org). Release process is managed by [sbt-release](https://github.com/sbt/sbt-release). 
+e packages are published to Maven Central and they are versioned according to [semantic versioning](https://semver.org). Release process is managed by [sbt-release](https://github.com/sbt/sbt-release).
 
 ## Contributing
 
