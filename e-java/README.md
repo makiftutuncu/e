@@ -167,23 +167,23 @@ Optional<Integer> valueOpt2 = maybe2.valueOptional();
 /* Mapping a Maybe */
 /*******************/
 
-Maybe<Integer> mapped1 = new E("error").toMaybe<Integer>().map(i => i * 2);
+Maybe<Integer> mapped1 = new E("error").toMaybe<Integer>().map(i -> i * 2);
 // {"name":"error"}
 
-Maybe<Integer> mapped2 = Maybe.success(5).map(i => i * 2);
+Maybe<Integer> mapped2 = Maybe.success(5).map(i -> i * 2);
 // 10
 
 /************************/
 /* Flat mapping a Maybe */
 /************************/
 
-Maybe<Integer> flatMapped1 = new E("error").toMaybe<Integer>().flatMap(i => Maybe.success(i * 2));
+Maybe<Integer> flatMapped1 = new E("error").toMaybe<Integer>().flatMap(i -> Maybe.success(i * 2));
 // {"name":"error"}
 
-Maybe<Boolean> flatMapped2 = Maybe.success(5).flatMap(i => new E("error").toMaybe<Boolean>())
+Maybe<Boolean> flatMapped2 = Maybe.success(5).flatMap(i -> new E("error").toMaybe<Boolean>())
 // {"name":"error"}
 
-Maybe<String> flatMapped3 = Maybe.success(5).flatMap(i => Maybe.success<String>((i * 2).toString()))
+Maybe<String> flatMapped3 = Maybe.success(5).flatMap(i -> Maybe.success<String>((i * 2).toString()))
 // 10
 
 /*******************/
@@ -218,6 +218,22 @@ Maybe<String> alternative2 = Maybe.success("test").orElse(new E("error1").toMayb
 
 Maybe<Integer> alternative3 = new E("error1").toMaybe<Integer>().orElse(Maybe.success(0));
 // 0
+
+/*******************************************************/
+/* Ignoring previous value and moving to another Maybe */
+/*******************************************************/
+
+Maybe<Integer> andThen1 = new E("error").toMaybe<Integer>().andThen(() -> Maybe.success(5));
+// {"name":"error"}
+
+Maybe<Integer> andThen2 = new E("error-1").toMaybe<Integer>().andThen(() -> new E("error-2").toMaybe<Integer>())
+// {"name":"error-1"}
+
+Maybe<Integer> andThen3 = Maybe.success(5).andThen(() -> new E("error").toMaybe<Integer>())
+// {"name":"error"}
+
+Maybe<String> andThen4 = Maybe.success("test-1").andThen(() -> Maybe.success<String>("test-2"))
+// test-2
 
 ```
 

@@ -44,6 +44,7 @@ sealed abstract class Maybe[+A](private val either: Either[E, A]) { self =>
 
   def foreach[U](f: A => U): Unit =
     self match {
+      case Maybe.Failure(_)     => ()
       case Maybe.Success(value) => f(value)
     }
 

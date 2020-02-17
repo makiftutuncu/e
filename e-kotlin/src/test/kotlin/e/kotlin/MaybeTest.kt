@@ -153,6 +153,17 @@ object MaybeTest {
         assertEquals("test-1".toMaybe(),            maybe3.orElse { maybe4 })
     }
 
+    @Test fun `test ignoring value and moving to another Maybe`() {
+        val maybe1 = E("test").toMaybe<String>()
+        val maybe2 = "test-1".toMaybe()
+        val maybe3 = "test-2".toMaybe()
+
+        assertEquals(maybe1, maybe1.andThen { E("test-2").toMaybe<String>() })
+        assertEquals(maybe1, maybe1.andThen { "test".toMaybe() })
+        assertEquals(maybe1, maybe2.andThen { maybe1 })
+        assertEquals(maybe3, maybe2.andThen { maybe3 })
+    }
+
     @Test fun `test equality`() {
         val e1 = E("test-name")
         val e2 = E(message = "Test Message")

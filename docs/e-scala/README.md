@@ -170,6 +170,18 @@ E("error1").toMaybe[Int] orElse  "default".toMaybe
 
 "test-1".toMaybe orElse "test-2".toMaybe
 
+/*******************************************************/
+/* Ignoring previous value and moving to another Maybe */
+/*******************************************************/
+
+E("error1").toMaybe[Int] andThen E("error2").toMaybe[Int]
+
+E("error1").toMaybe[Int] andThen "default".toMaybe
+
+"test".toMaybe andThen E("error").toMaybe[String]
+
+"test-1".toMaybe andThen "test-2".toMaybe
+
 /************************************/
 /* Constructing a Maybe from Option */
 /************************************/

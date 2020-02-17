@@ -89,6 +89,17 @@ class MaybeSpec extends AnyWordSpec with Matchers {
       (maybe3 orElse maybe4) shouldBe "test-1".toMaybe
     }
 
+    "be moved to another Maybe, ignoring its value" in {
+      val maybe1: Maybe[String] = E("test").toMaybe
+      val maybe2: Maybe[String] = "test-1".toMaybe
+      val maybe3: Maybe[String] = "test-2".toMaybe
+
+      (maybe1 andThen E("test-2").toMaybe) shouldBe maybe1
+      (maybe1 andThen "test".toMaybe)      shouldBe maybe1
+      (maybe2 andThen maybe1)              shouldBe maybe1
+      (maybe2 andThen maybe3)              shouldBe maybe3
+    }
+
     "be compared for equality" in {
       val maybe1: Maybe[String] = E("test-1").toMaybe
       val maybe2: Maybe[String] = E("test-1").toMaybe

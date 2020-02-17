@@ -185,6 +185,22 @@ E("error1").toMaybe<Int>().orElse { "default".toMaybe() }
 "test-1".toMaybe().orElse { "test-2".toMaybe() }
 // "test-1"
 
+/*******************************************************/
+/* Ignoring previous value and moving to another Maybe */
+/*******************************************************/
+
+E("error").toMaybe<Int>().andThen { E("error2").toMaybe<Int>() }
+// {"name":"error"}
+
+E("error1").toMaybe<Int>().andThen { "default".toMaybe() }
+// {"name":"error1"}
+
+"test".toMaybe().andThen { E("error").toMaybe<String>() }
+// {"name":"error"}
+
+"test-1".toMaybe().andThen { "test-2".toMaybe() }
+// test-2
+
 /****************************************/
 /* Constructing a Maybe from a nullable */
 /****************************************/
