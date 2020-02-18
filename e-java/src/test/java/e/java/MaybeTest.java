@@ -103,6 +103,28 @@ public class MaybeTest {
         assertEquals(maybe2.valueOptional().orElse(""), "test");
     }
 
+    @Test void testConstructingFromOptional() {
+        E e = new E("test");
+
+        Maybe<String> maybe1 = Maybe.fromOptional(null, () -> e);
+
+        assertFalse(maybe1.isSuccess());
+        assertEquals(maybe1.eOptional(), Optional.of(e));
+        assertFalse(maybe1.valueOptional().isPresent());
+
+        Maybe<String> maybe2 = Maybe.fromOptional(Optional.empty(), () -> e);
+
+        assertFalse(maybe2.isSuccess());
+        assertEquals(maybe2.eOptional(), Optional.of(e));
+        assertFalse(maybe2.valueOptional().isPresent());
+
+        Maybe<String> maybe3 = Maybe.fromOptional(Optional.of("test"), () -> e);
+
+        assertTrue(maybe3.isSuccess());
+        assertFalse(maybe3.eOptional().isPresent());
+        assertEquals(maybe3.valueOptional().orElse(""), "test");
+    }
+
     @Test void testMapping() {
         Maybe<String> maybe1 = Maybe.failure(new E("test"));
         Maybe<String> maybe2 = Maybe.success("test");
