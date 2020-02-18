@@ -5,6 +5,7 @@ You can find some example projects featuring e under this directory.
 | Project                             | Link                     |
 | ----------------------------------- | ------------------------ |
 | Spring Boot project written in Java | [Link](e-spring-example) |
+| http4s project written in Scala     | [Link](e-http4s-example) |
 | Ktor project written in Kotlin      | [Link](e-ktor-example)   |
 
 Here are some general uses cases of e that are also implemented in these example projects.
