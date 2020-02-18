@@ -432,6 +432,36 @@ Maybe.catchingMaybe(c => E().cause(c)) { "test".toMaybe }
 // res74: Maybe[String] = Success("test")
 ```
 
+`Maybe` can be used in for-comprehensions since it defines `map`, `flatMap`, `withFilter` and `foreach`.
+
+```scala
+import e.scala._
+import e.scala.implicits._
+
+def find(id: Int): Maybe[String] =
+  id match {
+    case 1 => "1".toMaybe
+    case 2 => "2".toMaybe
+    case _ => E("not-found").toMaybe[String]
+  }  
+
+def convert(s: String): Maybe[Int] =
+  for {
+    s      <- Maybe.catching(t => E("invalid").cause(t)) { s.toInt }
+    result  = s * 2
+  } yield {
+    result
+  }
+
+for {
+  s <- find(2)
+  r <- convert(s) if r < 5
+} {
+  println(r)
+}
+// 4
+```
+
 ## Encoder
 
 [`Encoder[OUT]`](src/main/scala/e/scala/Codec.scala) provides encode functionality such that given `E` can be converted to another value of type `OUT`. There is [`JsonStringEncoder`](src/main/scala/e/scala/JsonStringEncoder.scala) as a default `Encoder[String]` implementation.

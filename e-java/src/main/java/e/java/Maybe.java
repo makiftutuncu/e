@@ -72,6 +72,10 @@ public class Maybe<A> {
         return value == null ? new Failure<>(ifNull.get()) : new Success<>(value);
     }
 
+    public static <A> Maybe<A> fromOptional(Optional<A> optional, Supplier<E> ifEmpty) {
+        return optional == null || !optional.isPresent() ? new Failure<>(ifEmpty.get()) : new Success<>(optional.get());
+    }
+
     public boolean isSuccess() {
         return e == null;
     }

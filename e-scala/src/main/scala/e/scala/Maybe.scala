@@ -62,6 +62,8 @@ sealed abstract class Maybe[+A](private val either: Either[E, A]) { self =>
       case Maybe.Success(value) if predicate(value)  => value.toMaybe
     }
 
+  def withFilter(predicate: A => Boolean): Maybe[A] = filter(predicate)
+
   def handleErrorWith[AA >: A](f: PartialFunction[E, Maybe[AA]]): Maybe[AA] =
     self match {
       case Maybe.Failure(e) if f.isDefinedAt(e) => f(e)

@@ -141,6 +141,19 @@ Maybe<String> maybe8 = Maybe.nullable(null, () -> new E("null-value"));
 Maybe<String> maybe9 = Maybe.nullable("test", () -> new E("null-value"));
 // test
 
+/**************************************/
+/* Constructing a Maybe from Optional */
+/**************************************/
+
+Maybe<String> maybe10 = Maybe.fromOptional(null, () -> new E("empty"));
+// {"name":"empty"}
+
+Maybe<String> maybe11 = Maybe.fromOptional(Optional.empty(), () -> new E("empty"));
+// {"name":"empty"}
+
+Maybe<String> maybe12 = Maybe.fromOptional(Optional.of("test"), () -> new E("empty"));
+// test
+
 /*******************************/
 /* Checking content of a Maybe */
 /*******************************/

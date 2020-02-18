@@ -311,7 +311,35 @@ Maybe.catchingMaybe(c => E().cause(c)) { throw new Exception() }
 Maybe.catchingMaybe(c => E().cause(c)) { E().toMaybe[String] }
 
 Maybe.catchingMaybe(c => E().cause(c)) { "test".toMaybe }
+```
 
+`Maybe` can be used in for-comprehensions since it defines `map`, `flatMap`, `withFilter` and `foreach`.
+
+```scala mdoc
+import e.scala._
+import e.scala.implicits._
+
+def find(id: Int): Maybe[String] =
+  id match {
+    case 1 => "1".toMaybe
+    case 2 => "2".toMaybe
+    case _ => E("not-found").toMaybe[String]
+  } 
+
+def convert(s: String): Maybe[Int] =
+  for {
+    s      <- Maybe.catching(t => E("invalid").cause(t)) { s.toInt }
+    result  = s * 2
+  } yield {
+    result
+  }
+
+for {
+  s <- find(2)
+  r <- convert(s) if r < 5
+} {
+  println(r)
+}
 ```
 
 ## Encoder
