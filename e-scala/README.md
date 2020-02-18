@@ -477,13 +477,13 @@ import e.scala.implicits._
 /*******************************/
 
 val encoder: Encoder[String] = JsonStringEncoder
-// encoder: Encoder[String] = e.scala.JsonStringEncoder$@1c0f73b1
+// encoder: Encoder[String] = e.scala.JsonStringEncoder$@43051483
 
 encoder.encode(E())
-// res75: String = "{}"
+// res76: String = "{}"
 
 encoder.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), Map("test" -> "data")))
-// res76: String = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":3,\"cause\":\"Test Cause\",\"data\":{\"test\":\"data\"}}"
+// res77: String = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":3,\"cause\":\"Test Cause\",\"data\":{\"test\":\"data\"}}"
 
 /******************************************************/
 /* Custom CSV-like encoder for demonstration purposes */
@@ -494,15 +494,15 @@ val csv: Encoder[String] = { e: E =>
      |"${e.name}","${e.message}","${e.code}"
    """.stripMargin
 }
-// csv: Encoder[String] = repl.Session$App$$anonfun$159@7a50eca
+// csv: Encoder[String] = repl.Session$App$$anonfun$161@3a827b3e
 
 csv.encode(E())
-// res77: String = """"name","message","code"
+// res78: String = """"name","message","code"
 // "","","0"
 //    """
 
 csv.encode(E("test-name", "Test Message", 3, Some(new Exception("Test Cause")), Map("test" -> "data")))
-// res78: String = """"name","message","code"
+// res79: String = """"name","message","code"
 // "test-name","Test Message","3"
 //    """
 ```
@@ -549,16 +549,16 @@ val csvDecoder: Decoder[String] = new Decoder[String] {
   private def unescape(s: String): String =
     if (s.startsWith("\"") && s.endsWith("\"")) s.drop(1).dropRight(1) else s
 }
-// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@1540a76
+// csvDecoder: Decoder[String] = repl.Session$App$$anon$1@144e0035
 
 val result1 = csvDecoder.decode("foo")
 // result1: DecodingResult[E] = {"name":"decoding-failure","message":"Input did not have 2 rows!"}
 
 result1.isSuccess
-// res79: Boolean = false
+// res80: Boolean = false
 
 result1.get
-// res80: E = E(
+// res81: E = E(
 //   "decoding-failure",
 //   "Input did not have 2 rows!",
 //   0,
@@ -574,10 +574,10 @@ val result2 = csvDecoder.decode(
 // result2: DecodingResult[E] = {"name":"test-name","message":"Test Message","code":1}
 
 result2.isSuccess
-// res81: Boolean = true
+// res82: Boolean = true
 
 result2.get
-// res82: E = E("test-name", "Test Message", 1, None, Map())
+// res83: E = E("test-name", "Test Message", 1, None, Map())
 
 val either1 = csvDecoder.decodeEither("foo")
 // either1: Either[E, E] = Left(
@@ -585,7 +585,7 @@ val either1 = csvDecoder.decodeEither("foo")
 // )
 
 either1.isLeft
-// res83: Boolean = true
+// res84: Boolean = true
 
 val either2 = csvDecoder.decodeEither(
   """"name","message","code"
@@ -597,7 +597,7 @@ val either2 = csvDecoder.decodeEither(
 // )
 
 either2.isRight
-// res84: Boolean = true
+// res85: Boolean = true
 ```
 
 ## Codec
