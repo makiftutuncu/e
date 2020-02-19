@@ -1,8 +1,8 @@
 package dev.akif.ehttp4sexample.people
 
 import cats.effect.IO
-import dev.akif.ehttp4sexample.common.Service
-import e.scala.{E, Maybe}
+import dev.akif.ehttp4sexample.common.{Errors, Service}
+import dev.akif.ehttp4sexample.common.implicits._
 import e.scala.implicits._
 
 class PeopleService(val peopleRepository: PeopleRepository) extends Service[IO, Person, CreatePerson, UpdatePerson] {
@@ -11,7 +11,7 @@ class PeopleService(val peopleRepository: PeopleRepository) extends Service[IO, 
   override def get(id: Long): IO[Person] =
     for {
       personOpt <- peopleRepository.get(id)
-      person    <- personOpt.toMaybe(E("db", "Person not found", 404)).toIO
+      person    <- personOpt.toMaybe(Errors.notFound.message("Person is not found!")).toIO
     } yield {
       person
     }
@@ -21,12 +21,4 @@ class PeopleService(val peopleRepository: PeopleRepository) extends Service[IO, 
   override def update(id: Long, update: UpdatePerson): IO[Person] = peopleRepository.update(id, update)
 
   override def delete(id: Long): IO[Person] = peopleRepository.delete(id)
-
-  implicit class MaybeIOExtensions[A](private val maybe: Maybe[A]) {
-    def toIO: IO[A] =
-      maybe.fold[IO[A]](
-        e => IO.raiseError(e.toException()),
-        a => IO.pure(a)
-      )
-  }
 }

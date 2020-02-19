@@ -1,15 +1,20 @@
 package dev.akif.ehttp4sexample
 
+import cats.data.Kleisli
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits._
-import dev.akif.ehttp4sexample.common.Controller
+import dev.akif.ehttp4sexample.common.Errors.EAsException
+import dev.akif.ehttp4sexample.common.{Controller, Errors}
 import dev.akif.ehttp4sexample.people.{PeopleController, PeopleRepository, PeopleService}
 import doobie.util.transactor.Transactor
+import e.circe.implicits.circeEncoderE
+import e.scala.E
 import org.flywaydb.core.Flyway
-import org.http4s.Http
-import org.http4s.implicits._
+import org.http4s.circe.jsonEncoderOf
+import org.http4s.headers.`Content-Type`
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s._
 
 object Main extends IOApp {
   val db: Transactor[IO] = {
@@ -36,7 +41,25 @@ object Main extends IOApp {
       new PeopleController(peopleService)
     )
 
-  val app: Http[IO, IO] = Router(controllers.map(c => c.path -> c.route):_*).orNotFound
+  val app: Http[IO, IO] =
+    Kleisli { request =>
+      val routes = Router(controllers.map(c => c.path -> c.route): _*)
+
+      routes.run(request).getOrElse {
+        val e = Errors.notFound
+                      .message("Requested resource is not found!")
+                      .data("method" -> request.method.name)
+                      .data("uri"    -> request.uri)
+
+        eToResponse(e)
+      }.redeem(
+        {
+          case EAsException(e) => eToResponse(e)
+          case t               => eToResponse(Errors.unexpected.message("An unexpected error occurred!").cause(t))
+        },
+        identity
+      )
+    }
 
   def run(args: List[String]): IO[ExitCode] =
     BlazeServerBuilder[IO].bindHttp(8080, "localhost")
@@ -44,4 +67,12 @@ object Main extends IOApp {
                           .resource
                           .use(_ => IO.never)
                           .as(ExitCode.Success)
+
+  private def eToResponse(e: E): Response[IO] = {
+    val status  = Status.fromInt(e.code).getOrElse(Status.InternalServerError)
+    val headers = Headers.of(`Content-Type`(MediaType.application.json))
+    val entity  = jsonEncoderOf[IO, E].toEntity(e)
+
+    Response(status, headers = headers, body = entity.body)
+  }
 }

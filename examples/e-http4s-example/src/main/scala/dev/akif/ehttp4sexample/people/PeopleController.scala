@@ -2,10 +2,15 @@ package dev.akif.ehttp4sexample.people
 
 import cats.effect.IO
 import dev.akif.ehttp4sexample.common.Controller
+import io.circe.{Decoder, Encoder}
 import org.http4s.dsl.io._
-import org.http4s.{HttpRoutes, Response}
+import org.http4s.{EntityDecoder, EntityEncoder, HttpRoutes, Response}
+import org.http4s.circe.{jsonEncoderOf, jsonOf}
 
 class PeopleController(val peopleService: PeopleService) extends Controller[IO]("/people") {
+  implicit def entityDecoder[A: Decoder]: EntityDecoder[IO, A] = jsonOf[IO, A]
+  implicit def entityEncoder[A: Encoder]: EntityEncoder[IO, A] = jsonEncoderOf[IO, A]
+
   override val route: HttpRoutes[IO] =
     HttpRoutes.of[IO] {
       case           GET    -> Root               => getAll
