@@ -1,0 +1,7 @@
+GET     /ping   dev.akif.eplayexample.PingController.ping
+
+GET     /people         dev.akif.eplayexample.people.PeopleController.getAll
+POST    /people         dev.akif.eplayexample.people.PeopleController.create
+GET     /people/:id     dev.akif.eplayexample.people.PeopleController.get(id: Long)
+PUT     /people/:id     dev.akif.eplayexample.people.PeopleController.update(id: Long)
+DELETE  /people/:id     dev.akif.eplayexample.people.PeopleController.delete(id: Long)

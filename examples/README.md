@@ -2,17 +2,20 @@
 
 You can find some example projects featuring e under this directory.
 
-| Project                             | Link                     |
-| ----------------------------------- | ------------------------ |
-| Spring Boot project written in Java | [Link](e-spring-example) |
-| http4s project written in Scala     | [Link](e-http4s-example) |
-| Ktor project written in Kotlin      | [Link](e-ktor-example)   |
+| Project                                          | Link                     |
+| ------------------------------------------------ | ------------------------ |
+| Spring Boot project written in Java              | [Link](e-spring-example) |
+| Play Framework project written in Scala with ZIO | [Link](e-play-example)   |
+| http4s project written in Scala                  | [Link](e-http4s-example) |
+| Ktor project written in Kotlin                   | [Link](e-ktor-example)   |
 
 Here are some general uses cases of e that are also implemented in these example projects.
 
 ## 1. Eliminating the Need for Exceptions
 
 Exceptions are dangerous and costly. Using them as a means of representing errors is not ideal. To avoid it, one could treat errors as values like any other data in the code. Then we can pass errors around but this is not always trivial.
+
+Here's a good and long discussion on errors as values vs. exceptions: [https://softwareengineering.stackexchange.com/questions/405038](https://softwareengineering.stackexchange.com/questions/405038)
 
 e provides `E` type for treating errors as data and `Maybe` type for wrapping other values that can potentially fail. They both have friendly APIs and by using them, you can leave the exceptions to actual exceptional cases.
 
