@@ -57,7 +57,7 @@ class ESpec extends AnyWordSpec with Matchers {
     "include message" in {
       val e = E("test-name", "Test Message")
 
-      val expected = new Exception("Test Message")
+      val expected = new Exception(e.toString)
       val actual   = e.toException()
 
       actual.getMessage shouldBe expected.getMessage
@@ -67,7 +67,7 @@ class ESpec extends AnyWordSpec with Matchers {
     "include message and cause" in {
       val e = E("test-name", "Test Message").cause(cause)
 
-      val expected = new Exception("Test Message", cause)
+      val expected = new Exception(e.toString, cause)
       val actual   = e.toException()
 
       actual.getMessage shouldBe expected.getMessage

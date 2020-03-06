@@ -63,7 +63,7 @@ object ETest {
     @Test fun `test converting to exception`() {
         val e1 = E("test-name", "Test Message")
 
-        val expected1 = Exception("Test Message")
+        val expected1 = Exception(e1.toString())
         val actual1   = e1.toException()
 
         assertEquals(expected1.message, actual1.message)
@@ -71,7 +71,7 @@ object ETest {
 
         val e2 = e1.cause(cause)
 
-        val expected2 = Exception("Test Message", cause)
+        val expected2 = Exception(e2.toString(), cause)
         val actual2   = e2.toException()
 
         assertEquals(expected2.message, actual2.message)
