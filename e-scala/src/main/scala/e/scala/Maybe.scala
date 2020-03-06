@@ -114,19 +114,22 @@ object Maybe {
 
   def fromTry[A](t: Try[A], ifFailure: Throwable => E): Maybe[A] =
     t match {
-      case TryFailure(t) => Failure(ifFailure(t))
-      case TrySuccess(a) => Success(a)
+      case TryFailure(EException(e)) => Failure(e)
+      case TryFailure(t)             => Failure(ifFailure(t))
+      case TrySuccess(a)             => Success(a)
     }
 
   def catching[A](ifFailure: Throwable => E)(f: => A): Maybe[A] =
     Try(f) match {
-      case TryFailure(t) => Failure(ifFailure(t))
-      case TrySuccess(a) => Success(a)
+      case TryFailure(EException(e)) => Failure(e)
+      case TryFailure(t)             => Failure(ifFailure(t))
+      case TrySuccess(a)             => Success(a)
     }
 
   def catchingMaybe[A](ifFailure: Throwable => E)(f: => Maybe[A]): Maybe[A] =
     Try(f) match {
-      case TryFailure(t)     => Failure(ifFailure(t))
-      case TrySuccess(maybe) => maybe
+      case TryFailure(EException(e)) => Failure(e)
+      case TryFailure(t)             => Failure(ifFailure(t))
+      case TrySuccess(maybe)         => maybe
     }
 }

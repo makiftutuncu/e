@@ -55,6 +55,8 @@ public class Maybe<A> {
     public static <A> Maybe<A> catching(ThrowingSupplier<A> action, Function<Throwable, E> ifFailure) {
         try {
             return new Success<>(action.get());
+        } catch (EException ee) {
+            return new Failure<>(ee.e);
         } catch (Throwable t) {
             return new Failure<>(ifFailure.apply(t));
         }
@@ -63,6 +65,8 @@ public class Maybe<A> {
     public static <A> Maybe<A> catchingMaybe(ThrowingSupplier<Maybe<A>> action, Function<Throwable, E> ifFailure) {
         try {
             return action.get();
+        } catch (EException ee) {
+            return new Failure<>(ee.e);
         } catch (Throwable t) {
             return new Failure<>(ifFailure.apply(t));
         }

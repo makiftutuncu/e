@@ -73,6 +73,12 @@ object MaybeTest {
         assertTrue(maybe2.isSuccess())
         assertEquals(maybe2.value, "test")
         assertNull(maybe2.e)
+
+        val maybe3: Maybe<String> = Maybe.catching({ throw EException(e) }, { cause -> E().cause(cause) })
+
+        assertFalse(maybe3.isSuccess())
+        assertNull(maybe3.value)
+        assertEquals(maybe3.e, e)
     }
 
     @Test fun `test constructing by catching Maybe`() {
@@ -95,6 +101,12 @@ object MaybeTest {
         assertTrue(maybe3.isSuccess())
         assertEquals(maybe3.value, "test")
         assertNull(maybe3.e)
+
+        val maybe4: Maybe<String> = Maybe.catchingMaybe({ throw EException(e) }, { cause -> E().cause(cause) })
+
+        assertFalse(maybe4.isSuccess())
+        assertNull(maybe4.value)
+        assertEquals(maybe4.e, e)
     }
 
     @Test fun `test mapping a Maybe`() {

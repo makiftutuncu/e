@@ -63,6 +63,12 @@ public class MaybeTest {
         assertTrue(maybe2.isSuccess());
         assertFalse(maybe2.eOptional().isPresent());
         assertEquals(maybe2.valueOptional().orElse(""), "test");
+
+        Maybe<String> maybe3 = Maybe.catching(() -> { throw new EException(e); }, t -> new E().cause(t));
+
+        assertFalse(maybe3.isSuccess());
+        assertEquals(maybe3.eOptional(), Optional.of(e));
+        assertFalse(maybe3.valueOptional().isPresent());
     }
 
     @Test void testConstructingByCatchingMaybe() {
@@ -85,6 +91,12 @@ public class MaybeTest {
         assertTrue(maybe3.isSuccess());
         assertFalse(maybe3.eOptional().isPresent());
         assertEquals(maybe3.valueOptional().orElse(""), "test");
+
+        Maybe<String> maybe4 = Maybe.catchingMaybe(() -> { throw new EException(e); }, t -> new E().cause(t));
+
+        assertFalse(maybe4.isSuccess());
+        assertEquals(maybe4.eOptional(), Optional.of(e));
+        assertFalse(maybe4.valueOptional().isPresent());
     }
 
     @Test void testConstructingByNullable() {
