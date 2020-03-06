@@ -109,6 +109,8 @@ sealed class Maybe<A>(open val e: E?, open val value: A?) {
         fun <A> catching(action: () -> A, ifFailure: (Throwable) -> E): Maybe<A> =
             try {
                 success(action())
+            } catch (ee: EException) {
+                failure(ee.e)
             } catch (t: Throwable) {
                 failure(ifFailure(t))
             }
@@ -116,6 +118,8 @@ sealed class Maybe<A>(open val e: E?, open val value: A?) {
         fun <A> catchingMaybe(action: () -> Maybe<A>, ifFailure: (Throwable) -> E): Maybe<A> =
             try {
                 action()
+            } catch (ee: EException) {
+                failure(ee.e)
             } catch (t: Throwable) {
                 failure(ifFailure(t))
             }

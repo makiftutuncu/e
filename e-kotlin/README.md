@@ -55,6 +55,7 @@ val errorContainsInput = E(data = mapOf("input" to "test")).data()["input"] != n
 /*************************************************************/
 
 E(message = "test").toException()
+// {"message":"test"}
 
 /*******************************************************/
 /* Converting E to a Maybe, for returning stuff (safe) */

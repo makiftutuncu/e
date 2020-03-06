@@ -239,6 +239,13 @@ class MaybeSpec extends AnyWordSpec with Matchers {
       TryFailure[String](cause).toMaybe(c => E().cause(c))        shouldBe E().cause(cause).toMaybe[String]
     }
 
+    "produce a failure Maybe when it is Failure with an EException in it" in {
+      val e = E("test")
+
+      Maybe.fromTry(TryFailure[String](EException(e)), c => E().cause(c)) shouldBe e.toMaybe[String]
+      TryFailure[String](EException(e)).toMaybe(c => E().cause(c))        shouldBe e.toMaybe[String]
+    }
+
     "produce a success Maybe when it is Success" in {
       Maybe.fromTry(TrySuccess[String]("test"), c => E().cause(c)) shouldBe "test".toMaybe
       TrySuccess[String]("test").toMaybe(c => E().cause(c))        shouldBe "test".toMaybe
@@ -246,6 +253,12 @@ class MaybeSpec extends AnyWordSpec with Matchers {
   }
 
   "Constructing a Maybe by catching lambda" should {
+    "produce a failure Maybe when an EException is thrown" in {
+      val e = E("test")
+
+      Maybe.catching(c => E().cause(c)) { throw EException(e) } shouldBe e.toMaybe[String]
+    }
+
     "produce a failure Maybe when an exception is thrown" in {
       val cause = new Exception()
 
@@ -258,6 +271,12 @@ class MaybeSpec extends AnyWordSpec with Matchers {
   }
 
   "Constructing a Maybe by catching Maybe lambda" should {
+    "produce a failure Maybe when an EException is thrown" in {
+      val e = E("test")
+
+      Maybe.catchingMaybe(c => E().cause(c)) { throw EException(e) } shouldBe e.toMaybe[String]
+    }
+
     "produce a failure Maybe when an exception is thrown" in {
       val cause = new Exception()
 

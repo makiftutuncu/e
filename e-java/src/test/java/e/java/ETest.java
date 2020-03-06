@@ -71,7 +71,7 @@ public class ETest {
     @Test void testConvertingToException() {
         E e1 = new E("test-name", "Test Message", 1);
 
-        Exception expected1 = new Exception("Test Message");
+        Exception expected1 = new Exception(e1.toString());
         Exception actual1   = e1.toException();
 
         assertEquals(expected1.getMessage(), actual1.getMessage());
@@ -79,7 +79,7 @@ public class ETest {
 
         E e2 = e1.cause(cause);
 
-        Exception expected2 = new Exception("Test Message", cause);
+        Exception expected2 = new Exception(e2.toString(), cause);
         Exception actual2   = e2.toException();
 
         assertEquals(expected2.getMessage(), actual2.getMessage());

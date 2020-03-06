@@ -80,8 +80,8 @@ public final class E extends AbstractE<Throwable, Map<String, String>>  {
         return !data().isEmpty();
     }
 
-    @Override public Exception toException() {
-        return new Exception(message(), cause());
+    @Override public EException toException() {
+        return new EException(this);
     }
 
     public <A> Maybe<A> toMaybe() {

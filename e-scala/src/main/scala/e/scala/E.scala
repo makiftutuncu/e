@@ -20,7 +20,7 @@ final case class E(override val name: String = "",
 
   override def hasData: Boolean = data.nonEmpty
 
-  override def toException: Exception = new Exception(message, cause.orNull)
+  override def toException: EException = EException(this)
 
   def toMaybe[A]: Maybe[A] = Maybe.failure(this)
 

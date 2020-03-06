@@ -19,7 +19,7 @@ data class E(private val name: String = "",
 
     override fun hasData(): Boolean = data.isNotEmpty()
 
-    override fun toException(): Exception = Exception(message(), cause())
+    override fun toException(): EException = EException(this)
 
     fun <A> toMaybe(): Maybe<A> = Maybe.failure(this)
 

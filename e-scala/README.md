@@ -77,7 +77,7 @@ val errorContainsInput = E(data = Map("input" -> "test")).data.get("input").isDe
 /*************************************************************/
 
 E(message = "test").toException
-// res5: Exception = java.lang.Exception: test
+// res5: EException = e.scala.EException: {"message":"test"}
 
 /*******************************************************/
 /* Converting E to a Maybe, for returning stuff (safe) */

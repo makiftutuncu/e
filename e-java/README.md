@@ -60,7 +60,8 @@ boolean errorContainsInput = new E().data("input", "test").data().get("input") !
 /* Converting E to an Exception, for throwing stuff (unsafe) */
 /*************************************************************/
 
-Excpetion ex = new E("test", "Test").toException();
+EExcpetion ex = new E("test", "Test").toException();
+// {"name":"test","message":"Test"}
 
 /*******************************************************/
 /* Converting E to a Maybe, for returning stuff (safe) */
