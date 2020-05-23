@@ -1,14 +1,9 @@
-package e.circe
+package e
 
-import e.circe.implicits._
-import e.scala.E
-import e.scala.implicits._
-import io.circe._
-import io.circe.syntax._
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import munit.FunSuite
 
-class CirceSpec extends AnyWordSpec with Matchers {
+class CirceTest extends FunSuite {
+  /*
   "Decoding using Codec" should {
     "fail when input is not a JsonObject" in {
       val json = Json.arr(1.asJson, 2.asJson)
@@ -153,4 +148,5 @@ class CirceSpec extends AnyWordSpec with Matchers {
       actual shouldBe expected.toString
     }
   }
+  */
 }

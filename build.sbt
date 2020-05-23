@@ -14,11 +14,11 @@ scmInfo              in ThisBuild := Some(ScmInfo(url("https://github.com/makift
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-java`, `e-scala`, `e-kotlin`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .aggregate(`e-core`, `e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
 
 lazy val `e-docs` = project
   .in(file("e-docs"))
-  .dependsOn(`e-core`, `e-java`, `e-scala`, `e-kotlin`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .dependsOn(`e-core`, `e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
   .enablePlugins(MdocPlugin)
   .settings(Settings.scalaSettings)
   .settings(Settings.mdocSettings)
@@ -27,20 +27,9 @@ lazy val `e-core` = project
   .in(file("e-core"))
   .settings(Settings.javaSettings)
 
-lazy val `e-java` = project
-  .in(file("e-java"))
-  .dependsOn(`e-core`)
-  .settings(Settings.javaSettings)
-
-lazy val `e-scala` = project
-  .in(file("e-scala"))
-  .dependsOn(`e-core`)
-  .settings(Settings.scalaSettings)
-
-lazy val `e-kotlin` = project
-  .in(file("e-kotlin"))
-  .dependsOn(`e-core`)
-  .settings(Settings.kotlinSettings)
+lazy val `e-scala`  = project.in(file("e-scala")).settings(Settings.scalaSettings)
+lazy val `e-kotlin` = project.in(file("e-kotlin")).dependsOn(`e-core`).settings(Settings.kotlinSettings)
+lazy val `e-java`   = project.in(file("e-java")).dependsOn(`e-core`).settings(Settings.javaSettings)
 
 lazy val `e-circe` = project
   .in(file("e-circe"))
@@ -63,16 +52,6 @@ lazy val `e-play-json` = project
     )
   )
 
-lazy val `e-gson` = project
-  .in(file("e-gson"))
-  .dependsOn(`e-java`)
-  .settings(Settings.javaSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      Dependencies.gson
-    )
-  )
-
 lazy val `e-zio` = project
   .in(file("e-zio"))
   .dependsOn(`e-scala`)
@@ -80,6 +59,16 @@ lazy val `e-zio` = project
   .settings(
     libraryDependencies ++= Seq(
       Dependencies.zio
+    )
+  )
+
+lazy val `e-gson` = project
+  .in(file("e-gson"))
+  .dependsOn(`e-java`)
+  .settings(Settings.javaSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      Dependencies.gson
     )
   )
 
@@ -110,8 +99,8 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("e-core/publishSigned"),
-  releaseStepCommandAndRemaining("e-java/publishSigned"),
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
+  releaseStepCommandAndRemaining("e-java/publishSigned"),
   releaseStepCommandAndRemaining("e-kotlin/publishSigned"),
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
