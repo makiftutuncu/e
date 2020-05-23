@@ -1,14 +1,9 @@
-package e.zio
+package e
 
-import e.scala.E
-import e.zio.implicits._
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import zio.Exit.{Failure, Success}
-import zio.internal.PlatformLive
-import zio.{Cause, ZIO, Runtime => ZIORuntime}
+import munit.FunSuite
 
-class ZIOSpec extends AnyWordSpec with Matchers {
+class ZIOSpec extends FunSuite {
+  /*
   type Divider = (Int, Int) => MaybeZ[Int]
 
   def divide(a: Int, b: Int): MaybeZ[Int] =
@@ -57,4 +52,5 @@ class ZIOSpec extends AnyWordSpec with Matchers {
       test(divide(6, 2), 3)
     }
   }
+  */
 }

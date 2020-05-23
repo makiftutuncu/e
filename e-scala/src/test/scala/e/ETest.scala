@@ -1,10 +1,9 @@
-package e.scala
+package e
 
-import e.AbstractE
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import munit.FunSuite
 
-class ESpec extends AnyWordSpec with Matchers {
+class ETest extends FunSuite {
+  /*
   val cause = new Exception("Test Exception")
   val data  = Map("test" -> "data")
 
@@ -121,4 +120,5 @@ class ESpec extends AnyWordSpec with Matchers {
       E("test-name", "Test Message", 1, Some(cause), data).hashCode() shouldBe e.hashCode
     }
   }
+   */
 }
