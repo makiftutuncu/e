@@ -4,12 +4,14 @@ import scala.reflect.ClassTag
 import scala.util.{Try, Failure => TryFailure, Success => TrySuccess}
 
 /**
- * A container that can either contain an E or a value, semantically same as Either but specialized for E
+ * A container that can either be a Failure containing an E or Success containing a value,
+ * semantically a combination of Either and Try but specialized for E
  *
  * @tparam A Type of the value this EOr can contain
  *
  * @see [[e.E]]
  * @see [[scala.util.Either]]
+ * @see [[scala.util.Try]]
  */
 sealed trait EOr[+A] { self =>
   import EOr.{Failure, Success}
@@ -155,7 +157,7 @@ sealed trait EOr[+A] { self =>
    * @return This EOr of a new EOr containing an E computed by given conversion function
    */
   def filter(condition: A => Boolean,
-             filteredError: A => E = { a => EOr.filteredError.data("value" -> a) }): A or E =
+             filteredError: A => E = { a => EOr.filteredError.data("value", a) }): A or E =
     self match {
       case Failure(_)     => self
       case Success(value) => if (condition(value)) value.orE else filteredError(value).as[A]
@@ -204,8 +206,9 @@ sealed trait EOr[+A] { self =>
 
   override def equals(other: Any): Boolean =
     other match {
-      case that: EOr[_] => this.error == that.error && this.value == that.value
-      case _            => false
+      case Failure(e) => fold(_ == e,     _ => false)
+      case Success(a) => fold(_ => false, _ == a)
+      case _          => false
     }
 
   override def hashCode(): Int =
@@ -222,14 +225,14 @@ sealed trait EOr[+A] { self =>
 }
 
 object EOr {
-  private final case class Failure(e: E) extends (Nothing or E)
+  sealed abstract case class Failure(e: E) extends (Nothing or E)
 
-  private final case class Success[+A](a: A) extends (A or E)
+  sealed abstract case class Success[+A](a: A) extends (A or E)
 
   /**
    * A successful EOr of type Unit
    */
-  val unit: Unit or E = Success(())
+  val unit: Unit or E = new Success(()) {}
 
   /**
    * A default E to be used when condition does not hold while filtering an EOr
@@ -247,7 +250,7 @@ object EOr {
    *
    * @return A new failed EOr containing given E
    */
-  def apply[A](e: E): A or E = Failure(e)
+  def apply[A](e: E): A or E = new Failure(e) {}
 
   /**
    * Constructs a successful EOr containing given value
@@ -258,25 +261,33 @@ object EOr {
    *
    * @return A new failed EOr containing given value
    */
-  def apply[A](a: A): A or E = Success(a)
+  def apply[A](a: A): A or E = new Success(a) {}
 
   /**
    * Deconstructs given EOr for pattern matching against its E
    *
    * @param eor An EOr
    *
-   * @return Some E or None if given EOr has value
+   * @return Some Failure or None if given EOr has value
    */
-  def unapply(eor: Nothing or E): Option[E] = eor.error
+  def unapply(eor: Nothing or E): Option[Failure] =
+    eor match {
+      case f: Failure => Some(f)
+      case _          => None
+    }
 
   /**
    * Deconstructs given EOr for pattern matching against its value
    *
    * @param eor An EOr
    *
-   * @return Some value or None if given EOr has E
+   * @return Some Success or None if given EOr has E
    */
-  def unapply[A: ClassTag](eor: A or E): Option[A] = eor.value
+  def unapply[A: ClassTag](eor: A or E): Option[Success[A]] =
+    eor match {
+      case s: Success[A] => Some(s)
+      case _             => None
+    }
 
   /**
    * Constructs an EOr from an [[scala.Option]]
@@ -290,8 +301,8 @@ object EOr {
    */
   def fromOption[A](option: Option[A], ifNone: => E): A or E =
     option match {
-      case None    => Failure(ifNone)
-      case Some(a) => Success(a)
+      case None    => apply(ifNone)
+      case Some(a) => apply(a)
     }
 
   /**
@@ -307,8 +318,8 @@ object EOr {
    */
   def fromEither[L, R](either: Either[L, R], ifLeft: L => E): R or E =
     either match {
-      case Left(l)  => Failure(ifLeft(l))
-      case Right(r) => Success(r)
+      case Left(l)  => apply(ifLeft(l))
+      case Right(r) => apply(r)
     }
 
   /**
@@ -323,8 +334,8 @@ object EOr {
    */
   def fromTry[A](`try`: Try[A], ifFailure: Throwable => E): A or E =
     `try` match {
-      case TryFailure(EException(e)) => Failure(e)
-      case TryFailure(t)             => Failure(ifFailure(t))
-      case TrySuccess(a)             => Success(a)
+      case TryFailure(EException(e)) => apply(e)
+      case TryFailure(t)             => apply(ifFailure(t))
+      case TrySuccess(a)             => apply(a)
     }
 }

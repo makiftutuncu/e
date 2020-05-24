@@ -1,292 +1,274 @@
 package e
 
-import munit.FunSuite
+import e.test.ESuite
+import org.scalacheck.Prop.forAll
 
-class EOrTest extends FunSuite {
-  /*
-  "A Maybe" can {
-    "have failure" in {
-      val maybe1: Maybe[String] = Maybe.failure(E("test"))
+import scala.util.Try
 
-      maybe1.isSuccess shouldBe false
-      maybe1.eOpt      shouldBe Some(E("test"))
-      maybe1.valueOpt  shouldBe None
+class EOrTest extends ESuite {
+  property("Constructing an EOr") {
+    EOr.unit.assertValue(Some(()))
 
-      val maybe2: Maybe[String] = E("test").toMaybe[String]
-
-      maybe2.isSuccess shouldBe false
-      maybe2.eOpt      shouldBe Some(E("test"))
-      maybe2.valueOpt  shouldBe None
+    forAll { e: E =>
+      EOr[String](e).assertError(e)
+      e.as[String].assertError(e)
     }
 
-    "have value" in {
-      val maybe1: Maybe[String] = Maybe.success("test")
-
-      maybe1.isSuccess shouldBe true
-      maybe1.eOpt      shouldBe None
-      maybe1.valueOpt  shouldBe Some("test")
-
-      val maybe2: Maybe[String] = "test".toMaybe
-
-      maybe2.isSuccess shouldBe true
-      maybe2.eOpt      shouldBe None
-      maybe2.valueOpt  shouldBe Some("test")
+    forAll { string: String =>
+      EOr[String](string).assertValue(string)
+      string.orE.assertValue(string)
     }
 
-    "be unit" in {
-      val maybe: Maybe[Unit] = Maybe.unit
+    forAll { option: Option[String] =>
+      val none = E.name("None")
 
-      maybe.isSuccess shouldBe true
-      maybe.eOpt      shouldBe None
-      maybe.valueOpt  shouldBe Some(())
+      val eor1 = EOr.fromOption(option, none)
+      option.fold(eor1.assertError(none))(s => eor1.assertValue(s))
+
+      val eor2 = option.orE(none)
+      assertEquals(eor1, eor2)
     }
 
-    "be mapped" in {
-      val maybe1: Maybe[String] = E("test").toMaybe
-      val maybe2: Maybe[String] = "test".toMaybe
+    forAll { either: Either[Int, String] =>
+      val toE = { i: Int => E.code(i) }
 
-      maybe1.map(_.toUpperCase) shouldBe E("test").toMaybe
-      maybe2.map(_.toUpperCase) shouldBe "TEST".toMaybe
+      val eor1 = EOr.fromEither(either, toE)
+      either.fold(i => eor1.assertError(toE(i)), s => eor1.assertValue(s))
+
+      val eor2 = either.orE(toE)
+      assertEquals(eor1, eor2)
     }
 
-    "be flat mapped" in {
-      val maybe1: Maybe[String] = E("test-1").toMaybe
-      val maybe2: Maybe[String] = "test".toMaybe
+    forAll { `try`: Try[String] =>
+      val toE = { t: Throwable => E.message(t.getMessage) }
 
-      maybe1.flatMap(s => s.toUpperCase.toMaybe) shouldBe E("test-1").toMaybe
-      maybe2.flatMap(_ => E("test-2").toMaybe)          shouldBe E("test-2").toMaybe
-      maybe2.flatMap(s => s.toUpperCase.toMaybe) shouldBe "TEST".toMaybe
+      val eor1 = EOr.fromTry(`try`, toE)
+      `try`.fold(t => eor1.assertError(toE(t)), s => eor1.assertValue(s))
+
+      val eor2 = `try`.orE(toE)
+      assertEquals(eor1, eor2)
     }
 
-    "folded" in {
-      val maybe1: Maybe[String] = E("test-name").toMaybe
-      val maybe2: Maybe[String] = "test".toMaybe
+    forAll { ex: Exception =>
+      val toE = { t: Throwable => E.message(t.getMessage) }
 
-      maybe1.fold(_.name, identity) shouldBe "test-name"
-      maybe2.fold(_.name, identity) shouldBe "test"
-    }
+      lazy val s: String = throw ex
 
-    "get with a default value" in {
-      val maybe1: Maybe[String] = E("test").toMaybe
-      val maybe2: Maybe[String] = "test".toMaybe
-
-      maybe1.getOrElse("default") shouldBe "default"
-      maybe2.getOrElse("default") shouldBe "test"
-    }
-
-    "be replaced with an alternative" in {
-      val maybe1: Maybe[String] = E("test-1").toMaybe
-      val maybe2: Maybe[String] = E("test-2").toMaybe
-      val maybe3: Maybe[String] = "test-1".toMaybe
-      val maybe4: Maybe[String] = "test-2".toMaybe
-
-      (maybe1 orElse maybe2) shouldBe E("test-2").toMaybe
-      (maybe1 orElse maybe3) shouldBe "test-1".toMaybe
-      (maybe3 orElse maybe1) shouldBe "test-1".toMaybe
-      (maybe3 orElse maybe4) shouldBe "test-1".toMaybe
-    }
-
-    "be moved to another Maybe, ignoring its value" in {
-      val maybe1: Maybe[String] = E("test").toMaybe
-      val maybe2: Maybe[String] = "test-1".toMaybe
-      val maybe3: Maybe[String] = "test-2".toMaybe
-
-      (maybe1 andThen E("test-2").toMaybe) shouldBe maybe1
-      (maybe1 andThen "test".toMaybe)      shouldBe maybe1
-      (maybe2 andThen maybe1)              shouldBe maybe1
-      (maybe2 andThen maybe3)              shouldBe maybe3
-    }
-
-    "be filtered" in {
-      val maybe1 = E("error").toMaybe[Int]
-      val maybe2 = 5.toMaybe
-
-      maybe1.filter(_ < 4)                                       shouldBe maybe1
-      maybe1.filter(_ < 4, i => E("error-2").data("value" -> i)) shouldBe maybe1
-      maybe2.filter(_ < 4)                                       shouldBe E("predicate-failed", "Value did not satisfy predicate!").data("value" -> 5).toMaybe[Int]
-      maybe2.filter(_ < 4, i => E("error-2").data("value" -> i)) shouldBe E("error-2").data("value" -> 5).toMaybe[Int]
-      maybe2.filter(_ > 4)                                       shouldBe maybe2
-      maybe2.filter(_ > 4, i => E("error-2").data("value" -> i)) shouldBe maybe2
-    }
-
-    "be used to perform side effect" in {
-      val sb1 = new StringBuilder
-      val sb2 = new StringBuilder
-
-      E("error").toMaybe[String].foreach(s => sb1.append(s))
-      "test".toMaybe.foreach(s => sb2.append(s))
-
-      sb1.toString() shouldBe ""
-      sb2.toString() shouldBe "test"
-    }
-
-    "be handled with another Maybe" in {
-      val maybe1 = E("error-1").toMaybe[Int]
-      val maybe2 = E().toMaybe[Int]
-      val maybe3 = 5.toMaybe
-
-      maybe1.handleErrorWith { case _ => maybe2 } shouldBe maybe2
-      maybe1.handleErrorWith { case _ => maybe3 } shouldBe maybe3
-
-      maybe1.handleErrorWith { case e if e.hasName => 0.toMaybe } shouldBe 0.toMaybe
-      maybe1.handleErrorWith { case e if e.hasName => maybe2 }    shouldBe maybe2
-      maybe2.handleErrorWith { case e if e.hasName => 0.toMaybe } shouldBe maybe2
-      maybe2.handleErrorWith { case e if e.hasName => maybe1 }    shouldBe maybe2
-
-      maybe3.handleErrorWith { case _ => maybe2 }                 shouldBe maybe3
-      maybe3.handleErrorWith { case _ => 0.toMaybe }              shouldBe maybe3
-      maybe3.handleErrorWith { case e if e.hasName => maybe2 }    shouldBe maybe3
-      maybe3.handleErrorWith { case e if e.hasName => 0.toMaybe } shouldBe maybe3
-    }
-
-    "be handled" in {
-      val maybe1 = E("error-1").toMaybe[Int]
-      val maybe2 = E().toMaybe[Int]
-      val maybe3 = 5.toMaybe
-
-      maybe1.handleError { case _ => 0 } shouldBe 0.toMaybe
-
-      maybe1.handleError { case e if e.hasName => 0 } shouldBe 0.toMaybe
-      maybe2.handleError { case e if e.hasName => 0 } shouldBe maybe2
-
-      maybe3.handleError { case _ => 0 }              shouldBe maybe3
-      maybe3.handleError { case e if e.hasName => 0 } shouldBe maybe3
-    }
-
-    "be compared for equality" in {
-      val maybe1: Maybe[String] = E("test-1").toMaybe
-      val maybe2: Maybe[String] = E("test-1").toMaybe
-      val maybe3: Maybe[String] = E("test-2").toMaybe
-      val maybe4: Maybe[String] = "test".toMaybe
-      val maybe5: Maybe[String] = "test".toMaybe
-      val maybe6: Maybe[String] = "TEST".toMaybe
-
-      maybe1 shouldBe maybe2
-      maybe1 should not be maybe3
-      maybe1 should not be maybe4
-
-      maybe4 shouldBe maybe5
-      maybe4 should not be maybe6
-      maybe4 should not be maybe1
-    }
-
-    "have hash code" in {
-      val maybe1: Maybe[String] = E("test-1").toMaybe
-      val maybe2: Maybe[String] = E("test-1").toMaybe
-      val maybe3: Maybe[String] = E("test-2").toMaybe
-      val maybe4: Maybe[String] = "test".toMaybe
-      val maybe5: Maybe[String] = "test".toMaybe
-      val maybe6: Maybe[String] = "TEST".toMaybe
-
-      maybe1.hashCode shouldBe maybe2.hashCode
-      maybe1.hashCode should not be maybe3.hashCode
-      maybe1.hashCode should not be maybe4.hashCode
-
-      maybe4.hashCode shouldBe maybe5.hashCode
-      maybe4.hashCode should not be maybe6.hashCode
-      maybe4.hashCode should not be maybe1.hashCode
-    }
-
-    "be converted to a String" in {
-      val maybe1: Maybe[String] = E("test").toMaybe
-      val maybe2: Maybe[String] = "test".toMaybe
-
-      maybe1.toString shouldBe """{"name":"test"}"""
-      maybe2.toString shouldBe "test"
+      s.catching(toE).assertError(E.message(ex.getMessage))
     }
   }
 
-  "Constructing a Maybe from an Option" should {
-    "produce a failure Maybe when it is None" in {
-      Maybe.fromOption(Option.empty[String], E("test")) shouldBe E("test").toMaybe[String]
-      Option.empty[String].toMaybe(E("test"))           shouldBe E("test").toMaybe[String]
-    }
+  property("Mapping an EOr") {
+    val failed = E.name("failed")
 
-    "produce a success Maybe when it is Some" in {
-      Maybe.fromOption(Option[String]("test"), E("test")) shouldBe "test".toMaybe
-      Option[String]("test").toMaybe(E("test"))           shouldBe "test".toMaybe
+    failed.as[Int].map(_.toString).assertError(failed)
+
+    forAll { i: Int =>
+      i.orE.map(_.toString).assertValue(i.toString)
     }
   }
 
-  "Constructing a Maybe from an Either" should {
-    "produce a failure Maybe when it is Left" in {
-      Maybe.fromEither[Int, String](Left(1), i => E(code = i)) shouldBe E(code = 1).toMaybe[String]
-      Left[Int, String](1).toMaybe(i => E(code = i))           shouldBe E(code = 1).toMaybe[String]
-    }
+  property("Flat mapping an EOr") {
+    val failed1 = E.name("failed1")
+    val failed2 = E.name("failed2")
 
-    "produce a success Maybe when it is Right" in {
-      Maybe.fromEither[Int, String](Right("test"), i => E(code = i)) shouldBe "test".toMaybe
-      Right[Int, String]("test").toMaybe(i => E(code = i))           shouldBe "test".toMaybe
-    }
+    failed1.as[Int].flatMap(_ => failed2.as[String]).assertError(failed1)
+    failed1.as[Int].flatMap(_.toString.orE).assertError(failed1)
 
-    "produce a Maybe when Left of it is already an E" in {
-      val maybe1: Maybe[String] = Left[E, String](E("test"))
-      val maybe2: Maybe[String] = Right[E, String]("test")
-
-      maybe1 shouldBe E("test").toMaybe
-      maybe2 shouldBe "test".toMaybe
+    forAll { i: Int =>
+      i.orE.flatMap(_ => failed2.as[String]).assertError(failed2)
+      i.orE.flatMap(_.toString.orE).assertValue(i.toString)
     }
   }
 
-  "Constructing a Maybe from a Try" should {
-    "produce a failure Maybe when it is Failure" in {
-      val cause = new Exception()
+  property("Folding an EOr") {
+    val e1 = E.empty
+    val e2 = E.code(1)
 
-      Maybe.fromTry(TryFailure[String](cause), c => E().cause(c)) shouldBe E().cause(cause).toMaybe[String]
-      TryFailure[String](cause).toMaybe(c => E().cause(c))        shouldBe E().cause(cause).toMaybe[String]
-    }
+    assertEquals(e1.as[Int].fold[String](_.code.fold("")(_.toString), _.toString), "")
+    assertEquals(e2.as[Int].fold[String](_.code.fold("")(_.toString), _.toString), "1")
 
-    "produce a failure Maybe when it is Failure with an EException in it" in {
-      val e = E("test")
-
-      Maybe.fromTry(TryFailure[String](EException(e)), c => E().cause(c)) shouldBe e.toMaybe[String]
-      TryFailure[String](EException(e)).toMaybe(c => E().cause(c))        shouldBe e.toMaybe[String]
-    }
-
-    "produce a success Maybe when it is Success" in {
-      Maybe.fromTry(TrySuccess[String]("test"), c => E().cause(c)) shouldBe "test".toMaybe
-      TrySuccess[String]("test").toMaybe(c => E().cause(c))        shouldBe "test".toMaybe
+    forAll { i: Int =>
+      assertEquals(i.orE.fold[String](_.code.fold("")(_.toString), _.toString), i.toString)
     }
   }
 
-  "Constructing a Maybe by catching lambda" should {
-    "produce a failure Maybe when an EException is thrown" in {
-      val e = E("test")
+  property("Getting value of an EOr or a default value") {
+    val e = E.code(1)
 
-      Maybe.catching(c => E().cause(c)) { throw EException(e) } shouldBe e.toMaybe[String]
-    }
+    assertEquals(e.as[String].getOrElse(""), "")
 
-    "produce a failure Maybe when an exception is thrown" in {
-      val cause = new Exception()
-
-      Maybe.catching(c => E().cause(c)) { throw cause } shouldBe E().cause(cause).toMaybe[String]
-    }
-
-    "produce a success Maybe when a value is produced" in {
-      Maybe.catching(c => E().cause(c)) { "test" } shouldBe "test".toMaybe
+    forAll { s: String =>
+      assertEquals(s.orE.getOrElse(""), s)
     }
   }
 
-  "Constructing a Maybe by catching Maybe lambda" should {
-    "produce a failure Maybe when an EException is thrown" in {
-      val e = E("test")
+  property("Getting an EOr or an alternative one on error") {
+    val e1 = E.code(1)
+    val e2 = E.code(2)
 
-      Maybe.catchingMaybe(c => E().cause(c)) { throw EException(e) } shouldBe e.toMaybe[String]
-    }
+    (e1.as[String] orElse e2.as[String]).assertError(e2)
 
-    "produce a failure Maybe when an exception is thrown" in {
-      val cause = new Exception()
-
-      Maybe.catchingMaybe(c => E().cause(c)) { throw cause } shouldBe E().cause(cause).toMaybe[String]
-    }
-
-    "produce a success Maybe when a failure Maybe is produced" in {
-      Maybe.catchingMaybe(c => E().cause(c)) { E().toMaybe[String] } shouldBe E().toMaybe[String]
-    }
-
-    "produce a success Maybe when a success Maybe is produced" in {
-      Maybe.catchingMaybe(c => E().cause(c)) { "test".toMaybe } shouldBe "test".toMaybe
+    forAll { s: String =>
+      (s.orE orElse e2.as[String]).assertValue(s)
+      (e1.as[String] orElse s.orE).assertValue(s)
     }
   }
-   */
+
+  property("Getting an EOr or a next one on value") {
+    val e1 = E.code(1)
+    val e2 = E.code(2)
+
+    (e1.as[String] andThen e2.as[String]).assertError(e1)
+
+    forAll { (s: String, i: Int) =>
+      (e1.as[String] andThen s.orE).assertError(e1)
+      (s.orE andThen e2.as[String]).assertError(e2)
+      (s.orE andThen i.orE).assertValue(i)
+    }
+  }
+
+  property("Performing side-effect on an EOr") {
+    val e = E.code(1)
+    var counter = 0
+    var previous = 0
+
+    e.as[String].foreach { _ => previous = counter; counter = previous + 1 }
+    assertEquals(counter, 0)
+    assertEquals(previous, 0)
+
+    forAll { s: String =>
+      s.orE.foreach { _ => previous = counter; counter = previous + 1 }
+      assertEquals(counter, previous + 1)
+    }
+  }
+
+  property("Filtering an EOr") {
+    val e = E.code(1)
+    val negative = E.name("negative")
+
+    e.as[Int].filter(_ > 0).assertError(e)
+    e.as[Int].filter(_ > 0, _ => negative).assertError(e)
+
+    forAll { i: Int =>
+      val eor1 = i.orE.filter(_ > 0)
+      if (i > 0) {
+        eor1.assertValue(i)
+      } else {
+        eor1.assertError(EOr.filteredError.data("value", i))
+      }
+
+      val eor2 = i.orE.filter(_ > 0, _ => negative)
+      if (i > 0) {
+        eor2.assertValue(i)
+      } else {
+        eor2.assertError(negative)
+      }
+    }
+  }
+
+  property("Filtering an EOr with default error") {
+    val e = E.code(1)
+
+    e.as[Int].withFilter(_ > 0).assertError(e)
+
+    forAll { i: Int =>
+      val eor1 = i.orE.withFilter(_ > 0)
+      if (i > 0) {
+        eor1.assertValue(i)
+      } else {
+        eor1.assertError(EOr.filteredError.data("value", i))
+      }
+    }
+  }
+
+  property("Handling error in an EOr") {
+    val e1 = E.code(1)
+    val e2 = E.code(2)
+
+    val handler: PartialFunction[E, String] = {
+      case E(Some(1), _, _, _, _, _) => "handled"
+    }
+
+    e1.as[String].handle(handler).assertValue("handled")
+    e2.as[String].handle(handler).assertError(e2)
+
+    forAll { s: String =>
+      s.orE.handle(handler).assertValue(s)
+    }
+  }
+
+  property("Handling error in an EOr with another EOr") {
+    val e1 = E.code(1)
+    val e2 = E.code(2)
+    val e3 = E.code(3)
+    val e4 = E.code(4)
+
+    val handler: PartialFunction[E, String or E] = {
+      case E(Some(1), _, _, _, _, _) => "handled".orE
+      case E(Some(2), _, _, _, _, _) => e3.as[String]
+    }
+
+    e1.as[String].handleWith(handler).assertValue("handled")
+    e2.as[String].handleWith(handler).assertError(e3)
+    e4.as[String].handleWith(handler).assertError(e4)
+
+    forAll { s: String =>
+      s.orE.handleWith(handler).assertValue(s)
+    }
+  }
+
+  property("Equality and hash code of EOr") {
+    val eor1 = "test1".orE
+    val eor2 = "test2".orE
+
+    assertEquals(eor1, "test1".orE)
+    assertEquals(eor1.hashCode(), "test1".orE.hashCode())
+
+    assertNotEquals(eor1, eor2)
+    assertNotEquals(eor1.hashCode(), eor2.hashCode())
+
+    forAll { (code: Int, name: String, message: String, causes: List[E], data: Map[String, String], time: Long) =>
+      val e1 = E(Some(code), Some(name), Some(message), causes, data, Some(time))
+
+      val differentEs = List(
+        e1.copy(code = None),
+        e1.code(code + 1),
+        e1.copy(name = None),
+        e1.name(name + "foo"),
+        e1.copy(message = None),
+        e1.message(message + "bar"),
+        e1.copy(causes = List(E.empty)),
+        e1.cause(E.empty),
+        e1.copy(data = Map("foo" -> "bar")),
+        e1.data("foo", "bar"),
+        e1.copy(time = None),
+        e1.now
+      )
+
+      differentEs.foreach { e2 =>
+        val eor3 = e1.as[String]
+        val eor4 = e2.as[String]
+
+        assertNotEquals(eor3, eor1)
+        assertNotEquals(eor3.hashCode(), eor1.hashCode())
+
+        assertNotEquals(eor4, eor1)
+        assertNotEquals(eor4.hashCode(), eor1.hashCode())
+
+        assertNotEquals(eor3, eor4)
+        assertNotEquals(eor3.hashCode(), eor4.hashCode())
+      }
+    }
+  }
+
+  property("Converting an EOr to String") {
+    forAll { e: E =>
+      assertEquals(e.as[String].toString, e.toString)
+    }
+
+    forAll { i: Int =>
+      assertEquals(i.orE.toString, i.toString)
+    }
+  }
 }
