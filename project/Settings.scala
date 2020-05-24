@@ -50,7 +50,8 @@ object Settings {
     testFrameworks += new TestFramework("munit.Framework"),
 
     libraryDependencies ++= Seq(
-      Dependencies.mUnit
+      Dependencies.mUnit,
+      Dependencies.mUnitScalaCheck
     )
   )
 

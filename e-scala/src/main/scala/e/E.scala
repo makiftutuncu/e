@@ -17,17 +17,6 @@ final case class E(code: Option[Int]         = None,
                    data: Map[String, String] = Map.empty,
                    time: Option[Long]        = None) {
   /**
-   * A trace of this error and its causes, like the stack trace of an [[java.lang.Exception]]
-   *
-   * {{{
-   *   val e = E(name = Some("error1"), causes = List(E(name = Some("error2")), E(name = Some("error3"))))
-   *
-   *   e.trace // List("error1", "error2", "error3")
-   * }}}
-   */
-  lazy val trace: List[String] = causes.foldLeft(List(toString))(_ :+ _.toString)
-
-  /**
    * Constructs an E containing given code
    *
    * @param c A code
@@ -120,7 +109,7 @@ final case class E(code: Option[Int]         = None,
    *
    * @see [[System#currentTimeMillis]]
    */
-  def now(): E = copy(time = Some(System.currentTimeMillis))
+  def now: E = copy(time = Some(System.currentTimeMillis))
 
   /**
    * Constructs an E adding given cause if condition holds
@@ -163,6 +152,33 @@ final case class E(code: Option[Int]         = None,
   val hasTime: Boolean = time.isDefined
 
   /**
+   * A trace of this error and its causes as a String, like the stack trace of an [[java.lang.Exception]]
+   *
+   * {{{
+   *   val e = E(name = Some("error1"), causes = List(E(name = Some("error2")), E(name = Some("error3"))))
+   *
+   *   // error1
+   *   //   error2
+   *   //   error3
+   *   e.trace
+   * }}}
+   *
+   * @return Trace String of this E and its causes
+   *
+   * @see [[e.E#toString]]
+   */
+  def trace: String = {
+    def line(e: E, level: Int): String = ("  " * level) + e.toString
+
+    def traverse(e: E, level: Int): List[String] =
+      e.causes.foldLeft(List(line(e, level))) { case (strings, cause) =>
+        strings ++ traverse(cause, level + 1)
+      }
+
+    traverse(this, 0).mkString("\n")
+  }
+
+  /**
    * Converts this E to a failed A or E
    *
    * @tparam A The A type in resulting A or E
@@ -181,10 +197,16 @@ final case class E(code: Option[Int]         = None,
   def toException: EException = EException(this)
 
   override def toString: String = {
-    val codePart           = code.fold("")(c => s"[E-$c] ")
-    val nameAndMessagePart = List(name.getOrElse(""), message.getOrElse("")).filter(_.nonEmpty).mkString(": ")
+    val parts = List(
+      code.map(c => s"E$c").getOrElse(""),
+      name.getOrElse(""),
+      message.getOrElse(""),
+      if (!hasData) "" else data.map { case (k, v) => s"$k -> $v" }.mkString("[", ", ", "]")
+    ).filter(_.nonEmpty)
 
-    s"$codePart$nameAndMessagePart".trim
+    val string = parts.mkString(" | ").trim
+
+    if (string.isEmpty) "[Empty E]" else string
   }
 }
 
@@ -287,7 +309,7 @@ object E {
    *
    * @see [[System#currentTimeMillis]]
    */
-  def now(): E = E(time = Some(System.currentTimeMillis))
+  def now: E = E(time = Some(System.currentTimeMillis))
 
   /**
    * Constructs an E containing given cause if condition holds
