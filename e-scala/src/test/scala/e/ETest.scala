@@ -148,7 +148,7 @@ class ETest extends ESuite {
 
   property("Getting trace of an E") {
     forAll { (e1: E, e2: E, e3: E, e4: E, e5: E, e6: E) =>
-      val e = e1.causes(List(e2, e3.causes(List(e4, e5)), e6))
+      val e = e1.causes(e2, e3.causes(e4, e5), e6)
 
       val expectedTrace =
         s"""$e1

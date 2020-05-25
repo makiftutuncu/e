@@ -53,6 +53,15 @@ final case class E(code: Option[Int]         = None,
   def causes(c: List[E]): E = copy(causes = c)
 
   /**
+   * Constructs an E adding given causes
+   *
+   * @param c Causes as variable arguments
+   *
+   * @return A new E containing causes of this E and given causes
+   */
+  def causes(c: E*): E = copy(causes = c.toList)
+
+  /**
    * Constructs an E adding given cause
    *
    * @param e A cause
@@ -251,6 +260,15 @@ object E {
    * @return A new E containing given causes
    */
   def causes(c: List[E]): E = E(causes = c)
+
+  /**
+   * Constructs an E containing given causes
+   *
+   * @param c Causes as variable arguments
+   *
+   * @return A new E containing given causes
+   */
+  def causes(c: E*): E = E(causes = c.toList)
 
   /**
    * Constructs an E containing given cause

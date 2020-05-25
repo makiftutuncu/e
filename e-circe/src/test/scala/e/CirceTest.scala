@@ -1,152 +1,82 @@
 package e
 
-import munit.FunSuite
+import e.circe.{jsonCodec, _}
+import e.codec._
+import e.test.ESuite
+import io.circe.Json
+import io.circe.syntax._
 
-class CirceTest extends FunSuite {
-  /*
-  "Decoding using Codec" should {
-    "fail when input is not a JsonObject" in {
-      val json = Json.arr(1.asJson, 2.asJson)
+class CirceTest extends ESuite {
+  val codec: Codec[E, Json] = jsonCodec[E]
+  val error: E = Decoder.decodingError
 
-      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
+  test("Failing to decode an E") {
+    codec.decode(Json.arr()).assertError(error.causes(E.message("Expected: JsonObject")))
 
-      val actual = CodecForCirceJson.decode(json).get().cause(None)
+    codec.decode(Json.obj("code" := "foo")).assertError(error.causes(E.name(".code").message("Expected: Int")))
 
-      actual shouldBe expected
-    }
+    codec.decode(Json.obj("name" := 42)).assertError(error.causes(E.name(".name").message("Expected: String")))
 
-    "succeed and decode input into an E" in {
-      val json = Json.obj(
-        "name"    := "test-name",
-        "message" := "Test Message",
-        "code"    := 1,
-        "cause"   := "Test Exception",
-        "data"    := Map("test" -> "data")
-      )
+    codec.decode(Json.obj("message" := 123)).assertError(error.causes(E.name(".message").message("Expected: String")))
 
-      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data")
-      )
+    codec.decode(Json.obj("causes" := "foo")).assertError(error.causes(E.name(".causes").message("Expected: List[E]")))
 
-      val actual = CodecForCirceJson.decode(json).get()
+    codec.decode(Json.obj("data" := "foo")).assertError(error.causes(E.name(".data").message("Expected: Map[String, String]")))
 
-      actual shouldBe expected
-    }
+    codec.decode(Json.obj("time" := "foo")).assertError(error.causes(E.name(".time").message("Expected: Long")))
   }
 
-  "Encoding using Codec" should {
-    "encode an E as Json" in {
-      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
+  test("Decoding an E") {
+    codec.decode(Json.obj()).assertValue(E.empty)
 
-      val expected = Json.obj(
-        "name"    := "test-name",
-        "message" := "Test Message",
-        "code"    := 1,
-        "cause"   := "Test Exception",
-        "data"    := Map("test" -> "data")
-      )
+    val input1 = Json.obj(
+      "code"    := Json.Null,
+      "name"    := Json.Null,
+      "message" := Json.Null,
+      "causes"  := Json.Null,
+      "data"    := Json.Null,
+      "time"    := Json.Null
+    )
+    codec.decode(input1).assertValue(E.empty)
 
-      val actual = CodecForCirceJson.encode(e)
-
-      actual shouldBe expected
-    }
+    val input2 = Json.obj(
+      "code"    := 1,
+      "name"    := "test-name",
+      "message" := "Test Message",
+      "causes"  := List(E.name("cause-1"), E.name("cause-2")),
+      "data"    := Map("foo" -> "bar"),
+      "time"    := 123456789L
+    )
+    val e = E(
+      code    = Some(1),
+      name    = Some("test-name"),
+      message = Some("Test Message"),
+      causes  = List(E.name("cause-1"), E.name("cause-2")),
+      data    = Map("foo" -> "bar"),
+      time    = Some(123456789L)
+    )
+    codec.decode(input2).assertValue(e)
   }
 
-  "Decoding using circe" should {
-    "fail when input is not a JsonObject" in {
-      val json = Json.arr(1.asJson, 2.asJson)
+  test("Encoding an E") {
+    assertEquals(codec.encode(E.empty), Json.obj())
 
-      val expected = E("decoding-failure", "Input is not a Json object!").cause(new Exception("JsonObject")).data("input" -> "[1,2]")
-
-      val actual = json.as[E].left.map(_.getMessage())
-
-      actual shouldBe Left(expected.toString)
-    }
-
-    "succeed and decode input into an E" in {
-      val json = Json.obj(
-        "name"    := "test-name",
-        "message" := "Test Message",
-        "code"    := 1,
-        "cause"   := "Test Exception",
-        "data"    := Map("test" -> "data")
-      )
-
-      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
-
-      val actual = json.as[E]
-
-      actual shouldBe Right(expected)
-    }
+    val e = E(
+      code    = Some(1),
+      name    = Some("test-name"),
+      message = Some("Test Message"),
+      causes  = List(E.name("cause-1"), E.name("cause-2")),
+      data    = Map("foo" -> "bar"),
+      time    = Some(123456789L)
+    )
+    val output = Json.obj(
+      "code"    := 1,
+      "name"    := "test-name",
+      "message" := "Test Message",
+      "causes"  := List(E.name("cause-1"), E.name("cause-2")),
+      "data"    := Map("foo" -> "bar"),
+      "time"    := 123456789L
+    )
+    assertEquals(codec.encode(e), output)
   }
-
-  "Encoding using circe" should {
-    "encode an E as Json" in {
-      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
-
-      val expected = Json.obj(
-        "name"    := "test-name",
-        "message" := "Test Message",
-        "code"    := 1,
-        "cause"   := "Test Exception",
-        "data"    := Map("test" -> "data")
-      )
-
-      val actual = e.asJson
-
-      actual shouldBe expected
-    }
-
-    "encode a failure Maybe as Json" in {
-      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
-
-      val expected = Json.obj(
-        "name"    := "test-name",
-        "message" := "Test Message",
-        "code"    := 1,
-        "cause"   := "Test Exception",
-        "data"    := Map("test" -> "data")
-      )
-
-      val actual = e.toMaybe[String].asJson
-
-      actual shouldBe expected
-    }
-
-    "encode a success Maybe as Json" in {
-      val expected = Json.obj("test" := "data")
-
-      val actual = Map("test" -> "data").toMaybe.asJson
-
-      actual shouldBe expected
-    }
-  }
-
-  "Decoding as Maybe" should {
-    "fail when input is not a JsonObject" in {
-      val json = Json.arr(1.asJson, 2.asJson)
-
-      val expected = E("decoding-failure", "Input is not a Json object!").cause(new Exception("JsonObject")).data("input" -> "[1,2]")
-
-      val actual = json.decodeMaybe(df => E(message = df.getMessage)).eOpt.map(_.toString).getOrElse("")
-
-      actual shouldBe E(message = expected.toString).toString
-    }
-
-    "succeed and decode input into an E" in {
-      val json = Json.obj(
-        "name"    := "test-name",
-        "message" := "Test Message",
-        "code"    := 1,
-        "cause"   := "Test Exception",
-        "data"    := Map("test" -> "data")
-      )
-
-      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
-
-      val actual = json.decodeMaybe(df => E(message = df.getMessage)).valueOpt.map(_.toString).getOrElse("")
-
-      actual shouldBe expected.toString
-    }
-  }
-  */
 }
