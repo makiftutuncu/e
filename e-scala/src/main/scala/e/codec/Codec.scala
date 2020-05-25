@@ -10,7 +10,12 @@ import scala.annotation.implicitNotFound
  * @tparam S Type of source
  * @tparam T Type of target
  */
-@implicitNotFound("No implicit instance is found of type e.codec.Codec[${S}, ${T}]. You may try following:\n\n* Make sure an instance of correct types is in scope (missing import?)\n* Implement an implicit instance yourself\n* Ensure both e.codec.Decoder[${T}, ${S}] and e.codec.Encoder[${S}, ${T}] are in scope and use `Codec.of[${S}, ${T}]`")
+@implicitNotFound(
+  "No implicit instance is found of type e.codec.Codec[${S}, ${T}]. You may try following:\n\n" +
+  "* Make sure an instance of correct types is in scope (missing import?)\n" +
+  "* Implement an implicit instance yourself\n" +
+  "* Ensure both e.codec.Decoder[${T}, ${S}] and e.codec.Encoder[${S}, ${T}] are in scope and use `Codec.of[${S}, ${T}]`"
+)
 trait Codec[S, T] extends Decoder[T, S] with Encoder[S, T]
 
 object Codec {
