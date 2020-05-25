@@ -47,6 +47,16 @@ object Settings {
     scalaVersion       := latestScalaVersion,
     crossScalaVersions := crossCompiledScalaVersions,
 
+    scalacOptions ++= Seq(
+      "-encoding", "utf8"
+      , "-language:implicitConversions"
+      , "-language:higherKinds"
+      , "-Xfatal-warnings"
+      , "-Xlint:unused"
+      , "-Xlint:implicit-not-found"
+//      , "-Vimplicits"
+    ),
+
     testFrameworks += new TestFramework("munit.Framework"),
 
     libraryDependencies ++= Seq(

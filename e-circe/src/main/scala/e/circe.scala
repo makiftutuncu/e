@@ -1,48 +1,28 @@
 package e
 
 import cats.implicits._
-import e.codec.{CodecFor, Decoder, Encoder}
+import e.codec.{CodecFor, Decoder}
 import io.circe.CursorOp.DownField
 import io.circe.{Decoder => CirceDecoder, Encoder => CirceEncoder, _}
 import io.circe.syntax._
 
 object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
-  override implicit def jsonDecoder[A: CirceDecoder]: Decoder[Json, A] = { json: Json =>
-    CirceDecoder[A].decodeAccumulating(HCursor.fromJson(json)).toEither.orE { failuresNel =>
-      val causes = failuresNel.foldLeft(List.empty[E]) {
-        case (causes, failure) =>
-          causes :+ E(
-            name    = Option.when(failure.history.nonEmpty)(CursorOp.opsToPath(failure.history)),
-            message = Some(s"Expected: ${failure.message}")
-          )
-      }
-
-      Decoder.decodingError.causes(causes)
-    }
-  }
-
-  override implicit def jsonEncoder[A: CirceEncoder]: Encoder[A, Json] = { a: A =>
-    CirceEncoder[A].apply(a)
-  }
-
-  implicit val eCirceDecoder: CirceDecoder[E] =
-    CirceDecoder.instance { cursor =>
-      decodeIfObject(cursor) { _ =>
-        (
-          decodeIfExists[Int](cursor, "code"),
-          decodeIfExists[String](cursor, "name"),
-          decodeIfExists[String](cursor, "message"),
-          decodeIfExists[List[E]](cursor, "causes"),
-          decodeIfExists[Map[String, String]](cursor, "data"),
-          decodeIfExists[Long](cursor, "time")
-        ).mapN {
-          case (code, name, message, causes, data, time) =>
-            E(code, name, message, causes.getOrElse(List.empty[E]), data.getOrElse(Map.empty[String, String]), time)
-        }
+  override implicit val eDecoder: CirceDecoder[E] =
+    rootObjectDecoder {
+      (
+        fieldDecoder[Int]("code"),
+        fieldDecoder[String]("name"),
+        fieldDecoder[String]("message"),
+        fieldDecoder[List[E]]("causes"),
+        fieldDecoder[Map[String, String]]("data"),
+        fieldDecoder[Long]("time")
+      ).mapN {
+        case (code, name, message, causes, data, time) =>
+          E(code, name, message, causes.getOrElse(List.empty[E]), data.getOrElse(Map.empty[String, String]), time)
       }
     }
 
-  implicit val eCirceEncoder: CirceEncoder[E] =
+  override implicit val eEncoder: CirceEncoder[E] =
     CirceEncoder.instance { e =>
       Json.obj(
         "code"    := e.code,
@@ -54,36 +34,50 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
       ).dropNullValues
     }
 
-  implicit def eOrCirceDecoder[A: CirceDecoder]: CirceDecoder[A or E] =
-    eCirceDecoder.either(CirceDecoder[A]).map(_.fold(e => e.as[A], a => a.orE))
-
-  implicit def eOrCirceEncoder[A: CirceEncoder]: CirceEncoder[A or E] =
-    CirceEncoder.instance[A or E] { eor =>
-      eor.fold[Json](eCirceEncoder.apply, CirceEncoder[A].apply)
+  override def decode[A](json: Json)(implicit aDecoder: CirceDecoder[A]): A or E =
+    aDecoder.decodeAccumulating(HCursor.fromJson(json)).toEither.orE { failures =>
+      failures.foldLeft(Decoder.decodingError) {
+        case (e, failure) =>
+          e.cause(
+            E(
+              name    = Option.when(failure.history.nonEmpty)(CursorOp.opsToPath(failure.history)),
+              message = Some(failure.message)
+            )
+          )
+      }
     }
 
-  private def decodeIfObject[A: CirceDecoder](cursor: HCursor)(f: JsonObject => CirceDecoder.Result[A]): CirceDecoder.Result[A] =
-    cursor.focus.flatMap(_.asObject) match {
-      case None    => Left(DecodingFailure("JsonObject", List.empty))
-      case Some(j) => f(j)
+  override def encode[A](a: A)(implicit aEncoder: CirceEncoder[A]): Json = aEncoder.apply(a)
+
+  private def rootObjectDecoder[A](decoder: => CirceDecoder[A]): CirceDecoder[A] =
+    CirceDecoder.decodeJson.flatMap[A] { json =>
+      if (!json.isObject) {
+        CirceDecoder.failed(DecodingFailure("Expected: JsonObject", List.empty))
+      } else {
+        decoder
+      }
     }
 
-  private def decodeIfExists[A: CirceDecoder](cursor: HCursor, field: String): CirceDecoder.Result[Option[A]] =
-    cursor.downField(field).focus match {
-      case None =>
-        Right(None)
+  private def fieldDecoder[A](field: String)(implicit aDecoder: CirceDecoder[A]): CirceDecoder[Option[A]] =
+    CirceDecoder.instance { cursor =>
+      cursor.downField(field).focus.filterNot(_.isNull) match {
+        case None =>
+          Right(Option.empty[A])
 
-      case Some(j) =>
-        CirceDecoder[Option[A]].decodeJson(j).fold(
-          df => Left(DecodingFailure(
-            field match {
-              case "causes" => "List[E]"
-              case "data"   => "Map[String, String]"
-              case _        => df.message
-            },
-            List(DownField(field))
-          )),
-          a  => Right(a)
-        )
+        case Some(j) =>
+          CirceDecoder[A].decodeJson(j).fold[CirceDecoder.Result[Option[A]]](
+            failure => Left(
+              DecodingFailure(
+                "Expected: " + (field match {
+                  case "causes" => "List[E]"
+                  case "data"   => "Map[String, String]"
+                  case _        => failure.message
+                }),
+                List(DownField(field))
+              )
+            ),
+            a => Right(Some(a))
+          )
+      }
     }
 }

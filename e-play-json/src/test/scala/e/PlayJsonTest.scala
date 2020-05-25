@@ -1,153 +1,114 @@
 package e
 
-import munit.FunSuite
+import e.codec.Decoder
+import e.playjson._
+import e.test.ESuite
+import play.api.libs.json._
 
-class PlayJsonTest extends FunSuite {
-  /*
-  "Decoding using Codec" should {
-    "fail when input is not a JsObject" in {
-      val json = Json.arr(1, 2)
+class PlayJsonTest extends ESuite {
+  case class TestData(s: String, i: Int)
 
-      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
-
-      val actual = CodecForPlayJson.decodeEither(json)
-
-      actual shouldBe Left(expected)
+  implicit val testDataReads: Reads[TestData] =
+    Reads[TestData] {
+      case j: JsObject => JsSuccess(TestData((j \ "s").asOpt[String].getOrElse(""), (j \ "i").asOpt[Int].getOrElse(0)))
+      case _           => JsError("Expected an object")
     }
 
-    "succeed and decode input into an E" in {
-      val json = Json.obj(
-        "name"    -> "test-name",
-        "message" -> "Test Message",
-        "code"    -> 1,
-        "cause"   -> "Test Exception",
-        "data"    -> Map("test" -> "data")
+  implicit val testDataWrites: Writes[TestData] =
+    Writes[TestData] { testData =>
+      Json.obj(
+        "s" -> testData.s,
+        "i" -> testData.i
       )
-
-      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
-
-      val actual = CodecForPlayJson.decodeEither(json)
-
-      actual shouldBe Right(expected)
     }
+
+  private val eCodec        = codec[E]
+  private val testDataCodec = codec[TestData]
+  private val error         = Decoder.decodingError
+
+  test("Failing to decode an E") {
+    eCodec.decode(Json.arr()).assertError(error.causes(E.name("obj").message("error.expected.jsobject")))
+
+    eCodec.decode(Json.obj("code" -> "foo")).assertError(error.causes(E.name("obj.code").message("error.expected.jsnumber")))
+
+    eCodec.decode(Json.obj("name" -> 42)).assertError(error.causes(E.name("obj.name").message("error.expected.jsstring")))
+
+    eCodec.decode(Json.obj("message" -> 123)).assertError(error.causes(E.name("obj.message").message("error.expected.jsstring")))
+
+    eCodec.decode(Json.obj("causes" -> "foo")).assertError(error.causes(E.name("obj.causes").message("error.expected.jsarray")))
+
+    eCodec.decode(Json.obj("data" -> "foo")).assertError(error.causes(E.name("obj.data").message("error.expected.jsobject")))
+
+    eCodec.decode(Json.obj("time" -> "foo")).assertError(error.causes(E.name("obj.time").message("error.expected.jsnumber")))
+
+    eCodec.decode(Json.obj("code" -> "foo", "name" -> 42)).assertError(error.causes(E.name("obj.code").message("error.expected.jsnumber"), E.name("obj.name").message("error.expected.jsstring")))
   }
 
-  "Encoding using Codec" should {
-    "encode an E as Json" in {
-      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
+  test("Decoding an E") {
+    eCodec.decode(Json.obj()).assertValue(E.empty)
 
-      val expected = Json.obj(
-        "name"    -> "test-name",
-        "message" -> "Test Message",
-        "code"    -> 1,
-        "cause"   -> "Test Exception",
-        "data"    -> Map("test" -> "data")
-      )
+    val input1 = Json.obj(
+      "code"    -> JsNull,
+      "name"    -> JsNull,
+      "message" -> JsNull,
+      "causes"  -> JsNull,
+      "data"    -> JsNull,
+      "time"    -> JsNull
+    )
+    eCodec.decode(input1).assertValue(E.empty)
 
-      val actual = CodecForPlayJson.encode(e)
-
-      actual shouldBe expected
-    }
+    val input2 = Json.obj(
+      "code"    -> 1,
+      "name"    -> "test-name",
+      "message" -> "Test Message",
+      "causes"  -> List(E.name("cause-1"), E.name("cause-2")),
+      "data"    -> Map("foo" -> "bar"),
+      "time"    -> 123456789L
+    )
+    val e = E(
+      code    = Some(1),
+      name    = Some("test-name"),
+      message = Some("Test Message"),
+      causes  = List(E.name("cause-1"), E.name("cause-2")),
+      data    = Map("foo" -> "bar"),
+      time    = Some(123456789L)
+    )
+    eCodec.decode(input2).assertValue(e)
   }
 
-  "Reading using play-json" should {
-    "fail when input is not a JsObject" in {
-      val json = Json.arr(1, 2)
+  test("Encoding an E") {
+    assertEquals(eCodec.encode(E.empty), Json.obj())
 
-      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
-
-      val actual = Try(json.as[E]).failed.map {
-        case jse: JsResultException => jse.errors.head._2.head.message
-      }.getOrElse("")
-
-      actual shouldBe expected.toString
-    }
-
-    "succeed and read input as an E" in {
-      val json = Json.obj(
-        "name"    -> "test-name",
-        "message" -> "Test Message",
-        "code"    -> 1,
-        "cause"   -> "Test Exception",
-        "data"    -> Map("test" -> "data")
-      )
-
-      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
-
-      val actual = json.as[E]
-
-      actual shouldBe expected
-    }
+    val e = E(
+      code    = Some(1),
+      name    = Some("test-name"),
+      message = Some("Test Message"),
+      causes  = List(E.name("cause-1"), E.name("cause-2")),
+      data    = Map("foo" -> "bar"),
+      time    = Some(123456789L)
+    )
+    val output = Json.obj(
+      "code"    -> 1,
+      "name"    -> "test-name",
+      "message" -> "Test Message",
+      "causes"  -> List(E.name("cause-1"), E.name("cause-2")),
+      "data"    -> Map("foo" -> "bar"),
+      "time"    -> 123456789L
+    )
+    assertEquals(eCodec.encode(e), output)
   }
 
-  "Writing using play-json" should {
-    "write an E as Json" in {
-      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
-
-      val expected = Json.obj(
-        "name"    -> "test-name",
-        "message" -> "Test Message",
-        "code"    -> 1,
-        "cause"   -> "Test Exception",
-        "data"    -> Map("test" -> "data")
-      )
-
-      val actual = Json.toJson(e)
-
-      actual shouldBe expected
-    }
-
-    "write a failure Maybe as Json" in {
-      val e = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
-
-      val expected = Json.obj(
-        "name"    -> "test-name",
-        "message" -> "Test Message",
-        "code"    -> 1,
-        "cause"   -> "Test Exception",
-        "data"    -> Map("test" -> "data")
-      )
-
-      val actual = Json.toJson(e.toMaybe[String])
-
-      actual shouldBe expected
-    }
-
-    "write a success Maybe as Json" in {
-      val expected = Json.obj("test" -> "data")
-
-      val actual = Json.toJson(Map("test" -> "data").toMaybe)
-
-      actual shouldBe expected
-    }
+  test("Failing to decode TestData or E") {
+    testDataCodec.decode(Json.arr()).assertError(error.causes(E.name("obj").message("Expected an object")))
   }
 
-  "Reading as Maybe" should {
-    "fail when input is not a JsObject" in {
-      val json = Json.arr(1, 2)
+  test("Decoding a TestData or E") {
+    testDataCodec.decode(Json.obj("foo" -> "bar")).assertValue(TestData("", 0))
 
-      val expected = E("decoding-failure", "Input is not a Json object!").data("input" -> "[1,2]")
-
-      val actual = json.readMaybe(jse => E(message = jse.errors.head._2.head.message)).eOpt.map(_.toString).getOrElse("")
-
-      actual shouldBe E(message = expected.toString).toString
-    }
-
-    "succeed and read input into an E" in {
-      val json = Json.obj(
-        "name"    -> "test-name",
-        "message" -> "Test Message",
-        "code"    -> 1,
-        "cause"   -> "Test Exception",
-        "data"    -> Map("test" -> "data")
-      )
-
-      val expected = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
-
-      val actual = json.readMaybe(jse => E(message = jse.errors.head._2.head.message)).valueOpt.map(_.toString).getOrElse("")
-
-      actual shouldBe expected.toString
-    }
+    testDataCodec.decode(Json.obj("s" -> "foo", "i" -> 42)).assertValue(TestData("foo", 42))
   }
-  */
+
+  test("Encoding a TestData or E") {
+    assertEquals(testDataCodec.encode(TestData("foo", 42)), Json.obj("s" -> "foo", "i" -> 42))
+  }
 }

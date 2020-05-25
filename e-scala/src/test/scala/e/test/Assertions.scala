@@ -46,12 +46,12 @@ trait Assertions { self: munit.Assertions =>
   implicit class EOrAssertions[A](eor: A or E) {
     def assertError(thatE: E): Unit =
       eor match {
-        case Success(a)     => fail(s"EOr did not contain error, it contained value $a")
+        case Success(a)     => fail(s"EOr did not contain error, it contained: $a")
         case Failure(thisE) => assertEquals(thisE, thatE)
       }
 
     def assertValue(thatA: A): Unit = eor match {
-      case Failure(e)     => fail(s"EOr did not contain value, it contained error $e")
+      case Failure(e)     => fail(s"EOr did not contain value, it contained: $e")
       case Success(thisA) => assertEquals(thisA, thatA)
     }
   }
