@@ -81,6 +81,24 @@ class EOrTest extends ESuite {
     }
   }
 
+  property("Mapping error of an EOr") {
+    42.orE.mapError(_.code(1)).assertValue(42)
+
+    forAll { e: E =>
+      e.as[Int].mapError(_.code(1)).assertError(e.code(1))
+    }
+  }
+
+  property("Flat mapping error of an EOr") {
+    42.orE.flatMapError(_.code(1).as[Int]).assertValue(42)
+    42.orE.flatMapError(_ => 43.orE).assertValue(42)
+
+    forAll { e: E =>
+      e.as[Int].flatMapError(_ => 42.orE).assertValue(42)
+      e.as[Int].flatMapError(_.code(1).as[Int]).assertError(e.code(1))
+    }
+  }
+
   property("Folding an EOr") {
     val e1 = E.empty
     val e2 = E.code(1)

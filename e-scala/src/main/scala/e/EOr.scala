@@ -75,6 +75,34 @@ sealed trait EOr[+A] { self =>
     }
 
   /**
+   * Converts E in this, if it exists, using given mapping function to make a new EOr
+   *
+   * @param f E mapping function
+   *
+   * @return This EOr or a new EOr containing computed E if this one has E
+   */
+  def mapError(f: E => E): A or E =
+    self match {
+      case Failure(e) => f(e).as[A]
+      case Success(_) => self
+    }
+
+  /**
+   * Computes a new EOr using E in this, if it exists, with given flat mapping function
+   *
+   * @param f E flat mapping function
+   *
+   * @tparam AA Type of the new value
+   *
+   * @return This EOr or a computed EOr if this one has E
+   */
+  def flatMapError[AA >: A](f: E => AA or E): AA or E =
+    self match {
+      case Failure(e) => f(e)
+      case Success(_) => self
+    }
+
+  /**
    * Folds this into a single value, handling both E and value conversions with given functions
    *
    * @param ifFailure Conversion function for E

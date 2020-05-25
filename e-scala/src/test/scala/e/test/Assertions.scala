@@ -1,5 +1,6 @@
 package e.test
 
+import e.EOr.{Failure, Success}
 import e.{E, or}
 
 trait Assertions { self: munit.Assertions =>
@@ -43,18 +44,15 @@ trait Assertions { self: munit.Assertions =>
   }
 
   implicit class EOrAssertions[A](eor: A or E) {
-    def assertError(e: E): Unit = {
-      assert(eor.isFailure)
-      assert(!eor.isSuccess)
-      assertEquals(eor.error, Some(e))
-      assertEquals(eor.value, None)
-    }
+    def assertError(thatE: E): Unit =
+      eor match {
+        case Success(a)     => fail(s"EOr did not contain error, it contained value $a")
+        case Failure(thisE) => assertEquals(thisE, thatE)
+      }
 
-    def assertValue(a: A): Unit = {
-      assert(!eor.isFailure)
-      assert(eor.isSuccess)
-      assertEquals(eor.error, None)
-      assertEquals(eor.value, Some(a))
+    def assertValue(thatA: A): Unit = eor match {
+      case Failure(e)     => fail(s"EOr did not contain value, it contained error $e")
+      case Success(thisA) => assertEquals(thisA, thatA)
     }
   }
 }

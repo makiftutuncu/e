@@ -33,7 +33,7 @@ lazy val `e-java`   = project.in(file("e-java")).dependsOn(`e-core`).settings(Se
 
 lazy val `e-circe` = project
   .in(file("e-circe"))
-  .dependsOn(`e-scala`)
+  .dependsOn(`e-scala` % "compile->compile;test->test")
   .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -44,7 +44,7 @@ lazy val `e-circe` = project
 
 lazy val `e-play-json` = project
   .in(file("e-play-json"))
-  .dependsOn(`e-scala`)
+  .dependsOn(`e-scala` % "compile->compile;test->test")
   .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -54,7 +54,7 @@ lazy val `e-play-json` = project
 
 lazy val `e-zio` = project
   .in(file("e-zio"))
-  .dependsOn(`e-scala`)
+  .dependsOn(`e-scala` % "compile->compile;test->test")
   .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -64,7 +64,7 @@ lazy val `e-zio` = project
 
 lazy val `e-gson` = project
   .in(file("e-gson"))
-  .dependsOn(`e-java`)
+  .dependsOn(`e-java` % "compile->compile;test->test")
   .settings(Settings.javaSettings)
   .settings(
     libraryDependencies ++= Seq(
