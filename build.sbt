@@ -59,9 +59,13 @@ lazy val `e-zio` = project
   .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
-      Dependencies.zio
-    )
-  )
+      Dependencies.zio,
+      Dependencies.zioTest,
+      Dependencies.zioTestSBT
+    ),
+
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
+)
 
 lazy val `e-gson` = project
   .in(file("e-gson"))

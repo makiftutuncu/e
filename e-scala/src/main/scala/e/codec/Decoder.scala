@@ -13,7 +13,11 @@ import scala.annotation.implicitNotFound
  * @see [[e.E]]
  * @see [[e.EOr]]
  */
-@implicitNotFound("No implicit instance is found of type e.codec.Decoder[${I}, ${O}]. You may try following:\n\n* Make sure an instance of correct types is in scope (missing import?)\n* Implement an implicit instance yourself")
+@implicitNotFound(
+  "No implicit instance is found of type e.codec.Decoder[${I}, ${O}]. You may try following:\n\n" +
+  "* Make sure an instance of correct types is in scope (missing import?)\n" +
+  "* Implement an implicit instance yourself"
+)
 trait Decoder[-I, +O] {
   /**
    * Decodes an input, possibly failing with E

@@ -15,7 +15,7 @@ package object e {
    */
   type or[+A, _ <: E] = EOr[A]
 
-  implicit class ValueExtensions[A](a: => A) {
+  implicit class ValueExtensionsForEOr[A](a: => A) {
     /**
      * Converts this value to a successful A or E
      *
@@ -35,7 +35,7 @@ package object e {
     @inline def catching(ifFailure: Throwable => E): A or E = EOr.fromTry(Try(a), ifFailure)
   }
 
-  implicit class OptionExtensions[A](option: Option[A]) {
+  implicit class OptionExtensionsForEOr[A](option: Option[A]) {
     /**
      * Constructs an EOr from this [[scala.Option]]
      *
@@ -46,7 +46,7 @@ package object e {
     @inline def orE(ifNone: => E): A or E = EOr.fromOption(option, ifNone)
   }
 
-  implicit class EitherExtensions[L, R](either: Either[L, R]) {
+  implicit class EitherExtensionsForEOr[L, R](either: Either[L, R]) {
     /**
      * Constructs an EOr from this [[scala.util.Either]]
      *
@@ -57,7 +57,7 @@ package object e {
     @inline def orE(ifLeft: L => E): R or E = EOr.fromEither(either, ifLeft)
   }
 
-  implicit class TryExtensions[A](`try`: Try[A]) {
+  implicit class TryExtensionsForEOr[A](`try`: Try[A]) {
     /**
      * Constructs an EOr from this [[scala.util.Try]]
      *
@@ -68,7 +68,7 @@ package object e {
     @inline def orE(ifFailure: Throwable => E): A or E = EOr.fromTry(`try`, ifFailure)
   }
 
-  implicit class ThrowableExtensions(throwable: Throwable) {
+  implicit class ThrowableExtensionsForEOr(throwable: Throwable) {
     /**
      * Constructs an E containing message of this [[java.lang.Throwable]]
      *
