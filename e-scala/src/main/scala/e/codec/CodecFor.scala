@@ -10,13 +10,21 @@ import e.{E, or}
  * @tparam EN Encoder type
  */
 trait CodecFor[T, DE[_], EN[_]] {
-  implicit def jsonDecoder[A: DE]: Decoder[T, A]
+  implicit val eDecoder: DE[E]
 
-  implicit def jsonEncoder[A: EN]: Encoder[A, T]
+  implicit val eEncoder: EN[E]
 
-  implicit def jsonCodec[A: DE : EN]: Codec[A, T] =
+  def decode[A](input: T)(implicit aDecoder: DE[A]): A or E
+
+  def encode[A](input: A)(implicit aEncoder: EN[A]): T
+
+  implicit def decoder[A](implicit aDecoder: DE[A]): Decoder[T, A] = { input: T => decode[A](input) }
+
+  implicit def encoder[A](implicit aEncoder: EN[A]): Encoder[A, T] = { input: A => encode[A](input) }
+
+  implicit def codec[A](implicit aDecoder: DE[A], aEncoder: EN[A]): Codec[A, T] =
     new Codec[A, T] {
-      override def encode(input: A): T      = jsonEncoder[A].encode(input)
-      override def decode(input: T): A or E = jsonDecoder[A].decode(input)
+      override def decode(input: T): A or E = decoder[A].decode(input)
+      override def encode(input: A): T      = encoder[A].encode(input)
     }
 }

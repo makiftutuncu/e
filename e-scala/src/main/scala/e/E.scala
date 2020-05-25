@@ -50,7 +50,7 @@ final case class E(code: Option[Int]         = None,
    *
    * @return A new E containing causes of this E and given causes
    */
-  def causes(c: List[E]): E = copy(causes = c)
+  def causes(c: List[E]): E = copy(causes = causes ++ c)
 
   /**
    * Constructs an E adding given causes
@@ -59,7 +59,7 @@ final case class E(code: Option[Int]         = None,
    *
    * @return A new E containing causes of this E and given causes
    */
-  def causes(c: E*): E = copy(causes = c.toList)
+  def causes(c: E*): E = copy(causes = causes ++ c.toList)
 
   /**
    * Constructs an E adding given cause

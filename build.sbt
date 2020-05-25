@@ -48,6 +48,7 @@ lazy val `e-play-json` = project
   .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
+      Dependencies.catsCore,
       Dependencies.playJson
     )
   )

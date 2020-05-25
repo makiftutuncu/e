@@ -8,12 +8,7 @@ import scala.annotation.implicitNotFound
  * @tparam I Type of input
  * @tparam O Type of output
  */
-@implicitNotFound(
-  """No implicit instance is found of type e.codec.Encoder[${I}, ${O}]. You may try following:
-    |
-    |* Make sure an instance of correct types is in scope (missing import?)
-    |* Implement an implicit instance yourself""".stripMargin
-)
+@implicitNotFound("No implicit instance is found of type e.codec.Encoder[${I}, ${O}]. You may try following:\n\n\n* Make sure an instance of correct types is in scope (missing import?)\n* Implement an implicit instance yourself")
 trait Encoder[-I, +O] {
   /**
    * Encodes an input
