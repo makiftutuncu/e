@@ -11,7 +11,7 @@ class EOrTest extends ESuite {
 
     forAll { e: E =>
       EOr[String](e).assertError(e)
-      e.as[String].assertError(e)
+      e.toEOr[String].assertError(e)
     }
 
     forAll { string: String =>
@@ -61,7 +61,7 @@ class EOrTest extends ESuite {
   property("Mapping an EOr") {
     val failed = E.name("failed")
 
-    failed.as[Int].map(_.toString).assertError(failed)
+    failed.toEOr[Int].map(_.toString).assertError(failed)
 
     forAll { i: Int =>
       i.orE.map(_.toString).assertValue(i.toString)
@@ -72,11 +72,11 @@ class EOrTest extends ESuite {
     val failed1 = E.name("failed1")
     val failed2 = E.name("failed2")
 
-    failed1.as[Int].flatMap(_ => failed2.as[String]).assertError(failed1)
-    failed1.as[Int].flatMap(_.toString.orE).assertError(failed1)
+    failed1.toEOr[Int].flatMap(_ => failed2.toEOr[String]).assertError(failed1)
+    failed1.toEOr[Int].flatMap(_.toString.orE).assertError(failed1)
 
     forAll { i: Int =>
-      i.orE.flatMap(_ => failed2.as[String]).assertError(failed2)
+      i.orE.flatMap(_ => failed2.toEOr[String]).assertError(failed2)
       i.orE.flatMap(_.toString.orE).assertValue(i.toString)
     }
   }
@@ -85,17 +85,17 @@ class EOrTest extends ESuite {
     42.orE.mapError(_.code(1)).assertValue(42)
 
     forAll { e: E =>
-      e.as[Int].mapError(_.code(1)).assertError(e.code(1))
+      e.toEOr[Int].mapError(_.code(1)).assertError(e.code(1))
     }
   }
 
   property("Flat mapping error of an EOr") {
-    42.orE.flatMapError(_.code(1).as[Int]).assertValue(42)
+    42.orE.flatMapError(_.code(1).toEOr[Int]).assertValue(42)
     42.orE.flatMapError(_ => 43.orE).assertValue(42)
 
     forAll { e: E =>
-      e.as[Int].flatMapError(_ => 42.orE).assertValue(42)
-      e.as[Int].flatMapError(_.code(1).as[Int]).assertError(e.code(1))
+      e.toEOr[Int].flatMapError(_ => 42.orE).assertValue(42)
+      e.toEOr[Int].flatMapError(_.code(1).toEOr[Int]).assertError(e.code(1))
     }
   }
 
@@ -103,8 +103,8 @@ class EOrTest extends ESuite {
     val e1 = E.empty
     val e2 = E.code(1)
 
-    assertEquals(e1.as[Int].fold[String](_.code.fold("")(_.toString), _.toString), "")
-    assertEquals(e2.as[Int].fold[String](_.code.fold("")(_.toString), _.toString), "1")
+    assertEquals(e1.toEOr[Int].fold[String](_.code.fold("")(_.toString), _.toString), "")
+    assertEquals(e2.toEOr[Int].fold[String](_.code.fold("")(_.toString), _.toString), "1")
 
     forAll { i: Int =>
       assertEquals(i.orE.fold[String](_.code.fold("")(_.toString), _.toString), i.toString)
@@ -114,7 +114,7 @@ class EOrTest extends ESuite {
   property("Getting value of an EOr or a default value") {
     val e = E.code(1)
 
-    assertEquals(e.as[String].getOrElse(""), "")
+    assertEquals(e.toEOr[String].getOrElse(""), "")
 
     forAll { s: String =>
       assertEquals(s.orE.getOrElse(""), s)
@@ -125,11 +125,11 @@ class EOrTest extends ESuite {
     val e1 = E.code(1)
     val e2 = E.code(2)
 
-    (e1.as[String] orElse e2.as[String]).assertError(e2)
+    (e1.toEOr[String] orElse e2.toEOr[String]).assertError(e2)
 
     forAll { s: String =>
-      (s.orE orElse e2.as[String]).assertValue(s)
-      (e1.as[String] orElse s.orE).assertValue(s)
+      (s.orE orElse e2.toEOr[String]).assertValue(s)
+      (e1.toEOr[String] orElse s.orE).assertValue(s)
     }
   }
 
@@ -137,11 +137,11 @@ class EOrTest extends ESuite {
     val e1 = E.code(1)
     val e2 = E.code(2)
 
-    (e1.as[String] andThen e2.as[String]).assertError(e1)
+    (e1.toEOr[String] andThen e2.toEOr[String]).assertError(e1)
 
     forAll { (s: String, i: Int) =>
-      (e1.as[String] andThen s.orE).assertError(e1)
-      (s.orE andThen e2.as[String]).assertError(e2)
+      (e1.toEOr[String] andThen s.orE).assertError(e1)
+      (s.orE andThen e2.toEOr[String]).assertError(e2)
       (s.orE andThen i.orE).assertValue(i)
     }
   }
@@ -151,7 +151,7 @@ class EOrTest extends ESuite {
     var counter = 0
     var previous = 0
 
-    e.as[String].foreach { _ => previous = counter; counter = previous + 1 }
+    e.toEOr[String].foreach { _ => previous = counter; counter = previous + 1 }
     assertEquals(counter, 0)
     assertEquals(previous, 0)
 
@@ -165,8 +165,8 @@ class EOrTest extends ESuite {
     val e = E.code(1)
     val negative = E.name("negative")
 
-    e.as[Int].filter(_ > 0).assertError(e)
-    e.as[Int].filter(_ > 0, _ => negative).assertError(e)
+    e.toEOr[Int].filter(_ > 0).assertError(e)
+    e.toEOr[Int].filter(_ > 0, _ => negative).assertError(e)
 
     forAll { i: Int =>
       val eor1 = i.orE.filter(_ > 0)
@@ -188,7 +188,7 @@ class EOrTest extends ESuite {
   property("Filtering an EOr with default error") {
     val e = E.code(1)
 
-    e.as[Int].withFilter(_ > 0).assertError(e)
+    e.toEOr[Int].withFilter(_ > 0).assertError(e)
 
     forAll { i: Int =>
       val eor1 = i.orE.withFilter(_ > 0)
@@ -208,8 +208,8 @@ class EOrTest extends ESuite {
       case E(Some(1), _, _, _, _, _) => "handled"
     }
 
-    e1.as[String].handle(handler).assertValue("handled")
-    e2.as[String].handle(handler).assertError(e2)
+    e1.toEOr[String].handle(handler).assertValue("handled")
+    e2.toEOr[String].handle(handler).assertError(e2)
 
     forAll { s: String =>
       s.orE.handle(handler).assertValue(s)
@@ -224,12 +224,12 @@ class EOrTest extends ESuite {
 
     val handler: PartialFunction[E, String or E] = {
       case E(Some(1), _, _, _, _, _) => "handled".orE
-      case E(Some(2), _, _, _, _, _) => e3.as[String]
+      case E(Some(2), _, _, _, _, _) => e3.toEOr[String]
     }
 
-    e1.as[String].handleWith(handler).assertValue("handled")
-    e2.as[String].handleWith(handler).assertError(e3)
-    e4.as[String].handleWith(handler).assertError(e4)
+    e1.toEOr[String].handleWith(handler).assertValue("handled")
+    e2.toEOr[String].handleWith(handler).assertError(e3)
+    e4.toEOr[String].handleWith(handler).assertError(e4)
 
     forAll { s: String =>
       s.orE.handleWith(handler).assertValue(s)
@@ -265,8 +265,8 @@ class EOrTest extends ESuite {
       )
 
       differentEs.foreach { e2 =>
-        val eor3 = e1.as[String]
-        val eor4 = e2.as[String]
+        val eor3 = e1.toEOr[String]
+        val eor4 = e2.toEOr[String]
 
         assertNotEquals(eor3, eor1)
         assertNotEquals(eor3.hashCode(), eor1.hashCode())
@@ -282,7 +282,7 @@ class EOrTest extends ESuite {
 
   property("Converting an EOr to String") {
     forAll { e: E =>
-      assertEquals(e.as[String].toString, e.toString)
+      assertEquals(e.toEOr[String].toString, e.toString)
     }
 
     forAll { i: Int =>

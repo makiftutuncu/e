@@ -28,7 +28,7 @@ lazy val `e-core` = project
   .settings(Settings.javaSettings)
 
 lazy val `e-scala`  = project.in(file("e-scala")).settings(Settings.scalaSettings)
-lazy val `e-kotlin` = project.in(file("e-kotlin")).dependsOn(`e-core`).settings(Settings.kotlinSettings)
+lazy val `e-kotlin` = project.in(file("e-kotlin")).settings(Settings.kotlinSettings)
 lazy val `e-java`   = project.in(file("e-java")).dependsOn(`e-core`).settings(Settings.javaSettings)
 
 lazy val `e-circe` = project

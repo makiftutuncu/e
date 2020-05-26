@@ -164,7 +164,7 @@ class ETest extends ESuite {
 
   property("Converting an E to an EOr") {
     forAll { e: E =>
-      assertEquals(EOr[String](e), e.as[String])
+      assertEquals(EOr[String](e), e.toEOr[String])
     }
   }
 

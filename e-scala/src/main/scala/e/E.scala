@@ -188,15 +188,15 @@ final case class E(code: Option[Int]         = None,
   }
 
   /**
-   * Converts this E to a failed A or E
+   * Converts this E to a failed EOr
    *
-   * @tparam A The A type in resulting A or E
+   * @tparam A The A type in resulting EOr
    *
-   * @return An A or E containing this E
+   * @return An EOr containing this E
    *
    * @see [[e.EOr]]
    */
-  def as[A]: A or E = EOr(this)
+  def toEOr[A]: EOr[A] = EOr(this)
 
   /**
    * Converts this E into an exception
@@ -349,6 +349,6 @@ object E {
   def fromThrowable(throwable: Throwable): E =
     throwable match {
       case EException(e) => e
-      case error         => E(message = Some(error.getMessage))
+      case _             => E(message = Some(throwable.getMessage))
     }
 }

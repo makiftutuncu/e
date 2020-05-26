@@ -1,6 +1,6 @@
 package e.codec
 
-import e.{E, or}
+import e.{E, EOr}
 
 import scala.annotation.implicitNotFound
 
@@ -28,7 +28,7 @@ trait Decoder[-I, +O] {
    *
    * @see [[e.EOr]]
    */
-  def decode(input: I): O or E
+  def decode(input: I): EOr[O]
 }
 
 object Decoder {

@@ -1,6 +1,6 @@
 package e.codec
 
-import e.{E, or}
+import e.EOr
 
 import scala.annotation.implicitNotFound
 
@@ -44,7 +44,7 @@ object Codec {
    */
   def of[S, T](implicit decoder: Decoder[T, S], encoder: Encoder[S, T]): Codec[S, T] =
     new Codec[S, T] {
-      override def decode(input: T): S or E = decoder.decode(input)
+      override def decode(input: T): EOr[S] = decoder.decode(input)
       override def encode(input: S): T      = encoder.encode(input)
     }
 }
