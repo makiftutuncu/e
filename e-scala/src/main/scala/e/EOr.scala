@@ -53,9 +53,9 @@ sealed trait EOr[+A] { self =>
    *
    * @return A new EOr containing either the new value or E in this one
    */
-  def map[B](f: A => B): B or E =
+  def map[B](f: A => B): EOr[B] =
     self match {
-      case Failure(e)     => e.as[B]
+      case Failure(e)     => e.toEOr[B]
       case Success(value) => f(value).orE
     }
 
@@ -68,9 +68,9 @@ sealed trait EOr[+A] { self =>
    *
    * @return Computed EOr or a new EOr containing E in this one
    */
-  def flatMap[B](f: A => B or E): B or E =
+  def flatMap[B](f: A => EOr[B]): EOr[B] =
     self match {
-      case Failure(e)     => e.as[B]
+      case Failure(e)     => e.toEOr[B]
       case Success(value) => f(value)
     }
 
@@ -81,9 +81,9 @@ sealed trait EOr[+A] { self =>
    *
    * @return This EOr or a new EOr containing computed E if this one has E
    */
-  def mapError(f: E => E): A or E =
+  def mapError(f: E => E): EOr[A] =
     self match {
-      case Failure(e) => f(e).as[A]
+      case Failure(e) => f(e).toEOr[A]
       case Success(_) => self
     }
 
@@ -96,7 +96,7 @@ sealed trait EOr[+A] { self =>
    *
    * @return This EOr or a computed EOr if this one has E
    */
-  def flatMapError[AA >: A](f: E => AA or E): AA or E =
+  def flatMapError[AA >: A](f: E => EOr[AA]): EOr[AA] =
     self match {
       case Failure(e) => f(e)
       case Success(_) => self
@@ -142,7 +142,7 @@ sealed trait EOr[+A] { self =>
    *
    * @return This EOr or alternative if this one has E
    */
-  def orElse[AA >: A](alternative: => AA or E): AA or E =
+  def orElse[AA >: A](alternative: => EOr[AA]): EOr[AA] =
     self match {
       case Failure(_) => alternative
       case Success(_) => self
@@ -157,9 +157,9 @@ sealed trait EOr[+A] { self =>
    *
    * @return Next EOr or a new EOr containing E in this one
    */
-  def andThen[B](next: => B or E): B or E =
+  def andThen[B](next: => EOr[B]): EOr[B] =
     self match {
-      case Failure(e) => e.as[B]
+      case Failure(e) => e.toEOr[B]
       case Success(_) => next
     }
 
@@ -185,10 +185,10 @@ sealed trait EOr[+A] { self =>
    * @return This EOr of a new EOr containing an E computed by given conversion function
    */
   def filter(condition: A => Boolean,
-             filteredError: A => E = { a => EOr.filteredError.data("value", a) }): A or E =
+             filteredError: A => E = { a => EOr.filteredError.data("value", a) }): EOr[A] =
     self match {
       case Failure(_)     => self
-      case Success(value) => if (condition(value)) value.orE else filteredError(value).as[A]
+      case Success(value) => if (condition(value)) value.orE else filteredError(value).toEOr[A]
     }
 
   /**
@@ -200,7 +200,7 @@ sealed trait EOr[+A] { self =>
    *
    * @see [[e.EOr#filteredError]]
    */
-  def withFilter(condition: A => Boolean): A or E = filter(condition)
+  def withFilter(condition: A => Boolean): EOr[A] = filter(condition)
 
   /**
    * Handles E in this EOr, if it exists, by given partial function to compute a successful EOr
@@ -211,7 +211,7 @@ sealed trait EOr[+A] { self =>
    *
    * @return A new EOr containing handled value if partial function was defined for E in this EOr or this EOr as is
    */
-  def handle[AA >: A](f: PartialFunction[E, AA]): AA or E =
+  def handle[AA >: A](f: PartialFunction[E, AA]): EOr[AA] =
     self match {
       case Failure(e) if f.isDefinedAt(e) => f(e).orE
       case _                              => self
@@ -226,7 +226,7 @@ sealed trait EOr[+A] { self =>
    *
    * @return Computed new EOr if partial function was defined for E in this EOr or this EOr as is
    */
-  def handleWith[AA >: A](f: PartialFunction[E, AA or E]): AA or E =
+  def handleWith[AA >: A](f: PartialFunction[E, EOr[AA]]): EOr[AA] =
     self match {
       case Failure(e) if f.isDefinedAt(e) => f(e)
       case _                              => self
@@ -253,14 +253,26 @@ sealed trait EOr[+A] { self =>
 }
 
 object EOr {
-  sealed abstract case class Failure(e: E) extends (Nothing or E)
+  /**
+   * A failed EOr
+   *
+   * @param e An error
+   */
+  final case class Failure(e: E) extends EOr[Nothing]
 
-  sealed abstract case class Success[+A](a: A) extends (A or E)
+  /**
+   * A successful EOr
+   *
+   * @param a A value
+   *
+   * @tparam A Type of the value this EOr can contain
+   */
+  final case class Success[+A](a: A) extends EOr[A]
 
   /**
    * A successful EOr of type Unit
    */
-  val unit: Unit or E = new Success(()) {}
+  val unit: EOr[Unit] = Success(())
 
   /**
    * A default E to be used when condition does not hold while filtering an EOr
@@ -278,7 +290,7 @@ object EOr {
    *
    * @return A new failed EOr containing given E
    */
-  def apply[A](e: E): A or E = new Failure(e) {}
+  def apply[A](e: E): EOr[A] = Failure(e)
 
   /**
    * Constructs a successful EOr containing given value
@@ -289,7 +301,7 @@ object EOr {
    *
    * @return A new failed EOr containing given value
    */
-  def apply[A](a: A): A or E = new Success(a) {}
+  def apply[A](a: A): EOr[A] = Success(a)
 
   /**
    * Deconstructs given EOr for pattern matching against its E
@@ -298,7 +310,7 @@ object EOr {
    *
    * @return Some Failure or None if given EOr has value
    */
-  def unapply(eor: Nothing or E): Option[Failure] =
+  def unapply(eor: EOr[Nothing]): Option[Failure] =
     eor match {
       case f: Failure => Some(f)
       case _          => None
@@ -311,7 +323,7 @@ object EOr {
    *
    * @return Some Success or None if given EOr has E
    */
-  def unapply[A: ClassTag](eor: A or E): Option[Success[A]] =
+  def unapply[A: ClassTag](eor: EOr[A]): Option[Success[A]] =
     eor match {
       case s: Success[A] => Some(s)
       case _             => None
@@ -327,7 +339,7 @@ object EOr {
    *
    * @return An EOr containing either value in Option or given E
    */
-  def fromOption[A](option: Option[A], ifNone: => E): A or E =
+  def fromOption[A](option: Option[A], ifNone: => E): EOr[A] =
     option match {
       case None    => apply(ifNone)
       case Some(a) => apply(a)
@@ -344,7 +356,7 @@ object EOr {
    *
    * @return An EOr containing either Right value in Either or an E computed by given function
    */
-  def fromEither[L, R](either: Either[L, R], ifLeft: L => E): R or E =
+  def fromEither[L, R](either: Either[L, R], ifLeft: L => E): EOr[R] =
     either match {
       case Left(l)  => apply(ifLeft(l))
       case Right(r) => apply(r)
@@ -360,7 +372,7 @@ object EOr {
    *
    * @return An EOr containing either value in Try or an E computed by given function
    */
-  def fromTry[A](`try`: Try[A], ifFailure: Throwable => E): A or E =
+  def fromTry[A](`try`: Try[A], ifFailure: Throwable => E): EOr[A] =
     `try` match {
       case TryFailure(EException(e)) => apply(e)
       case TryFailure(t)             => apply(ifFailure(t))

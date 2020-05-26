@@ -71,7 +71,7 @@ object zio {
     def toREIO[R]: REIO[R, A] = REIO.effectTotal(a)
   }
 
-  implicit class EOrExtensionsForEIO[A](eor: A or E) {
+  implicit class EOrExtensionsForEIO[A](eor: EOr[A]) {
     /**
      * Converts this EOr to a ZIO
      *

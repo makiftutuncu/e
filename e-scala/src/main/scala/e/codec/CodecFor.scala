@@ -1,9 +1,9 @@
 package e.codec
 
-import e.{E, or}
+import e.{E, EOr}
 
 /**
- * Helper trait that fixes the target type for creating a [[e.codec.Codec]] implementation of that type
+ * Helper trait creating a [[e.codec.Codec]] implementation of a third-party type
  *
  * @tparam T  Target type
  * @tparam DE Decoder type
@@ -14,7 +14,7 @@ trait CodecFor[T, DE[_], EN[_]] {
 
   implicit val eEncoder: EN[E]
 
-  def decode[A](input: T)(implicit aDecoder: DE[A]): A or E
+  def decode[A](input: T)(implicit aDecoder: DE[A]): EOr[A]
 
   def encode[A](input: A)(implicit aEncoder: EN[A]): T
 
@@ -24,7 +24,7 @@ trait CodecFor[T, DE[_], EN[_]] {
 
   implicit def codec[A](implicit aDecoder: DE[A], aEncoder: EN[A]): Codec[A, T] =
     new Codec[A, T] {
-      override def decode(input: T): A or E = decoder[A].decode(input)
+      override def decode(input: T): EOr[A] = decoder[A].decode(input)
       override def encode(input: A): T      = encoder[A].encode(input)
     }
 }
