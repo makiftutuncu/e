@@ -1,7 +1,7 @@
 package dev.akif.eplayexample.people
 
 import dev.akif.eplayexample.common.{Errors, Service}
-import e.zio._
+import e.ezio._
 import e._
 
 trait PeopleService {

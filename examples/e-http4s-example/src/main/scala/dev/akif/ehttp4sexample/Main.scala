@@ -54,7 +54,7 @@ object Main extends IOApp {
       }.redeem(
         {
           case EException(e) => eToResponse(e)
-          case t             => eToResponse(Errors.unexpected.message("An unexpected error occurred!").cause(t.toE))
+          case t             => eToResponse(Errors.unexpected.message("An unexpected error occurred!").cause(t.toE()))
         },
         identity
       )

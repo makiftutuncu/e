@@ -3,11 +3,11 @@ package dev.akif.eplayexample.common
 import dev.akif.eplayexample.AppComponents.Modules
 import e._
 import e.playjson._
-import e.zio._
+import e.ezio._
 import play.api.http.ContentTypes
 import play.api.libs.json.{Json, Reads, Writes}
 import play.api.mvc._
-import _root_.zio.Runtime
+import zio.Runtime
 import play.api.http
 
 import scala.concurrent.Promise
@@ -23,7 +23,7 @@ abstract class Controller(private val runtime: Runtime[Modules], private val cc:
             val e = cause.fold[E](
               Errors.unexpected,
               identity,
-              t => Errors.unexpected.cause(t.toE),
+              t => Errors.unexpected.cause(t.toE()),
               id => Errors.unexpected.message(s"Fiber $id is interrupted!")
             )(
               (e1, _) => e1,

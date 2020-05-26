@@ -23,21 +23,14 @@ object playjson extends CodecFor[JsValue, Reads, Writes] {
   }
 
   override implicit val eEncoder: Writes[E] = Writes { e: E =>
-    val m = Json.obj(
-      "code"    -> e.code,
-      "name"    -> e.name,
-      "message" -> e.message,
-      "causes"  -> (if (e.hasCause) Json.toJson(e.causes) else JsNull),
-      "data"    -> (if (e.hasData)  Json.toJson(e.data)   else JsNull),
-      "time"    -> e.time
-    ).value
+    val empty = Json.obj()
 
-    Json.toJson(
-      m.filter {
-        case (_, JsNull) => false
-        case _           => true
-      }
-    )
+    e.code.fold(empty)(c => Json.obj("code" -> c)) ++
+    e.name.fold(empty)(n => Json.obj("name" -> n)) ++
+    e.message.fold(empty)(m => Json.obj("message" -> m)) ++
+    (if (!e.hasCause) empty else Json.obj("causes" -> Json.toJson(e.causes))) ++
+    (if (!e.hasData)  empty else Json.obj("data" -> Json.toJson(e.data))) ++
+    e.time.fold(empty)(t => Json.obj("time" -> t))
   }
 
   override def decode[A](json: JsValue)(implicit aReads: Reads[A]): EOr[A] =

@@ -6,7 +6,7 @@ package e
  * @param e An E
  *
  * @see [[e.E]]
- * @see [[java.lang.RuntimeException]]
+ * @see java.lang.RuntimeException
  */
 final case class EException(e: E) extends RuntimeException(e.toString) {
   override def toString: String = e.toString

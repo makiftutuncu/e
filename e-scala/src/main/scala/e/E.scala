@@ -8,7 +8,7 @@ package e
  * @param message A message about this error, usually human-readable
  * @param causes  Underlying cause(s) of this error, if any
  * @param data    Arbitrary data related to this error as a key-value map
- * @param time    Time when this error occurred as milliseconds, see [[System#currentTimeMillis]]
+ * @param time    Time when this error occurred as milliseconds, see java.lang.System#currentTimeMillis
  */
 final case class E(code: Option[Int]         = None,
                    name: Option[String]      = None,
@@ -116,7 +116,7 @@ final case class E(code: Option[Int]         = None,
    *
    * @return A new E containing time set to now
    *
-   * @see [[System#currentTimeMillis]]
+   * @see java.lang.System#currentTimeMillis
    */
   def now: E = copy(time = Some(System.currentTimeMillis))
 
@@ -161,7 +161,7 @@ final case class E(code: Option[Int]         = None,
   val hasTime: Boolean = time.isDefined
 
   /**
-   * A trace of this error and its causes as a String, like the stack trace of an [[java.lang.Exception]]
+   * A trace of this error and its causes as a String, like the stack trace of an [[scala.Exception]]
    *
    * {{{
    *   val e = E(name = Some("error1"), causes = List(E(name = Some("error2")), E(name = Some("error3"))))
@@ -325,7 +325,7 @@ object E {
    *
    * @return A new E containing time set to now
    *
-   * @see [[System#currentTimeMillis]]
+   * @see java.lang.System#currentTimeMillis
    */
   def now: E = E(time = Some(System.currentTimeMillis))
 
@@ -340,7 +340,7 @@ object E {
   def causeIf(condition: Boolean, e: => E): E = if (condition) E(causes = List(e)) else empty
 
   /**
-   * Constructs an E from given [[java.lang.Throwable]]
+   * Constructs an E from given [[scala.Throwable]]
    *
    * @param throwable A Throwable
    *

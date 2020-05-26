@@ -40,7 +40,7 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
         case (e, failure) =>
           e.cause(
             E(
-              name    = Option.when(failure.history.nonEmpty)(CursorOp.opsToPath(failure.history)),
+              name    = if (failure.history.isEmpty) None else Option(CursorOp.opsToPath(failure.history)),
               message = Some(failure.message)
             )
           )

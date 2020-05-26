@@ -2,7 +2,7 @@ package dev.akif.eplayexample.people
 
 import anorm.{SQL, SqlParser}
 import dev.akif.eplayexample.common.Repository
-import e.zio.EIO
+import e.ezio.EIO
 
 trait PeopleRepository {
   val peopleRepository: PeopleRepository.Def
