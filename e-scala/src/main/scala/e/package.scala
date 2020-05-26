@@ -23,7 +23,8 @@ package object e {
      *
      * @see [[e.EOr]]
      */
-    @inline def orE: EOr[A] = EOr(a)
+    @inline def orE: EOr[A] =
+      EOr(a)
 
     /**
      * Constructs an EOr from evaluating this value and by converting caught Exception using given function
@@ -32,7 +33,8 @@ package object e {
      *
      * @return An EOr containing either evaluated value or an E computed by given function
      */
-    @inline def catching(ifFailure: Throwable => E = E.fromThrowable): EOr[A] = EOr.fromTry(Try(a), ifFailure)
+    @inline def catching(ifFailure: Throwable => E = E.fromThrowable): EOr[A] =
+      EOr.fromTry(Try(a))(ifFailure)
   }
 
   implicit class OptionExtensionsForEOr[A](option: Option[A]) {
@@ -43,7 +45,8 @@ package object e {
      *
      * @return An EOr containing either value in this Option or given E
      */
-    @inline def orE(ifNone: => E): EOr[A] = EOr.fromOption(option, ifNone)
+    @inline def orE(ifNone: => E): EOr[A] =
+      EOr.fromOption(option)(ifNone)
   }
 
   implicit class EitherExtensionsForEOr[L, R](either: Either[L, R]) {
@@ -54,7 +57,8 @@ package object e {
      *
      * @return An EOr containing either Right value in this Either or an E computed by given function
      */
-    @inline def orE(ifLeft: L => E): EOr[R] = EOr.fromEither(either, ifLeft)
+    @inline def orE(ifLeft: L => E): EOr[R] =
+      EOr.fromEither(either)(ifLeft)
   }
 
   implicit class TryExtensionsForEOr[A](`try`: Try[A]) {
@@ -65,22 +69,17 @@ package object e {
      *
      * @return An EOr containing either value in this Try or an E computed by given function
      */
-    @inline def orE(ifFailure: Throwable => E = E.fromThrowable): EOr[A] = EOr.fromTry(`try`, ifFailure)
+    @inline def orE(ifFailure: Throwable => E = E.fromThrowable): EOr[A] =
+      EOr.fromTry(`try`)(ifFailure)
   }
 
   implicit class ThrowableExtensionsForEOr(throwable: Throwable) {
-    /**
-     * Constructs an E containing message of this [[java.lang.Throwable]]
-     *
-     * @return A new E containing message of this Throwable
-     */
-    @inline def toE: E = E.fromThrowable(throwable)
-
     /**
      * Constructs an E from this [[java.lang.Throwable]]
      *
      * @return A new E containing message of this Throwable
      */
-    @inline def toE(f: Throwable => E): E = f(throwable)
+    @inline def toE(f: Throwable => E = E.fromThrowable): E =
+      f(throwable)
   }
 }
