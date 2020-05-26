@@ -1,12 +1,13 @@
 package dev.akif.eplayexample
 
 import dev.akif.eplayexample.common.Errors
-import e.playjson.implicits._
-import e.scala.E
+import e._
+import e.playjson._
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.Json
 import play.api.mvc.Results.Status
 import play.api.mvc.{RequestHeader, Result}
+import play.api.http
 
 import scala.concurrent.Future
 
@@ -23,12 +24,12 @@ class ErrorHandler extends HttpErrorHandler {
 
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
     val e = Errors.unexpected
-                  .cause(exception)
+                  .cause(exception.toE)
                   .data("method" -> request.method)
                   .data("uri" -> request.uri)
 
     Future.successful(result(request, e))
   }
 
-  private def result(request: RequestHeader, e: E): Result = Status(e.code)(Json.toJson(e))
+  private def result(request: RequestHeader, e: E): Result = Status(e.code.getOrElse(http.Status.INTERNAL_SERVER_ERROR))(Json.toJson(e))
 }
