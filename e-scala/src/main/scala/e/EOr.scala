@@ -231,25 +231,6 @@ sealed trait EOr[+A] { self =>
       case Failure(e) if f.isDefinedAt(e) => f(e)
       case _                              => self
     }
-
-  override def equals(other: Any): Boolean =
-    other match {
-      case Failure(e) => fold(_ == e,     _ => false)
-      case Success(a) => fold(_ => false, _ == a)
-      case _          => false
-    }
-
-  override def hashCode(): Int =
-    self match {
-      case Failure(e) => e.hashCode
-      case Success(a) => a.hashCode
-    }
-
-  override def toString: String =
-    self match {
-      case Failure(e) => e.toString
-      case Success(a) => a.toString
-    }
 }
 
 object EOr {
@@ -258,7 +239,9 @@ object EOr {
    *
    * @param e An error
    */
-  final case class Failure(e: E) extends EOr[Nothing]
+  final case class Failure(e: E) extends EOr[Nothing] {
+    override def toString: String = e.toString
+  }
 
   /**
    * A successful EOr
@@ -267,7 +250,9 @@ object EOr {
    *
    * @tparam A Type of the value this EOr can contain
    */
-  final case class Success[+A](a: A) extends EOr[A]
+  final case class Success[+A](a: A) extends EOr[A] {
+    override def toString: String = a.toString
+  }
 
   /**
    * A successful EOr of type Unit
@@ -339,7 +324,7 @@ object EOr {
    *
    * @return An EOr containing either value in Option or given E
    */
-  def fromOption[A](option: Option[A], ifNone: => E): EOr[A] =
+  def fromOption[A](option: Option[A])(ifNone: => E): EOr[A] =
     option match {
       case None    => apply(ifNone)
       case Some(a) => apply(a)
@@ -356,7 +341,7 @@ object EOr {
    *
    * @return An EOr containing either Right value in Either or an E computed by given function
    */
-  def fromEither[L, R](either: Either[L, R], ifLeft: L => E): EOr[R] =
+  def fromEither[L, R](either: Either[L, R])(ifLeft: L => E): EOr[R] =
     either match {
       case Left(l)  => apply(ifLeft(l))
       case Right(r) => apply(r)
@@ -372,7 +357,7 @@ object EOr {
    *
    * @return An EOr containing either value in Try or an E computed by given function
    */
-  def fromTry[A](`try`: Try[A], ifFailure: Throwable => E): EOr[A] =
+  def fromTry[A](`try`: Try[A])(ifFailure: Throwable => E): EOr[A] =
     `try` match {
       case TryFailure(EException(e)) => apply(e)
       case TryFailure(t)             => apply(ifFailure(t))

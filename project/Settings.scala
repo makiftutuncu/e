@@ -68,6 +68,13 @@ object Settings {
   lazy val kotlinSettings: Seq[Setting[_]] = javaSettings ++ Seq(
     kotlinLib("stdlib"),
 
-    kotlinVersion := latestKotlinVersion
+    kotlinVersion := latestKotlinVersion,
+
+    libraryDependencies ++= Seq(
+      Dependencies.jUnit,
+      Dependencies.jUnitInterface
+    ),
+
+    testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
   )
 }

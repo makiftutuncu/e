@@ -97,7 +97,7 @@ object zio {
      *
      * @see [[e.E#fromThrowable]]
      */
-    def toEIO: EIO[A] = task.mapError(_.toE)
+    def toEIO: EIO[A] = task.mapError(_.toE())
 
     /**
      * Converts this Task such that error in it is an E, in an environment
@@ -108,7 +108,7 @@ object zio {
      *
      * @see [[e.E#fromThrowable]]
      */
-    def toREIO[R]: REIO[R, A] = task.mapError(_.toE)
+    def toREIO[R]: REIO[R, A] = task.mapError(_.toE())
   }
 
   implicit class IOExtensionsForEIO[EE, A](io: IO[EE, A]) {
@@ -141,6 +141,6 @@ object zio {
      *
      * @see [[e.E#fromThrowable]]
      */
-    def toREIO: REIO[R, A] = rio.mapError(_.toE)
+    def toREIO: REIO[R, A] = rio.mapError(_.toE())
   }
 }

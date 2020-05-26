@@ -180,7 +180,7 @@ class ETest extends ESuite {
       val e = E.message(message)
 
       assertEquals(E.fromThrowable(ex), e)
-      assertEquals(ex.toE, e)
+      assertEquals(ex.toE(), e)
     }
 
     forAll { e: E =>

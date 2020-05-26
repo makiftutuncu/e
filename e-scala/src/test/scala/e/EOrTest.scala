@@ -22,7 +22,7 @@ class EOrTest extends ESuite {
     forAll { option: Option[String] =>
       val none = E.name("None")
 
-      val eor1 = EOr.fromOption(option, none)
+      val eor1 = EOr.fromOption(option)(none)
       option.fold(eor1.assertError(none))(s => eor1.assertValue(s))
 
       val eor2 = option.orE(none)
@@ -32,7 +32,7 @@ class EOrTest extends ESuite {
     forAll { either: Either[Int, String] =>
       val toE = { i: Int => E.code(i) }
 
-      val eor1 = EOr.fromEither(either, toE)
+      val eor1 = EOr.fromEither(either)(toE)
       either.fold(i => eor1.assertError(toE(i)), s => eor1.assertValue(s))
 
       val eor2 = either.orE(toE)
@@ -42,7 +42,7 @@ class EOrTest extends ESuite {
     forAll { `try`: Try[String] =>
       val toE = { t: Throwable => E.message(t.getMessage) }
 
-      val eor1 = EOr.fromTry(`try`, toE)
+      val eor1 = EOr.fromTry(`try`)(toE)
       `try`.fold(t => eor1.assertError(toE(t)), s => eor1.assertValue(s))
 
       val eor2 = `try`.orE(toE)
