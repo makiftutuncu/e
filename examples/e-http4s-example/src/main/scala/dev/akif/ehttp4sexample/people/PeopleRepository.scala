@@ -1,5 +1,5 @@
 package dev.akif.ehttp4sexample.people
-
+import e._
 import cats.effect.IO
 import dev.akif.ehttp4sexample.common.implicits._
 import dev.akif.ehttp4sexample.common.{Errors, Repository}
@@ -14,7 +14,7 @@ class PeopleRepository(override val db: Transactor[IO]) extends Repository[IO, P
     operation.transact(db).handleErrorWith { t =>
       Errors.database
             .message("Cannot get people!")
-            .cause(t)
+            .cause(t.toE)
             .toIO
     }
   }
@@ -27,7 +27,7 @@ class PeopleRepository(override val db: Transactor[IO]) extends Repository[IO, P
       Errors.database
             .message("Cannot get person!")
             .data("id" -> id)
-            .cause(t)
+            .cause(t.toE)
             .toIO
     }
   }
@@ -41,7 +41,7 @@ class PeopleRepository(override val db: Transactor[IO]) extends Repository[IO, P
             .message("Cannot create person!")
             .data("name" -> create.name)
             .data("age" -> create.age)
-            .cause(t)
+            .cause(t.toE)
             .toIO
     }
   }
@@ -62,7 +62,7 @@ class PeopleRepository(override val db: Transactor[IO]) extends Repository[IO, P
           .message("Cannot update person!")
           .data("name" -> update.name)
           .data("age" -> update.age)
-          .cause(t)
+          .cause(t.toE)
           .toIO
       }
   }
@@ -81,7 +81,7 @@ class PeopleRepository(override val db: Transactor[IO]) extends Repository[IO, P
       Errors.database
         .message("Cannot delete person!")
         .data("id" -> id)
-        .cause(t)
+        .cause(t.toE)
         .toIO
     }
   }
