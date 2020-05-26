@@ -75,7 +75,9 @@ package object e {
 
   implicit class ThrowableExtensionsForEOr(throwable: Throwable) {
     /**
-     * Constructs an E from this [[java.lang.Throwable]]
+     * Constructs an E from this [[scala.Throwable]]
+     *
+     * @param f A mapping function
      *
      * @return A new E containing message of this Throwable
      */

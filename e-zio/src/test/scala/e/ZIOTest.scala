@@ -1,9 +1,9 @@
 package e
 
-import _root_.zio.test._
-import _root_.zio.test.environment.TestEnvironment
-import _root_.zio.test.Assertion._
-import e.zio._
+import zio.test._
+import zio.test.environment.TestEnvironment
+import zio.test.Assertion._
+import e.ezio._
 
 object ZIOTest extends DefaultRunnableSpec {
   private val divideByZero: E = E.name("divideError").message("Cannot divide by 0!")

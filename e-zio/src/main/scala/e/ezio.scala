@@ -1,34 +1,34 @@
 package e
 
-import _root_.zio.{ZIO, Task, RIO, IO}
+import zio.{ZIO, Task, RIO, IO}
 
-object zio {
+object ezio {
   /**
-   * Type alias for a ZIO that fails with [[e.E]]
+   * Type alias for a ZIO that fails with E
    *
    * @tparam A Type of successful value
    *
-   * @see [[_root_.zio.ZIO]]
+   * @see zio.ZIO
    */
   type EIO[+A] = ZIO[Any, E, A]
 
   /**
-   * @see [[e.zio.EIO]]
+   * @see [[e.ezio.EIO]]
    */
   val EIO: ZIO.type = ZIO
 
   /**
-   * Type alias for a ZIO that has and environment and fails with [[e.E]]
+   * Type alias for a ZIO that has and environment and fails with E
    *
    * @tparam R Type of environment
    * @tparam A Type of successful value
    *
-   * @see [[_root_.zio.ZIO]]
+   * @see zio.ZIO
    */
   type REIO[-R, +A]  = ZIO[R, E, A]
 
   /**
-   * @see [[e.zio.REIO]]
+   * @see [[e.ezio.REIO]]
    */
   val REIO: ZIO.type = ZIO
 
@@ -93,22 +93,26 @@ object zio {
     /**
      * Converts this Task such that error in it is an E
      *
+     * @param f A mapping function
+     *
      * @return A ZIO that fails with an E
      *
-     * @see [[e.E#fromThrowable]]
+     * @see e.E.fromThrowable
      */
-    def toEIO: EIO[A] = task.mapError(_.toE())
+    def toEIO(f: Throwable => E = E.fromThrowable): EIO[A] = task.mapError(_.toE(f))
 
     /**
      * Converts this Task such that error in it is an E, in an environment
      *
      * @tparam R Type of environment
      *
+     * @param f A mapping function
+     *
      * @return A ZIO that fails with an E
      *
-     * @see [[e.E#fromThrowable]]
+     * @see e.E.fromThrowable
      */
-    def toREIO[R]: REIO[R, A] = task.mapError(_.toE())
+    def toREIO[R](f: Throwable => E = E.fromThrowable): REIO[R, A] = task.mapError(_.toE(f))
   }
 
   implicit class IOExtensionsForEIO[EE, A](io: IO[EE, A]) {
@@ -137,10 +141,12 @@ object zio {
     /**
      * Converts this RIO such that error in it is an E
      *
+     * @param f A mapping function
+     *
      * @return A ZIO that fails with an E
      *
-     * @see [[e.E#fromThrowable]]
+     * @see e.E.fromThrowable
      */
-    def toREIO: REIO[R, A] = rio.mapError(_.toE())
+    def toREIO(f: Throwable => E = E.fromThrowable): REIO[R, A] = rio.mapError(_.toE(f))
   }
 }
