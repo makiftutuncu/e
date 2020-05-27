@@ -1,15 +1,14 @@
 package dev.akif.ehttp4sexample.common
 
 import cats.effect.IO
-import dev.akif.ehttp4sexample.common.Errors.EAsException
-import e.scala.{E, Maybe}
+import e.{E, EOr}
 
 object implicits {
   implicit class EIOExtensions(private val e: E) {
-    def toIO[A]: IO[A] = IO.raiseError(EAsException(e))
+    def toIO[A]: IO[A] = IO.raiseError(e.toException)
   }
 
-  implicit class MaybeIOExtensions[A](private val maybe: Maybe[A]) {
-    def toIO: IO[A] = maybe.fold[IO[A]](e => e.toIO[A], a => IO.pure(a))
+  implicit class EOrIOExtensions[A](private val eOr: EOr[A]) {
+    def toIO: IO[A] = eOr.fold[IO[A]](e => e.toIO[A], a => IO.pure(a))
   }
 }
