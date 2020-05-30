@@ -222,7 +222,7 @@ class EOrTest extends ESuite {
     val e3 = E.code(3)
     val e4 = E.code(4)
 
-    val handler: PartialFunction[E, String or E] = {
+    val handler: PartialFunction[E, EOr[String]] = {
       case E(Some(1), _, _, _, _, _) => "handled".orE
       case E(Some(2), _, _, _, _, _) => e3.toEOr[String]
     }

@@ -5,7 +5,7 @@ package object e {
    * Type alias for EOr, allowing a more pleasing syntax as following:
    *
    * {{{
-   *   String or E // instead of EOr[String]
+   *   E or String // instead of EOr[String]
    * }}}
    *
    * @tparam A Type of the value EOr can contain
@@ -13,7 +13,7 @@ package object e {
    * @see [[e.E]]
    * @see [[e.EOr]]
    */
-  type or[+A, _ <: E] = EOr[A]
+  type or[_ <: E, +A] = EOr[A]
 
   implicit class ValueExtensionsForEOr[A](a: => A) {
     /**

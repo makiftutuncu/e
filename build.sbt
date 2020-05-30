@@ -14,22 +14,18 @@ scmInfo              in ThisBuild := Some(ScmInfo(url("https://github.com/makift
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .aggregate(`e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
 
 lazy val `e-docs` = project
   .in(file("e-docs"))
-  .dependsOn(`e-core`, `e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .dependsOn(`e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
   .enablePlugins(MdocPlugin)
   .settings(Settings.scalaSettings)
   .settings(Settings.mdocSettings)
 
-lazy val `e-core` = project
-  .in(file("e-core"))
-  .settings(Settings.javaSettings)
-
 lazy val `e-scala`  = project.in(file("e-scala")).settings(Settings.scalaSettings)
 lazy val `e-kotlin` = project.in(file("e-kotlin")).settings(Settings.kotlinSettings)
-lazy val `e-java`   = project.in(file("e-java")).dependsOn(`e-core`).settings(Settings.javaSettings)
+lazy val `e-java`   = project.in(file("e-java")).settings(Settings.javaSettings)
 
 lazy val `e-circe` = project
   .in(file("e-circe"))
@@ -103,7 +99,6 @@ releaseProcess := Seq[ReleaseStep](
   updateDocumentation,
   commitReleaseVersion,
   tagRelease,
-  releaseStepCommandAndRemaining("e-core/publishSigned"),
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
   releaseStepCommandAndRemaining("e-java/publishSigned"),
   releaseStepCommandAndRemaining("e-kotlin/publishSigned"),

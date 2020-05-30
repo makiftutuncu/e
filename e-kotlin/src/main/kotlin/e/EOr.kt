@@ -26,9 +26,9 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
     /**
      * Converts value in this, if it exists, using given mapping function to make a new EOr
      *
-     * @param f Mapping function
+     * @param B Type of the new value
      *
-     * @tparam B Type of the new value
+     * @param f Mapping function
      *
      * @return A new EOr containing either the new value or E in this one
      */
@@ -41,9 +41,9 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
     /**
      * Computes a new EOr using value in this, if it exists, with given flat mapping function
      *
-     * @param f Flat mapping function
+     * @param B Type of the new value
      *
-     * @tparam B Type of the new value
+     * @param f Flat mapping function
      *
      * @return Computed EOr or a new EOr containing E in this one
      */
@@ -85,9 +85,9 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
     /**
      * Provides a next EOr if this one has a value, ignoring the value
      *
-     * @param next Next EOr in case this one has a value
+     * @param B Type of value in next EOr
      *
-     * @tparam B Type of value in next EOr
+     * @param next Next EOr in case this one has a value
      *
      * @return Next EOr or a new EOr containing E in this one
      */
@@ -100,9 +100,9 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
     /**
      * Performs a side-effect using value in this, if it exists
      *
-     * @param f Side-effecting function
+     * @param U Type of result of the side-effect
      *
-     * @tparam U Type of result of the side-effect
+     * @param f Side-effecting function
      */
     fun <U> forEach(f: (A) -> U) {
         when (this) {
@@ -127,13 +127,30 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
         }
 
     companion object {
+        /**
+         * A failed EOr
+         *
+         * @param error An error
+         */
         data class Failure<A>(override val error: E): EOr<A>(error, null) {
             override fun toString(): String = error.toString()
         }
 
+        /**
+         * A successful EOr
+         *
+         * @param A Type of the value this EOr can contain
+         *
+         * @param value A value
+         */
         data class Success<A>(override val value: A): EOr<A>(null, value) {
             override fun toString(): String = value.toString()
         }
+
+        /**
+         * A successful EOr of type Unit
+         */
+        val unit: EOr<Unit> = Success(Unit)
 
         /**
          * A default E to be used when condition does not hold while filtering an EOr
@@ -141,11 +158,6 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
          * @see e.EOr.filter
          */
         val filteredError: E = E(name = "filtered", message = "Condition does not hold!")
-
-        /**
-         * A successful EOr of type Unit
-         */
-        val unit: EOr<Unit> = Success(Unit)
 
         /**
          * Constructs a failed EOr containing given E
@@ -194,6 +206,8 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
         fun <A> catching(f: () -> A, ifFailure: (Throwable) -> E): EOr<A> =
             try {
                 Success(f())
+            } catch (ee: EException) {
+                Failure(ee.e)
             } catch (t: Throwable) {
                 Failure(ifFailure(t))
             }
