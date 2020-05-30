@@ -63,7 +63,7 @@ object EOrTest: Assertions {
         E.name("test").toEOr<Int>().flatMapError { it.code(1).toEOr() }.assertError(E.code(1).name("test"))
     }
 
-    @Test fun `Folding an EOr`() {
+    @Test fun `folding an EOr`() {
         assertEquals("",  E.empty.toEOr<Int>().fold({ it.code?.toString() ?: "" }, { it.toString() }))
         assertEquals("1", E.code(1).toEOr<Int>().fold({ it.code?.toString() ?: "" }, { it.toString() }))
 
@@ -128,7 +128,7 @@ object EOrTest: Assertions {
         (-42).orE().filter({ it > 0 }) { negative.data("value", it) }.assertError(negative.data("value", -42))
     }
 
-    @Test fun `Equality and hash code of EOr`() {
+    @Test fun `equality and hash code of EOr`() {
         val eor1 = "test1".orE()
         val eor2 = "test2".orE()
 

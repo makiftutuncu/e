@@ -36,10 +36,10 @@ trait Assertions { self: munit.Assertions =>
     }
   }
 
-  def assertAlmostSame(generated: Long, created: Long, threshold: Long = 1000L): Unit = {
+  def assertAlmostSame(expected: Long, actual: Long, threshold: Long = 1000L): Unit = {
     assert(
-      (created - generated).abs < threshold,
-      s"Times were apart mode than $threshold ms, generated: $generated, created: $created"
+      (actual - expected).abs < threshold,
+      s"Times were apart mode than $threshold ms, expected: $expected, actual: $actual"
     )
   }
 
