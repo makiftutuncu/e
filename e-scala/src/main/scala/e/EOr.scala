@@ -1,6 +1,5 @@
 package e
 
-import scala.reflect.ClassTag
 import scala.util.{Try, Failure => TryFailure, Success => TrySuccess}
 
 /**
@@ -287,32 +286,6 @@ object EOr {
    * @return A new failed EOr containing given value
    */
   def apply[A](a: A): EOr[A] = Success(a)
-
-  /**
-   * Deconstructs given EOr for pattern matching against its E
-   *
-   * @param eor An EOr
-   *
-   * @return Some Failure or None if given EOr has value
-   */
-  def unapply(eor: EOr[Nothing]): Option[Failure] =
-    eor match {
-      case f: Failure => Some(f)
-      case _          => None
-    }
-
-  /**
-   * Deconstructs given EOr for pattern matching against its value
-   *
-   * @param eor An EOr
-   *
-   * @return Some Success or None if given EOr has E
-   */
-  def unapply[A: ClassTag](eor: EOr[A]): Option[Success[A]] =
-    eor match {
-      case s: Success[A] => Some(s)
-      case _             => None
-    }
 
   /**
    * Constructs an EOr from an [[scala.Option]]

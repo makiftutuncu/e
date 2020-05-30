@@ -13,11 +13,11 @@ interface Codec<S, T>: Decoder<T, S>, Encoder<S, T> {
     /**
      * Creates a codec based on an implicit decoder and encoder
      *
+     * @param S Type of source
+     * @param T Type of target
+     *
      * @param decoder Implicit instance of decoder
      * @param encoder Implicit instance of encoder
-     *
-     * @tparam S Type of source
-     * @tparam T Type of target
      *
      * @return Created codec
      */
