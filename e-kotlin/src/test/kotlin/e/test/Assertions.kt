@@ -36,10 +36,10 @@ interface Assertions {
         assertEquals(time,         this.time)
     }
 
-    fun assertAlmostSame(generated: Long, created: Long?, threshold: Long = 1000L) {
+    fun assertAlmostSame(expected: Long, actual: Long?, threshold: Long = 1000L) {
         assertTrue(
-            ((created ?: 0L) - generated).absoluteValue < threshold,
-            "Times were apart mode than $threshold ms, generated: $generated, created: $created"
+            ((actual ?: 0L) - expected).absoluteValue < threshold,
+            "Times were apart mode than $threshold ms, expected: $expected, actual: $actual"
         )
     }
 
