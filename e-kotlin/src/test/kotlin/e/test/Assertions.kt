@@ -45,14 +45,14 @@ interface Assertions {
 
     fun <A> EOr<A>.assertError(thatE: E) {
         fold(
-            { thisE -> assertEquals(thatE, thisE) },
+            { thisE -> assertEquals(thatE, thisE, "Expected: ${thatE.trace()}, Actual: ${thisE.trace()}") },
             { a     -> fail<A>("EOr did not contain error, it contained: $a") }
         )
     }
 
     fun <A> EOr<A>.assertValue(thatA: A) {
         fold(
-            { e     -> fail<A>("EOr did not contain value, it contained: $e") },
+            { e     -> fail<A>("EOr did not contain value, it contained: ${e.trace()}") },
             { thisA -> assertEquals(thatA, thisA) }
         )
     }
