@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 
 import com.google.gson.*;
 
-import com.google.gson.reflect.TypeToken;
 import e.EOr;
 import e.codec.Codec;
 import e.E;
@@ -123,25 +122,25 @@ public class EGsonCodec implements Codec<E, JsonElement>, JsonSerializer<E>, Jso
     }
 
     private EOr<Optional<Integer>> decodeCode(JsonObject obj) {
-        return !obj.has("code") ?
+        return (!obj.has("code") || obj.get("code").isJsonNull()) ?
                EOr.from(Optional.empty()) :
-               primitive("code", obj, JsonPrimitive::isNumber, JsonPrimitive::getAsInt).map(Optional::of);
+               primitive("code", "Int", obj, JsonPrimitive::isNumber, JsonPrimitive::getAsInt).map(Optional::of);
     }
 
     private EOr<Optional<String>> decodeName(JsonObject obj) {
-        return !obj.has("name") ?
+        return (!obj.has("name") || obj.get("name").isJsonNull()) ?
                EOr.from(Optional.empty()) :
-               primitive("name", obj, JsonPrimitive::isString, JsonPrimitive::getAsString).map(Optional::of);
+               primitive("name", "String", obj, JsonPrimitive::isString, JsonPrimitive::getAsString).map(Optional::of);
     }
 
     private EOr<Optional<String>> decodeMessage(JsonObject obj) {
-        return !obj.has("message") ?
+        return (!obj.has("message") || obj.get("message").isJsonNull()) ?
                EOr.from(Optional.empty()) :
-               primitive("message", obj, JsonPrimitive::isString, JsonPrimitive::getAsString).map(Optional::of);
+               primitive("message", "String", obj, JsonPrimitive::isString, JsonPrimitive::getAsString).map(Optional::of);
     }
 
     private EOr<List<E>> decodeCauses(JsonObject obj) {
-        if (!obj.has("causes")) {
+        if (!obj.has("causes") || obj.get("causes").isJsonNull()) {
             return EOr.from(new LinkedList<>());
         }
 
@@ -168,7 +167,7 @@ public class EGsonCodec implements Codec<E, JsonElement>, JsonSerializer<E>, Jso
     }
 
     private EOr<Map<String, String>> decodeData(JsonObject obj) {
-        if (!obj.has("data")) {
+        if (!obj.has("data") || obj.get("data").isJsonNull()) {
             return EOr.from(new LinkedHashMap<>());
         }
 
@@ -186,7 +185,7 @@ public class EGsonCodec implements Codec<E, JsonElement>, JsonSerializer<E>, Jso
             String key = j.getKey();
             JsonElement value = j.getValue();
 
-            if (!value.isJsonPrimitive() || value.getAsJsonPrimitive().isString()) {
+            if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString()) {
                 dataDecodingFailures.add(expected("data." + key, "String"));
             } else {
                 decodedData.put(key, value.getAsJsonPrimitive().getAsString());
@@ -201,9 +200,9 @@ public class EGsonCodec implements Codec<E, JsonElement>, JsonSerializer<E>, Jso
     }
 
     private EOr<Optional<Long>> decodeTime(JsonObject obj) {
-        return !obj.has("time") ?
+        return (!obj.has("time") || obj.get("time").isJsonNull()) ?
                EOr.from(Optional.empty()) :
-               primitive("time", obj, JsonPrimitive::isNumber, JsonPrimitive::getAsLong).map(Optional::of);
+               primitive("time", "Long", obj, JsonPrimitive::isNumber, JsonPrimitive::getAsLong).map(Optional::of);
     }
 
     private E expected(String key, String type) {
@@ -211,10 +210,10 @@ public class EGsonCodec implements Codec<E, JsonElement>, JsonSerializer<E>, Jso
     }
 
     private <A> EOr<A> primitive(String key,
+                                 String type,
                                  JsonObject obj,
                                  Predicate<JsonPrimitive> predicate,
                                  Function<JsonPrimitive, A> getter) {
-        String type = (new TypeToken<A>() {}).getType().getTypeName();
         E expected = expected(key, type);
 
         return EOr.catching(() -> obj.get(key).getAsJsonPrimitive(), t  -> expected)
