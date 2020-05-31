@@ -1,5 +1,6 @@
 package e
 
+import e.scala._
 import zio.{ZIO, Task, RIO, IO}
 
 object ezio {

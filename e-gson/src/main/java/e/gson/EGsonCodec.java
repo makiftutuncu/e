@@ -7,10 +7,10 @@ import java.util.function.Predicate;
 
 import com.google.gson.*;
 
-import e.EOr;
-import e.codec.Codec;
-import e.E;
-import e.codec.Decoder;
+import e.java.E;
+import e.java.EOr;
+import e.java.codec.Codec;
+import e.java.codec.Decoder;
 
 public class EGsonCodec implements Codec<E, JsonElement>, JsonSerializer<E>, JsonDeserializer<E> {
     private static EGsonCodec instance;

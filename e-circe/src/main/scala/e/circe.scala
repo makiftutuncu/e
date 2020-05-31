@@ -1,7 +1,8 @@
 package e
 
 import cats.implicits._
-import e.codec.{CodecFor, Decoder}
+import e.scala._
+import e.scala.codec.{CodecFor, Decoder}
 import io.circe.CursorOp.DownField
 import io.circe.{Decoder => CirceDecoder, Encoder => CirceEncoder, _}
 import io.circe.syntax._

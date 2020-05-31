@@ -14,21 +14,21 @@ import java.util.function.Supplier;
  */
 public interface EOr<A> {
     /**
-     * Whether or not this contains an E
+     * @return Whether or not this contains an E
      */
     default boolean isFailure() {
         return this instanceof Failure;
     }
 
     /**
-     * Whether or not this contains a value
+     * @return Whether or not this contains a value
      */
     default boolean isSuccess() {
         return this instanceof Success;
     }
 
     /**
-     * E in this as an Optional
+     * @return E in this as an Optional
      */
     default Optional<E> error() {
         if (isSuccess()) { return Optional.empty(); }
@@ -39,7 +39,7 @@ public interface EOr<A> {
     }
 
     /**
-     * Value in this as an Optional
+     * @return Value in this as an Optional
      */
     default Optional<A> value() {
         if (isFailure()) { return Optional.empty(); }
@@ -248,7 +248,7 @@ public interface EOr<A> {
             this.e = e;
         }
 
-        /** E in this EOr */
+        /** @return E in this EOr */
         public E e() {
             return e;
         }
@@ -283,7 +283,7 @@ public interface EOr<A> {
             this.a = a;
         }
 
-        /** Value in this EOr */
+        /** @return Value in this EOr */
         public A a() {
             return a;
         }

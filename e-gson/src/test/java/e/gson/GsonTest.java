@@ -1,12 +1,12 @@
 package e.gson;
 
-import static e.test.Assertions.*;
-import static e.test.Helpers.*;
+import static e.java.test.Assertions.*;
+import static e.java.test.Helpers.*;
 
 import com.google.gson.*;
-import e.E;
-import e.EOr;
-import e.codec.Decoder;
+import e.java.E;
+import e.java.EOr;
+import e.java.codec.Decoder;
 import org.junit.jupiter.api.Test;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
