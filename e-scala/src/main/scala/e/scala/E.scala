@@ -1,4 +1,4 @@
-package e
+package e.scala
 
 /**
  * A generic and immutable error, containing helpful information
@@ -161,7 +161,7 @@ final case class E(code: Option[Int]         = None,
   val hasTime: Boolean = time.isDefined
 
   /**
-   * A trace of this error and its causes as a String, like the stack trace of an [[scala.Exception]]
+   * A trace of this error and its causes as a String, like the stack trace of an [[_root_.scala.Exception]]
    *
    * {{{
    *   val e = E(name = Some("error1"), causes = List(E(name = Some("error2")), E(name = Some("error3"))))
@@ -174,7 +174,7 @@ final case class E(code: Option[Int]         = None,
    *
    * @return Trace String of this E and its causes
    *
-   * @see [[e.E#toString]]
+   * @see [[e.scala.E#toString]]
    */
   def trace: String = {
     def line(e: E, level: Int): String = ("  " * level) + e.toString
@@ -194,14 +194,14 @@ final case class E(code: Option[Int]         = None,
    *
    * @return An EOr containing this E
    *
-   * @see [[e.EOr]]
+   * @see [[e.scala.EOr]]
    */
   def toEOr[A]: EOr[A] = EOr(this)
 
   /**
    * Converts this E into an exception
    *
-   * @return An [[e.EException]] containing this E
+   * @return An [[e.scala.EException]] containing this E
    */
   def toException: EException = EException(this)
 
@@ -340,7 +340,7 @@ object E {
   def causeIf(condition: Boolean, e: => E): E = if (condition) E(causes = List(e)) else empty
 
   /**
-   * Constructs an E from given [[scala.Throwable]]
+   * Constructs an E from given [[_root_.scala.Throwable]]
    *
    * @param throwable A Throwable
    *

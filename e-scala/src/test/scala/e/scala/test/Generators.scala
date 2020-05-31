@@ -1,6 +1,6 @@
-package e.test
+package e.scala.test
 
-import e.E
+import e.scala.E
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 

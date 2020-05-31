@@ -1,6 +1,6 @@
-package e
+package e.scala
 
-import e.test.ESuite
+import e.scala.test.ESuite
 import org.scalacheck.Prop.forAll
 
 import scala.util.Try
