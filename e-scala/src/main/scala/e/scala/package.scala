@@ -1,6 +1,8 @@
-import scala.util.Try
+package e
 
-package object e {
+import _root_.scala.util.Try
+
+package object scala {
   /**
    * Type alias for EOr, allowing a more pleasing syntax as following:
    *
@@ -10,8 +12,8 @@ package object e {
    *
    * @tparam A Type of the value EOr can contain
    *
-   * @see [[e.E]]
-   * @see [[e.EOr]]
+   * @see [[e.scala.E]]
+   * @see [[e.scala.EOr]]
    */
   type or[_ <: E, +A] = EOr[A]
 
@@ -21,7 +23,7 @@ package object e {
      *
      * @return An EOr[A] containing this value
      *
-     * @see [[e.EOr]]
+     * @see [[e.scala.EOr]]
      */
     @inline def orE: EOr[A] =
       EOr(a)
@@ -39,7 +41,7 @@ package object e {
 
   implicit class OptionExtensionsForEOr[A](option: Option[A]) {
     /**
-     * Constructs an EOr from this [[scala.Option]]
+     * Constructs an EOr from this [[_root_.scala.Option]]
      *
      * @param ifNone An E to use in case this Option is None
      *
@@ -51,7 +53,7 @@ package object e {
 
   implicit class EitherExtensionsForEOr[L, R](either: Either[L, R]) {
     /**
-     * Constructs an EOr from this [[scala.util.Either]]
+     * Constructs an EOr from this [[_root_.scala.util.Either]]
      *
      * @param ifLeft An E conversion function in case this Either is Left
      *
@@ -63,7 +65,7 @@ package object e {
 
   implicit class TryExtensionsForEOr[A](`try`: Try[A]) {
     /**
-     * Constructs an EOr from this [[scala.util.Try]]
+     * Constructs an EOr from this [[_root_.scala.util.Try]]
      *
      * @param ifFailure An E conversion function in case this Try is Failure
      *
@@ -75,7 +77,7 @@ package object e {
 
   implicit class ThrowableExtensionsForEOr(throwable: Throwable) {
     /**
-     * Constructs an E from this [[scala.Throwable]]
+     * Constructs an E from this [[_root_.scala.Throwable]]
      *
      * @param f A mapping function
      *

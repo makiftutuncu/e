@@ -1,4 +1,4 @@
-package e.codec
+package e.scala.codec
 
 import scala.annotation.implicitNotFound
 
@@ -9,7 +9,7 @@ import scala.annotation.implicitNotFound
  * @tparam O Type of output
  */
 @implicitNotFound(
-  "No implicit instance is found of type e.codec.Encoder[${I}, ${O}]. You may try following:\n\n" +
+  "No implicit instance is found of type e.scala.codec.Encoder[${I}, ${O}]. You may try following:\n\n" +
   "* Make sure an instance of correct types is in scope (missing import?)\n" +
   "* Implement an implicit instance yourself"
 )

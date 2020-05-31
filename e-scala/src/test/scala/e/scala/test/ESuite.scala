@@ -1,4 +1,4 @@
-package e.test
+package e.scala.test
 
 import munit.ScalaCheckSuite
 

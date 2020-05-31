@@ -1,4 +1,4 @@
-package e
+package e.scala
 
 import scala.util.{Try, Failure => TryFailure, Success => TrySuccess}
 
@@ -8,9 +8,9 @@ import scala.util.{Try, Failure => TryFailure, Success => TrySuccess}
  *
  * @tparam A Type of the value this EOr can contain
  *
- * @see [[e.E]]
- * @see [[scala.util.Either]]
- * @see [[scala.util.Try]]
+ * @see [[e.scala.E]]
+ * @see [[_root_.scala.util.Either]]
+ * @see [[_root_.scala.util.Try]]
  */
 sealed trait EOr[+A] { self =>
   import EOr.{Failure, Success}
@@ -197,7 +197,7 @@ sealed trait EOr[+A] { self =>
    *
    * @return This EOr of a new EOr containing filtered error
    *
-   * @see [[e.EOr#filteredError]]
+   * @see [[e.scala.EOr#filteredError]]
    */
   def withFilter(condition: A => Boolean): EOr[A] = filter(condition)
 
@@ -261,7 +261,7 @@ object EOr {
   /**
    * A default E to be used when condition does not hold while filtering an EOr
    *
-   * @see [[e.EOr#withFilter]]
+   * @see [[e.scala.EOr#withFilter]]
    */
   val filteredError: E = E(name = Some("filtered"), message = Some("Condition does not hold!"))
 
@@ -288,7 +288,7 @@ object EOr {
   def apply[A](a: A): EOr[A] = Success(a)
 
   /**
-   * Constructs an EOr from an [[scala.Option]]
+   * Constructs an EOr from an [[_root_.scala.Option]]
    *
    * @param option An Option
    * @param ifNone An error to use in case Option is None
@@ -304,7 +304,7 @@ object EOr {
     }
 
   /**
-   * Constructs an EOr from an [[scala.util.Either]]
+   * Constructs an EOr from an [[_root_.scala.util.Either]]
    *
    * @param either An Either
    * @param ifLeft An E conversion function in case Either is Left
@@ -321,7 +321,7 @@ object EOr {
     }
 
   /**
-   * Constructs an EOr from a [[scala.util.Try]]
+   * Constructs an EOr from a [[_root_.scala.util.Try]]
    *
    * @param try       A Try
    * @param ifFailure An E conversion function in case Try is Failure

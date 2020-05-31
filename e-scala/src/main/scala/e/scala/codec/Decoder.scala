@@ -1,6 +1,6 @@
-package e.codec
+package e.scala.codec
 
-import e.{E, EOr}
+import e.scala.{E, EOr}
 
 import scala.annotation.implicitNotFound
 
@@ -10,11 +10,11 @@ import scala.annotation.implicitNotFound
  * @tparam I Type of input
  * @tparam O Type of output
  *
- * @see [[e.E]]
- * @see [[e.EOr]]
+ * @see [[e.scala.E]]
+ * @see [[e.scala.EOr]]
  */
 @implicitNotFound(
-  "No implicit instance is found of type e.codec.Decoder[${I}, ${O}]. You may try following:\n\n" +
+  "No implicit instance is found of type e.scala.codec.Decoder[${I}, ${O}]. You may try following:\n\n" +
   "* Make sure an instance of correct types is in scope (missing import?)\n" +
   "* Implement an implicit instance yourself"
 )
@@ -26,7 +26,7 @@ trait Decoder[-I, +O] {
    *
    * @return Decoded output or E
    *
-   * @see [[e.EOr]]
+   * @see [[e.scala.EOr]]
    */
   def decode(input: I): EOr[O]
 }

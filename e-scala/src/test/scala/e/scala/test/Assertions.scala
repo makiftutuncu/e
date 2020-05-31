@@ -1,7 +1,7 @@
-package e.test
+package e.scala.test
 
-import e.EOr.{Failure, Success}
-import e.{E, EOr}
+import e.scala.EOr.{Failure, Success}
+import e.scala.{E, EOr}
 
 trait Assertions { self: munit.Assertions =>
   implicit class EAssertions(e: E) {

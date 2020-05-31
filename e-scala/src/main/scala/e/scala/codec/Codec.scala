@@ -1,20 +1,20 @@
-package e.codec
+package e.scala.codec
 
-import e.EOr
+import e.scala.EOr
 
 import scala.annotation.implicitNotFound
 
 /**
- * Typeclass defining decoding and encoding together via [[e.codec.Decoder]] and [[e.codec.Encoder]]
+ * Typeclass defining decoding and encoding together via [[e.scala.codec.Decoder]] and [[e.scala.codec.Encoder]]
  *
  * @tparam S Type of source
  * @tparam T Type of target
  */
 @implicitNotFound(
-  "No implicit instance is found of type e.codec.Codec[${S}, ${T}]. You may try following:\n\n" +
+  "No implicit instance is found of type e.scala.codec.Codec[${S}, ${T}]. You may try following:\n\n" +
   "* Make sure an instance of correct types is in scope (missing import?)\n" +
   "* Implement an implicit instance yourself\n" +
-  "* Ensure both e.codec.Decoder[${T}, ${S}] and e.codec.Encoder[${S}, ${T}] are in scope and use `Codec.of[${S}, ${T}]`"
+  "* Ensure both e.scala.codec.Decoder[${T}, ${S}] and e.scala.codec.Encoder[${S}, ${T}] are in scope and use `Codec.of[${S}, ${T}]`"
 )
 trait Codec[S, T] extends Decoder[T, S] with Encoder[S, T]
 

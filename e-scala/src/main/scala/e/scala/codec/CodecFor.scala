@@ -1,9 +1,9 @@
-package e.codec
+package e.scala.codec
 
-import e.{E, EOr}
+import e.scala.{E, EOr}
 
 /**
- * Helper trait creating a [[e.codec.Codec]] implementation of a third-party type
+ * Helper trait creating a [[e.scala.codec.Codec]] implementation of a third-party type
  *
  * @tparam T  Target type
  * @tparam DE Decoder type
