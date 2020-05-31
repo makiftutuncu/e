@@ -221,42 +221,42 @@ public final class E {
     }
 
     /**
-     * Whether or not a code is set
+     * @return Whether or not a code is set
      */
     public boolean hasCode() {
         return code != null;
     }
 
     /**
-     * Whether or not a name is set
+     * @return Whether or not a name is set
      */
     public boolean hasName() {
         return name != null;
     }
 
     /**
-     * Whether or not a message is set
+     * @return Whether or not a message is set
      */
     public boolean hasMessage() {
         return message != null;
     }
 
     /**
-     * Whether or not a cause is set
+     * @return Whether or not a cause is set
      */
     public boolean hasCause() {
         return !causes.isEmpty();
     }
 
     /**
-     * Whether or not a data is set
+     * @return Whether or not a data is set
      */
     public boolean hasData() {
         return !data.isEmpty();
     }
 
     /**
-     * Whether or not a time is set
+     * @return Whether or not a time is set
      */
     public boolean hasTime() {
         return time != null;

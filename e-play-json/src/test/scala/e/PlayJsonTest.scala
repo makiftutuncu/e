@@ -1,8 +1,9 @@
 package e
 
-import e.codec.Decoder
 import e.playjson._
-import e.test.ESuite
+import e.scala.E
+import e.scala.codec.Decoder
+import e.scala.test.ESuite
 import play.api.libs.json._
 
 class PlayJsonTest extends ESuite {
@@ -22,8 +23,8 @@ class PlayJsonTest extends ESuite {
       )
     }
 
-  private val eCodec        = codec[E]
-  private val testDataCodec = codec[TestData]
+  private val eCodec        = makeCodec[E]
+  private val testDataCodec = makeCodec[TestData]
   private val error         = Decoder.decodingError
 
   test("Failing to decode an E") {

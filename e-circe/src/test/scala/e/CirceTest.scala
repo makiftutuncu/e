@@ -2,8 +2,9 @@ package e
 
 import cats.implicits._
 import e.circe._
-import e.codec._
-import e.test.ESuite
+import e.scala.E
+import e.scala.codec._
+import e.scala.test.ESuite
 import io.circe.{Json, Decoder => CirceDecoder, Encoder => CirceEncoder}
 import io.circe.syntax._
 
@@ -17,8 +18,8 @@ class CirceTest extends ESuite {
 
   implicit val testDataEncoder: CirceEncoder[TestData] = CirceEncoder.forProduct2("s", "i")(t => (t.s, t.i))
 
-  private val eCodec        = codec[E]
-  private val testDataCodec = codec[TestData]
+  private val eCodec        = makeCodec[E]
+  private val testDataCodec = makeCodec[TestData]
   private val error         = Decoder.decodingError
 
   test("Failing to decode an E") {

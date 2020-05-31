@@ -1,5 +1,6 @@
 package e
 
+import e.scala._
 import zio.test._
 import zio.test.environment.TestEnvironment
 import zio.test.Assertion._

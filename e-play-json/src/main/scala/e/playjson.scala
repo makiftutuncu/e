@@ -2,7 +2,8 @@ package e
 
 import cats.{Functor, Semigroupal}
 import cats.implicits._
-import e.codec.{CodecFor, Decoder}
+import e.scala._
+import e.scala.codec.{CodecFor, Decoder}
 import play.api.libs.json._
 
 object playjson extends CodecFor[JsValue, Reads, Writes] {

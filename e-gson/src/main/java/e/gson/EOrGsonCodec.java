@@ -1,10 +1,10 @@
 package e.gson;
 
 import com.google.gson.*;
-import e.E;
-import e.EOr;
-import e.codec.Decoder;
-import e.codec.Encoder;
+import e.java.E;
+import e.java.EOr;
+import e.java.codec.Decoder;
+import e.java.codec.Encoder;
 
 import java.lang.reflect.Type;
 
