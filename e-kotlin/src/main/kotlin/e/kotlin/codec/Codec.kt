@@ -1,9 +1,9 @@
-package e.codec
+package e.kotlin.codec
 
-import e.EOr
+import e.kotlin.EOr
 
 /**
- * Typeclass defining decoding and encoding together via [e.codec.Decoder] and [e.codec.Encoder]
+ * Typeclass defining decoding and encoding together via [e.kotlin.codec.Decoder] and [e.kotlin.codec.Encoder]
  *
  * @param S Type of source
  * @param T Type of target

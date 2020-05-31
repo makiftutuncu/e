@@ -1,6 +1,6 @@
-package e
+package e.kotlin
 
-import e.test.Assertions
+import e.kotlin.test.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 

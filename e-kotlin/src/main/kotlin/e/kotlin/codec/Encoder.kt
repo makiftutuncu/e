@@ -1,4 +1,4 @@
-package e.codec
+package e.kotlin.codec
 
 /**
  * Typeclass defining how to encode an input value to an output value

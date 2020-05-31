@@ -1,7 +1,7 @@
-package e.codec
+package e.kotlin.codec
 
-import e.E
-import e.EOr
+import e.kotlin.E
+import e.kotlin.EOr
 
 /**
  * Typeclass defining how to decode an input value to an output value, possibly failing with E
@@ -9,8 +9,8 @@ import e.EOr
  * @param I Type of input
  * @param O Type of output
  *
- * @see e.E
- * @see e.EOr
+ * @see e.kotlin.E
+ * @see e.kotlin.EOr
  */
 interface Decoder<in I, out O> {
   /**
@@ -20,7 +20,7 @@ interface Decoder<in I, out O> {
    *
    * @return Decoded output or E
    *
-   * @see e.EOr
+   * @see e.kotlin.EOr
    */
   fun decode(input: I): EOr<O>
 

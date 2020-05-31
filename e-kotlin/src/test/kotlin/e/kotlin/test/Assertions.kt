@@ -1,7 +1,7 @@
-package e.test
+package e.kotlin.test
 
-import e.E
-import e.EOr
+import e.kotlin.E
+import e.kotlin.EOr
 import org.junit.jupiter.api.Assertions.*
 import kotlin.math.absoluteValue
 

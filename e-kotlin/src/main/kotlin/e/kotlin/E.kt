@@ -1,4 +1,4 @@
-package e
+package e.kotlin
 
 /**
  * A generic and immutable error, containing helpful information
@@ -167,7 +167,7 @@ data class E(val code: Int?                = null,
      *
      * @return Trace String of this E and its causes
      *
-     * @see e.E.toString
+     * @see e.kotlin.E.toString
      */
     fun trace(): String {
         fun line(e: E, level: Int): String = "  ".repeat(level) + e.toString()
@@ -187,14 +187,14 @@ data class E(val code: Int?                = null,
      *
      * @return An EOr<A> containing this E
      *
-     * @see e.EOr
+     * @see e.kotlin.EOr
      */
     fun <A> toEOr(): EOr<A> = EOr.from(this)
 
     /**
      * Converts this E into an exception
      *
-     * @return An [e.EException] containing this E
+     * @return An [e.kotlin.EException] containing this E
      */
     fun toException(): EException = EException(this)
 

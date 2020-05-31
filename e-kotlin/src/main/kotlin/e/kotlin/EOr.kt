@@ -1,4 +1,4 @@
-package e
+package e.kotlin
 
 /**
  * A container that can either be a Failure containing an E or Success containing a value
@@ -10,7 +10,7 @@ package e
  * @param error E in this EOr
  * @param value Value in this EOr
  *
- * @see e.E
+ * @see e.kotlin.E
  */
 sealed class EOr<out A>(open val error: E?, open val value: A?) {
     /**
@@ -155,7 +155,7 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
         /**
          * A default E to be used when condition does not hold while filtering an EOr
          *
-         * @see e.EOr.filter
+         * @see e.kotlin.EOr.filter
          */
         val filteredError: E = E(name = "filtered", message = "Condition does not hold!")
 

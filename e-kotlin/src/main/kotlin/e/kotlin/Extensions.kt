@@ -1,4 +1,4 @@
-package e
+package e.kotlin
 
 /**
  * Computes a new EOr using E in this, if it exists, with given flat mapping function
@@ -41,7 +41,7 @@ inline fun <reified A> EOr<A>.orElse(crossinline alternative: () -> EOr<A>): EOr
  *
  * @return An EOr containing this value
  *
- * @see e.EOr
+ * @see e.kotlin.EOr
  */
 fun <A> A.orE(): EOr<A> =
     EOr.from(this)
