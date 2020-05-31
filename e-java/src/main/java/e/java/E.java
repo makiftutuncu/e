@@ -1,4 +1,4 @@
-package e;
+package e.java;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -27,12 +27,12 @@ public final class E {
     /**
      * Creates an E with all its properties
      *
-     * @param code    {@link e.E#code}
-     * @param name    {@link e.E#name}
-     * @param message {@link e.E#message}
-     * @param causes  {@link e.E#causes}
-     * @param data    {@link e.E#data}
-     * @param time    {@link e.E#time}
+     * @param code    {@link e.java.E#code}
+     * @param name    {@link e.java.E#name}
+     * @param message {@link e.java.E#message}
+     * @param causes  {@link e.java.E#causes}
+     * @param data    {@link e.java.E#data}
+     * @param time    {@link e.java.E#time}
      */
     public E(Integer code, String name, String message, List<E> causes, Map<String, String> data, Long time) {
         this.code = code;
@@ -43,32 +43,32 @@ public final class E {
         this.time = time;
     }
 
-    /** @return {@link e.E#code} or empty {@link java.util.Optional} if code is not set */
+    /** @return {@link e.java.E#code} or empty {@link java.util.Optional} if code is not set */
     public Optional<Integer> code() {
         return Optional.ofNullable(code);
     }
 
-    /** @return {@link e.E#name} or empty {@link java.util.Optional} if name is not set */
+    /** @return {@link e.java.E#name} or empty {@link java.util.Optional} if name is not set */
     public Optional<String> name() {
         return Optional.ofNullable(name);
     }
 
-    /** @return {@link e.E#message} or empty {@link java.util.Optional} if message is not set */
+    /** @return {@link e.java.E#message} or empty {@link java.util.Optional} if message is not set */
     public Optional<String> message() {
         return Optional.ofNullable(message);
     }
 
-    /** @return {@link e.E#causes} or empty {@link java.util.List} if causes are not set */
+    /** @return {@link e.java.E#causes} or empty {@link java.util.List} if causes are not set */
     public List<E> causes() {
         return Collections.unmodifiableList(causes);
     }
 
-    /** @return {@link e.E#data} or empty {@link java.util.Map} if data are not set */
+    /** @return {@link e.java.E#data} or empty {@link java.util.Map} if data are not set */
     public Map<String, String> data() {
         return data;
     }
 
-    /** @return {@link e.E#time} or empty {@link java.util.Optional} if time is not set */
+    /** @return {@link e.java.E#time} or empty {@link java.util.Optional} if time is not set */
     public Optional<Long> time() {
         return Optional.ofNullable(time);
     }
@@ -267,7 +267,7 @@ public final class E {
      *
      * @return Trace String of this E and its causes
      *
-     * @see e.E#toString
+     * @see e.java.E#toString
      */
     public String trace() {
         class TraceBuilder {
@@ -308,7 +308,7 @@ public final class E {
      *
      * @return An EOr&lt;A&gt; containing this E
      *
-     * @see e.EOr
+     * @see e.java.EOr
      */
     public <A> EOr<A> toEOr() {
         return EOr.from(this);
@@ -317,7 +317,7 @@ public final class E {
     /**
      * Converts this E into an exception
      *
-     * @return An {@link e.EException} containing this E
+     * @return An {@link e.java.EException} containing this E
      */
     public EException toException() {
         return new EException(this);
