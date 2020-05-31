@@ -3,12 +3,11 @@ package dev.akif.ehttp4sexample
 import cats.data.Kleisli
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits._
-import dev.akif.ehttp4sexample.common.Errors.EAsException
 import dev.akif.ehttp4sexample.common.{Controller, Errors}
 import dev.akif.ehttp4sexample.people.{PeopleController, PeopleRepository, PeopleService}
 import doobie.util.transactor.Transactor
-import e.circe.implicits.circeEncoderE
-import e.scala.E
+import e.circe._
+import e._
 import org.flywaydb.core.Flyway
 import org.http4s.circe.jsonEncoderOf
 import org.http4s.headers.`Content-Type`
@@ -54,8 +53,8 @@ object Main extends IOApp {
         eToResponse(e)
       }.redeem(
         {
-          case EAsException(e) => eToResponse(e)
-          case t               => eToResponse(Errors.unexpected.message("An unexpected error occurred!").cause(t))
+          case EException(e) => eToResponse(e)
+          case t             => eToResponse(Errors.unexpected.message("An unexpected error occurred!").cause(t.toE()))
         },
         identity
       )
@@ -69,7 +68,7 @@ object Main extends IOApp {
                           .as(ExitCode.Success)
 
   private def eToResponse(e: E): Response[IO] = {
-    val status  = Status.fromInt(e.code).getOrElse(Status.InternalServerError)
+    val status  = e.code.flatMap(c => Status.fromInt(c).toOption).getOrElse(Status.InternalServerError)
     val headers = Headers.of(`Content-Type`(MediaType.application.json))
     val entity  = jsonEncoderOf[IO, E].toEntity(e)
 
