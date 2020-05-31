@@ -1,9 +1,9 @@
-package e;
+package e.java;
 
 /**
  * A RuntimeException wrapping E to be used where errors are represented as E but an Exception is needed
  *
- * @see e.E
+ * @see e.java.E
  * @see java.lang.RuntimeException
  */
 public class EException extends RuntimeException {

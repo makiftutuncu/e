@@ -1,7 +1,7 @@
-package e.codec;
+package e.java.codec;
 
-import e.E;
-import e.EOr;
+import e.java.E;
+import e.java.EOr;
 
 /**
  * Typeclass defining how to decode an input value to an output value, possibly failing with E
@@ -9,8 +9,8 @@ import e.EOr;
  * @param <I> Type of input
  * @param <O> Type of output
  *
- * @see e.E
- * @see e.EOr
+ * @see e.java.E
+ * @see e.java.EOr
  */
 public interface Decoder<I, O> {
     /**
@@ -20,7 +20,7 @@ public interface Decoder<I, O> {
      *
      * @return Decoded output or E
      *
-     * @see e.EOr
+     * @see e.java.EOr
      */
     EOr<O> decode(I input);
 

@@ -1,7 +1,7 @@
-package e;
+package e.java;
 
-import static e.test.Assertions.*;
-import static e.test.Helpers.*;
+import static e.java.test.Assertions.*;
+import static e.java.test.Helpers.*;
 
 import org.junit.jupiter.api.Test;
 

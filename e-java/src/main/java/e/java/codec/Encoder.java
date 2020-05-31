@@ -1,4 +1,4 @@
-package e.codec;
+package e.java.codec;
 
 /**
  * Typeclass defining how to encode an input value to an output value

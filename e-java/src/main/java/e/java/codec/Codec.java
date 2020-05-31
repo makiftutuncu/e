@@ -1,9 +1,9 @@
-package e.codec;
+package e.java.codec;
 
-import e.EOr;
+import e.java.EOr;
 
 /**
- * Typeclass defining decoding and encoding together via {@link e.codec.Decoder} and {@link e.codec.Encoder}
+ * Typeclass defining decoding and encoding together via {@link e.java.codec.Decoder} and {@link e.java.codec.Encoder}
  *
  * @param <S> Type of source
  * @param <T> Type of target

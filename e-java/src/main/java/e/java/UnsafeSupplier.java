@@ -1,4 +1,4 @@
-package e;
+package e.java;
 
 /**
  * A helper functional interface marking a value to be supplied in an unsafe way

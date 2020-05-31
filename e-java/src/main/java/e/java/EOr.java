@@ -1,4 +1,4 @@
-package e;
+package e.java;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -10,7 +10,7 @@ import java.util.function.Supplier;
  *
  * @param <A> Type of the value this EOr can contain
  *
- * @see e.E
+ * @see e.java.E
  */
 public interface EOr<A> {
     /**
@@ -229,7 +229,7 @@ public interface EOr<A> {
      *
      * @return This EOr of a new EOr containing an E
      *
-     * @see e.EOr#filteredError
+     * @see e.java.EOr#filteredError
      */
     default EOr<A> filter(Function<A, Boolean> condition) {
         return filter(condition, a -> EOr.filteredError.data("value", a));
@@ -314,7 +314,7 @@ public interface EOr<A> {
     /**
      * A default E to be used when condition does not hold while filtering an EOr
      *
-     * @see e.EOr#filter
+     * @see e.java.EOr#filter
      */
     E filteredError = E.fromName("filtered").message("Condition does not hold!");
 

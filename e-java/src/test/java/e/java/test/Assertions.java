@@ -1,11 +1,11 @@
-package e.test;
+package e.java.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import e.E;
-import e.EOr;
+import e.java.E;
+import e.java.EOr;
 
 import java.util.List;
 import java.util.Map;
