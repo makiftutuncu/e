@@ -16,14 +16,14 @@ public interface EOr<A> {
     /**
      * @return Whether or not this contains an E
      */
-    default boolean isFailure() {
+    default boolean hasError() {
         return this instanceof Failure;
     }
 
     /**
      * @return Whether or not this contains a value
      */
-    default boolean isSuccess() {
+    default boolean hasValue() {
         return this instanceof Success;
     }
 
@@ -31,7 +31,7 @@ public interface EOr<A> {
      * @return E in this as an Optional
      */
     default Optional<E> error() {
-        if (isSuccess()) { return Optional.empty(); }
+        if (hasValue()) { return Optional.empty(); }
 
         E e = ((Failure<?>) this).e;
 
@@ -42,7 +42,7 @@ public interface EOr<A> {
      * @return Value in this as an Optional
      */
     default Optional<A> value() {
-        if (isFailure()) { return Optional.empty(); }
+        if (hasError()) { return Optional.empty(); }
 
         A a = ((Success<A>) this).a;
 
@@ -59,7 +59,7 @@ public interface EOr<A> {
      * @return A new EOr containing either the new value or E in this one
      */
     default <B> EOr<B> map(Function<A, B> f) {
-        if (isFailure()) {
+        if (hasError()) {
             E e = ((Failure<?>) this).e;
 
             return new Failure<>(e);
@@ -81,7 +81,7 @@ public interface EOr<A> {
      * @return Computed EOr or a new EOr containing E in this one
      */
     default <B> EOr<B> flatMap(Function<A, EOr<B>> f) {
-        if (isFailure()) {
+        if (hasError()) {
             E e = ((Failure<?>) this).e;
 
             return new Failure<>(e);
@@ -100,7 +100,7 @@ public interface EOr<A> {
      * @return This EOr or a new EOr containing computed E if this one has E
      */
     default EOr<A> mapError(Function<E, E> f) {
-        if (isSuccess()) { return this; }
+        if (hasValue()) { return this; }
 
         E thisE = ((Failure<?>) this).e;
         E thatE = f.apply(thisE);
@@ -116,7 +116,7 @@ public interface EOr<A> {
      * @return This EOr or a computed EOr if this one has E
      */
     default EOr<A> flatMapError(Function<E, EOr<A>> f) {
-        if (isSuccess()) { return this; }
+        if (hasValue()) { return this; }
 
         E e = ((Failure<?>) this).e;
 
@@ -134,7 +134,7 @@ public interface EOr<A> {
      * @return Converted result
      */
     default <B> B fold(Function<E, B> ifFailure, Function<A, B> ifSuccess) {
-        if (isFailure()) {
+        if (hasError()) {
             E e = ((Failure<?>) this).e;
 
             return ifFailure.apply(e);
@@ -153,7 +153,7 @@ public interface EOr<A> {
      * @return Value in this or given default value
      */
     default A getOrElse(Supplier<A> alternative) {
-        if (isSuccess()) { return ((Success<A>) this).a; }
+        if (hasValue()) { return ((Success<A>) this).a; }
 
         return alternative.get();
     }
@@ -166,7 +166,7 @@ public interface EOr<A> {
      * @return This EOr or alternative if this one has E
      */
     default EOr<A> orElse(Supplier<EOr<A>> alternative) {
-        if (isSuccess()) { return this; }
+        if (hasValue()) { return this; }
 
         return alternative.get();
     }
@@ -181,7 +181,7 @@ public interface EOr<A> {
      * @return Next EOr or a new EOr containing E in this one
      */
     default <B> EOr<B> andThen(Supplier<EOr<B>> next) {
-        if (isFailure()) {
+        if (hasError()) {
             E e = ((Failure<?>) this).e;
 
             return new Failure<>(e);
@@ -191,17 +191,50 @@ public interface EOr<A> {
     }
 
     /**
+     * Performs a side-effect using error in this, if it exists
+     *
+     * @param <U> Type of result of the side-effect
+     *
+     * @param f Side-effecting function
+     *
+     * @return This EOr for chaining
+     */
+    default <U> EOr<A> onError(Function<E, U> f) {
+        if (hasError()) {
+            E e = ((Failure<A>) this).e;
+            f.apply(e);
+        }
+
+        return this;
+    }
+
+    /**
      * Performs a side-effect using value in this, if it exists
      *
      * @param <U> Type of result of the side-effect
      *
      * @param f Side-effecting function
+     *
+     * @return This EOr for chaining
      */
-    default <U> void forEach(Function<A, U> f) {
-        if (isFailure()) { return; }
+    default <U> EOr<A> onValue(Function<A, U> f) {
+        if (hasValue()) {
+            A a = ((Success<A>) this).a;
+            f.apply(a);
+        }
 
-        A a = ((Success<A>) this).a;
-        f.apply(a);
+        return this;
+    }
+
+    /**
+     * Alias of `onValue`
+     *
+     * @return This EOr for chaining
+     *
+     * @see e.java.EOr#onValue
+     */
+    default <U> EOr<A> forEach(Function<A, U> f) {
+        return onValue(f);
     }
 
     /**
@@ -213,7 +246,7 @@ public interface EOr<A> {
      * @return This EOr of a new EOr containing an E computed by given conversion function
      */
     default EOr<A> filter(Function<A, Boolean> condition, Function<A, E> filteredError) {
-        if (isFailure()) { return this; }
+        if (hasError()) { return this; }
 
         A a = ((Success<A>) this).a;
 

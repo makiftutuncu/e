@@ -98,7 +98,28 @@ public class EOrTest {
         assertValue(EOr.from("test").andThen(() -> EOr.from(42)), 42);
     }
 
-    @Test void performingSideEffectOnAnEOr() {
+    @Test void performingSideEffectOnAnEOrOnError() {
+        final AtomicInteger counter = new AtomicInteger(0);
+
+        EOr.from("test").onError(i -> counter.getAndIncrement());
+        assertEquals(0, counter.get());
+
+        listOf(E.fromName("test1"), E.fromName("test2"), E.fromName("test3")).forEach(e -> e.toEOr().onError(s -> counter.getAndIncrement()));
+        assertEquals(3, counter.get());
+    }
+
+    @Test void performingSideEffectOnAnEOrOnValue() {
+        E e = E.fromCode(1);
+        final AtomicInteger counter = new AtomicInteger(0);
+
+        e.toEOr().onValue(i -> counter.getAndIncrement());
+        assertEquals(0, counter.get());
+
+        listOf("test1", "test2", "test3").forEach(t -> EOr.from(t).onValue(s -> counter.getAndIncrement()));
+        assertEquals(3, counter.get());
+    }
+
+    @Test void performingSideEffectOnAnEOrUsingForEach() {
         E e = E.fromCode(1);
         final AtomicInteger counter = new AtomicInteger(0);
 
