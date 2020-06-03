@@ -3,7 +3,7 @@ package dev.akif.ehttp4sexample.common
 import cats.free.Free
 import doobie.free.connection.ConnectionOp
 import doobie.util.transactor.Transactor
-import e.E
+import e.scala.E
 
 trait Repository[F[_], M, C, U] {
   val db: Transactor[F]

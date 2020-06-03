@@ -7,7 +7,7 @@ val h2Version       = "1.4.200"
 val hikaricpVersion = "3.4.2"
 val flywayVersion   = "6.1.4"
 val logbackVersion  = "1.2.1"
-val eVersion        = "1.1.1"
+val eVersion        = "2.0.0-SNAPSHOT"
 
 plugins {
     application

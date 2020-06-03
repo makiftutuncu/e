@@ -1,7 +1,7 @@
 package dev.akif.ehttp4sexample.common
 
 import cats.effect.IO
-import e.{E, EOr}
+import e.scala.{E, EOr}
 
 object implicits {
   implicit class EIOExtensions(private val e: E) {

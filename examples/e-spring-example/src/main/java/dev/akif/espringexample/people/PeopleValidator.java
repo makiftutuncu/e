@@ -4,28 +4,28 @@ import org.springframework.stereotype.Component;
 
 import dev.akif.espringexample.errors.Errors;
 import dev.akif.espringexample.people.dto.PersonDTO;
-import e.java.Maybe;
+import e.java.EOr;
 
 @Component
 public class PeopleValidator {
     public static final int MAX_NAME_LENGTH = 16;
 
-    public Maybe<Void> validatePersonDTO(PersonDTO personDTO, boolean allowNull) {
+    public EOr<Void> validatePersonDTO(PersonDTO personDTO, boolean allowNull) {
         return validateName(personDTO.getName(), allowNull)
-                .andThen(() -> validateAge(personDTO.getAge(), allowNull)
-                .andThen(Maybe::unit));
+                .andThen(() -> validateAge(personDTO.getAge(), allowNull))
+                .andThen(() -> EOr.unit);
     }
 
-    private Maybe<Void> validateName(String name, boolean allowNull) {
+    private EOr<Void> validateName(String name, boolean allowNull) {
         if (allowNull && name == null) {
-            return Maybe.unit();
+            return EOr.unit;
         }
 
         if (!allowNull && name == null) {
             return Errors.invalidData
                          .message("Name is invalid!")
                          .data("rules", "Name cannot be null!")
-                         .toMaybe();
+                         .toEOr();
         }
 
         if (name.isBlank() || name.length() > MAX_NAME_LENGTH) {
@@ -33,22 +33,22 @@ public class PeopleValidator {
                          .message("Name is invalid!")
                          .data("name", name)
                          .data("rules", "Name must be less than " + MAX_NAME_LENGTH + " characters long and it must not be empty.")
-                         .toMaybe();
+                         .toEOr();
         }
 
-        return Maybe.unit();
+        return EOr.unit;
     }
 
-    private Maybe<Void> validateAge(Integer age, boolean allowNull) {
+    private EOr<Void> validateAge(Integer age, boolean allowNull) {
         if (allowNull && age == null) {
-            return Maybe.unit();
+            return EOr.unit;
         }
 
         if (!allowNull && age == null) {
             return Errors.invalidData
                          .message("Age is invalid!")
                          .data("rules", "Age cannot be null!")
-                         .toMaybe();
+                         .toEOr();
         }
 
         if (age < 0) {
@@ -56,9 +56,9 @@ public class PeopleValidator {
                          .message("Age is invalid!")
                          .data("age", age)
                          .data("rules", "Age must be a positive integer.")
-                         .toMaybe();
+                         .toEOr();
         }
 
-        return Maybe.unit();
+        return EOr.unit;
     }
 }

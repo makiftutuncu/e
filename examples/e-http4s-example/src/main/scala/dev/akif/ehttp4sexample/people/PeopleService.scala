@@ -3,7 +3,7 @@ package dev.akif.ehttp4sexample.people
 import cats.effect.IO
 import dev.akif.ehttp4sexample.common.{Errors, Service}
 import dev.akif.ehttp4sexample.common.implicits._
-import e._
+import e.scala._
 
 class PeopleService(val peopleRepository: PeopleRepository) extends Service[IO, Person, CreatePerson, UpdatePerson] {
   override def getAll: IO[List[Person]] = peopleRepository.getAll
