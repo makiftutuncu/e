@@ -77,7 +77,10 @@ lazy val `e-gson` = project
 
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
-credentials          in ThisBuild += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
+val sonatypeUser = sys.env.getOrElse("SONATYPE_USER", "")
+val sonatypePass = sys.env.getOrElse("SONATYPE_PASS", "")
+
+credentials          in ThisBuild += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", sonatypeUser, sonatypePass)
 pomIncludeRepository in ThisBuild := { _ => false }
 publishMavenStyle    in ThisBuild := true
 publishTo            in ThisBuild := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
@@ -90,8 +93,17 @@ val updateDocumentation = ReleaseStep(
   }
 )
 
+val checkCredentials = ReleaseStep { state =>
+  if (sonatypeUser.isEmpty || sonatypePass.isEmpty) {
+    throw new Exception("Sonatype credentials are missing! Make sure to provide SONATYPE_USER and SONATYPE_PASS environment variables.")
+  }
+
+  state
+}
+
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
+  checkCredentials,
   inquireVersions,
   runClean,
   runTest,

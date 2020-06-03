@@ -97,7 +97,40 @@ object EOrTest: Assertions {
         "test".orE().andThen { 42.orE() }.assertValue(42)
     }
 
-    @Test fun `performing side-effect on an EOr`() {
+    @Test fun `performing side-effect on an EOr on error`() {
+        var counter = 0
+
+        "test".orE().onError {
+            counter += 1
+        }
+        assertEquals(0, counter)
+
+        listOf(E.name("test1"), E.name("test2"), E.name("test3")).forEach {
+            it.toEOr<String>().onError {
+                counter += 1
+            }
+        }
+        assertEquals(3, counter)
+    }
+
+    @Test fun `performing side-effect on an EOr on value`() {
+        val e = E.code(1)
+        var counter = 0
+
+        e.toEOr<String>().onValue {
+            counter += 1
+        }
+        assertEquals(0, counter)
+
+        listOf("test1", "test2", "test3").forEach {
+            it.orE().onValue {
+                counter += 1
+            }
+        }
+        assertEquals(3, counter)
+    }
+
+    @Test fun `performing side-effect on an EOr using forEach`() {
         val e = E.code(1)
         var counter = 0
 

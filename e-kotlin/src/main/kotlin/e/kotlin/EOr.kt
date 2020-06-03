@@ -16,12 +16,12 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
     /**
      * Whether or not this contains an E
      */
-    fun isFailure(): Boolean = this is Failure
+    fun hasError(): Boolean = this is Failure
 
     /**
      * Whether or not this contains a value
      */
-    fun isSuccess(): Boolean = this is Success<A>
+    fun hasValue(): Boolean = this is Success<A>
 
     /**
      * Converts value in this, if it exists, using given mapping function to make a new EOr
@@ -98,18 +98,44 @@ sealed class EOr<out A>(open val error: E?, open val value: A?) {
         }
 
     /**
+     * Performs a side-effect using error in this, if it exists
+     *
+     * @param U Type of result of the side-effect
+     *
+     * @param f Side-effecting function
+     */
+    fun <U> onError(f: (E) -> U): EOr<A> {
+        when (this) {
+            is Failure -> f(this.error)
+            else       -> {}
+        }
+
+        return this
+    }
+
+    /**
      * Performs a side-effect using value in this, if it exists
      *
      * @param U Type of result of the side-effect
      *
      * @param f Side-effecting function
      */
-    fun <U> forEach(f: (A) -> U) {
+    fun <U> onValue(f: (A) -> U): EOr<A> {
         when (this) {
-            is Failure -> {}
             is Success -> f(this.value)
+            else       -> {}
         }
+
+        return this
     }
+
+    /**
+     * Alias of `onValue`
+     *
+     * @see [e.kotlin.EOr.onValue]
+     */
+    fun <U> forEach(f: (A) -> U): EOr<A> =
+        onValue(f)
 
     /**
      * Filters this EOr by value in it, if it exists, using given function

@@ -146,7 +146,36 @@ class EOrTest extends ESuite {
     }
   }
 
-  property("Performing side-effect on an EOr") {
+  property("Performing side-effect on an EOr on error") {
+    var counter = 0
+    var previous = 0
+
+    "test".orE.onError { _ => previous = counter; counter = previous + 1 }
+    assertEquals(counter, 0)
+    assertEquals(previous, 0)
+
+    forAll { e: E =>
+      e.toEOr[String].onError { _ => previous = counter; counter = previous + 1 }
+      assertEquals(counter, previous + 1)
+    }
+  }
+
+  property("Performing side-effect on an EOr on value") {
+    val e = E.code(1)
+    var counter = 0
+    var previous = 0
+
+    e.toEOr[String].onValue { _ => previous = counter; counter = previous + 1 }
+    assertEquals(counter, 0)
+    assertEquals(previous, 0)
+
+    forAll { s: String =>
+      s.orE.onValue { _ => previous = counter; counter = previous + 1 }
+      assertEquals(counter, previous + 1)
+    }
+  }
+
+  property("Performing side-effect on an EOr using foreach") {
     val e = E.code(1)
     var counter = 0
     var previous = 0

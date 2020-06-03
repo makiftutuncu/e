@@ -18,12 +18,12 @@ sealed trait EOr[+A] { self =>
   /**
    * Whether or not this contains an E
    */
-  val isFailure: Boolean = self.isInstanceOf[Failure]
+  val hasError: Boolean = self.isInstanceOf[Failure]
 
   /**
    * Whether or not this contains a value
    */
-  val isSuccess: Boolean = self.isInstanceOf[Success[A]]
+  val hasValue: Boolean = self.isInstanceOf[Success[A]]
 
   /**
    * E in this as an Option
@@ -163,17 +163,38 @@ sealed trait EOr[+A] { self =>
     }
 
   /**
+   * Performs a side-effect using error in this, if it exists
+   *
+   * @param f Side-effecting function
+   *
+   * @tparam U Type of result of the side-effect
+   */
+  def onError[U](f: E => U): EOr[A] =
+    self match {
+      case Failure(e) => f(e); this
+      case _          => this
+    }
+
+  /**
    * Performs a side-effect using value in this, if it exists
    *
    * @param f Side-effecting function
    *
    * @tparam U Type of result of the side-effect
    */
-  def foreach[U](f: A => U): Unit =
+  def onValue[U](f: A => U): EOr[A] =
     self match {
-      case Failure(_)     => ()
-      case Success(value) => f(value)
+      case Success(a) => f(a); this
+      case _          => this
     }
+
+  /**
+   * Alias of `onValue`
+   *
+   * @see [[e.scala.EOr#onValue]]
+   */
+  def foreach[U](f: A => U): Unit =
+    onValue(f)
 
   /**
    * Filters this EOr by value in it, if it exists, using given function
