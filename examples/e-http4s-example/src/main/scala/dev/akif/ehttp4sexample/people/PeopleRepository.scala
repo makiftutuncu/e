@@ -1,5 +1,6 @@
 package dev.akif.ehttp4sexample.people
-import e._
+
+import e.scala._
 import cats.effect.IO
 import dev.akif.ehttp4sexample.common.implicits._
 import dev.akif.ehttp4sexample.common.{Errors, Repository}

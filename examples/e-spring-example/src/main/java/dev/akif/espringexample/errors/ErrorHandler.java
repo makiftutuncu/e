@@ -2,6 +2,7 @@ package dev.akif.espringexample.errors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,10 +25,10 @@ public class ErrorHandler {
     public ResponseEntity<E> handle(Exception exception) {
         logger.error("Caught an unhandled exception!", exception);
 
-        return handle(Errors.unexpected.cause(exception));
+        return handle(Errors.unexpected.cause(E.fromThrowable(exception)));
     }
 
     private ResponseEntity<E> handle(E e) {
-        return ResponseEntity.status(e.code()).body(e);
+        return ResponseEntity.status(e.code().orElse(HttpStatus.INTERNAL_SERVER_ERROR.value())).body(e);
     }
 }

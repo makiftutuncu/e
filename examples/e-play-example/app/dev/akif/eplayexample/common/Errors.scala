@@ -1,6 +1,6 @@
 package dev.akif.eplayexample.common
 
-import e._
+import e.scala._
 
 object Errors {
   val invalidData: E = E.name("invalid-data").code(400)

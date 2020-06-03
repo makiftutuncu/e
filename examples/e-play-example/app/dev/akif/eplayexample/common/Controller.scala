@@ -1,7 +1,7 @@
 package dev.akif.eplayexample.common
 
 import dev.akif.eplayexample.AppComponents.Modules
-import e._
+import e.scala._
 import e.playjson._
 import e.ezio._
 import play.api.http.ContentTypes

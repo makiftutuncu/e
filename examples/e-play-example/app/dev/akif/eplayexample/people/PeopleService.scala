@@ -2,7 +2,7 @@ package dev.akif.eplayexample.people
 
 import dev.akif.eplayexample.common.{Errors, Service}
 import e.ezio._
-import e._
+import e.scala._
 
 trait PeopleService {
   val peopleService: PeopleService.Def
@@ -28,7 +28,7 @@ object PeopleService {
       peopleRepository.getAll
 
     override def get(id: Long): EIO[Person] =
-      peopleRepository.get(id).flatMap(_.orE((Errors.database.message("Cannot find person!").data("id" -> id))).toEIO)
+      peopleRepository.get(id).flatMap(_.orE(Errors.database.message("Cannot find person!").data("id" -> id)).toEIO)
 
     override def create(create: CreatePerson): EIO[Person] =
       peopleRepository.create(create)

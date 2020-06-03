@@ -7,7 +7,7 @@ import dev.akif.ehttp4sexample.common.{Controller, Errors}
 import dev.akif.ehttp4sexample.people.{PeopleController, PeopleRepository, PeopleService}
 import doobie.util.transactor.Transactor
 import e.circe._
-import e._
+import e.scala._
 import org.flywaydb.core.Flyway
 import org.http4s.circe.jsonEncoderOf
 import org.http4s.headers.`Content-Type`

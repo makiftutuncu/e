@@ -3,7 +3,7 @@ package dev.akif.eplayexample.common
 import java.sql.Connection
 
 import e.ezio._
-import e._
+import e.scala._
 
 trait Repository {
   val db: DB.Def

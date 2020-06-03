@@ -1,7 +1,7 @@
 package dev.akif.eplayexample
 
 import dev.akif.eplayexample.common.Errors
-import e._
+import e.scala._
 import e.playjson._
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.Json

@@ -1,6 +1,6 @@
 package dev.akif.ehttp4sexample.common
 
-import e.E
+import e.scala.E
 
 object Errors {
   val notFound: E   = E(name = Some("not-found"),  code = Some(404))
