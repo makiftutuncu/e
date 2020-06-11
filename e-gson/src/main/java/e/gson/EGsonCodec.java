@@ -12,7 +12,9 @@ import e.java.EOr;
 import e.java.codec.Codec;
 import e.java.codec.Decoder;
 
-public class EGsonCodec implements Codec<E, JsonElement>, JsonSerializer<E>, JsonDeserializer<E> {
+public class EGsonCodec implements Codec<E, JsonElement>,
+                                   JsonSerializer<E>,
+                                   JsonDeserializer<E> {
     private static EGsonCodec instance;
 
     private EGsonCodec() {}
