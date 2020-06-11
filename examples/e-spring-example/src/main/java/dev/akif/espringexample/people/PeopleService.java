@@ -30,16 +30,15 @@ public class PeopleService implements Service<PersonDTO, PersonDTOWithId> {
     }
 
     @Override public EOr<PersonDTOWithId> getById(long id) {
-        return repository.getById(id).flatMap(personOpt -> {
-            if (personOpt.isEmpty()) {
-                return Errors.notFound
-                             .message("Person is not found!")
-                             .data("id", id)
-                             .toEOr();
-            }
-
-            return EOr.from(new PersonDTOWithId(personOpt.get()));
-        });
+        return repository.getById(id)
+            .flatMap(personOpt ->
+                EOr.fromOptional(personOpt, () ->
+                    Errors.notFound
+                          .message("Person is not found!")
+                          .data("id", id)
+                )
+            )
+            .map(PersonDTOWithId::new);
     }
 
     @Override public EOr<PersonDTOWithId> create(PersonDTO personDTO) {

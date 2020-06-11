@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class EOrTest {
@@ -25,6 +26,12 @@ public class EOrTest {
         E eNull = E.fromName("null");
         assertError(EOr.fromNullable(nullable1, () -> eNull), eNull);
         assertValue(EOr.fromNullable(nullable2, () -> eNull), "test");
+
+        Optional<String> optional1 = Optional.empty();
+        Optional<String> optional2 = Optional.of("test");
+        E eEmpty = E.fromName("null");
+        assertError(EOr.fromOptional(optional1, () -> eEmpty), eEmpty);
+        assertValue(EOr.fromOptional(optional2, () -> eEmpty), "test");
 
         UnsafeSupplier<String> t1 = () -> { throw new Exception("test"); };
         UnsafeSupplier<String> t2 = () -> "Test";

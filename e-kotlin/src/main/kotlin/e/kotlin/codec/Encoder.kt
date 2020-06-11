@@ -7,12 +7,12 @@ package e.kotlin.codec
  * @param O Type of output
  */
 interface Encoder<in I, out O> {
-  /**
-   * Encodes an input
-   *
-   * @param input An input
-   *
-   * @return Encoded output
-   */
-  fun encode(input: I): O
+    /**
+     * Encodes an input
+     *
+     * @param input An input
+     *
+     * @return Encoded output
+     */
+    fun encode(input: I): O
 }

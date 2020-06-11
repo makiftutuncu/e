@@ -51,14 +51,27 @@ public class PeopleRepository implements Repository<Person, PersonDTO> {
         return EOr.catching(
             () -> jpa.findById(id),
             t -> Errors.database
-                       .message("Cannot update person!")
+                       .message("Cannot find person to update!")
                        .cause(E.fromThrowable(t))
-                       .data("name", personDTO.getName())
-                       .data("age",  personDTO.getAge())
+                       .data("id", id)
+        ).flatMap(personOpt ->
+            EOr.fromOptional(personOpt, () ->
+                Errors.notFound
+                      .message("Cannot find person to update!")
+                      .data("id", id)
+            )
         ).flatMap(person ->
-            EOr.fromNullable(
-                person.orElse(null),
-                () -> Errors.notFound.message("Cannot find person to update!").data("id", id)
+            EOr.catching(
+                () -> {
+                    Person updated = personDTO.updated(person);
+                    jpa.save(updated);
+                    return updated;
+                },
+                t -> Errors.database
+                           .message("Cannot update person!")
+                           .cause(E.fromThrowable(t))
+                           .data("name", personDTO.getName())
+                           .data("age",  personDTO.getAge())
             )
         );
     }
@@ -67,17 +80,26 @@ public class PeopleRepository implements Repository<Person, PersonDTO> {
         return EOr.catching(
             () -> jpa.findById(id),
             t -> Errors.database
-                       .message("Cannot delete person!")
+                       .message("Cannot find person to delete!")
                        .cause(E.fromThrowable(t))
                        .data("id", id)
-        ).flatMap(person ->
-            EOr.fromNullable(
-                person.orElse(null),
-                () -> Errors.notFound.message("Cannot find person to delete!").data("id", id)
+        ).flatMap(personOpt ->
+            EOr.fromOptional(personOpt, () ->
+                Errors.notFound
+                      .message("Cannot find person to delete!")
+                      .data("id", id)
             )
-        ).map(person -> {
-            jpa.delete(person);
-            return person;
-        });
+        ).flatMap(person ->
+            EOr.catching(
+                () -> {
+                    jpa.delete(person);
+                    return person;
+                },
+                t -> Errors.database
+                           .message("Cannot delete person!")
+                           .cause(E.fromThrowable(t))
+                           .data("id", id)
+            )
+        );
     }
 }

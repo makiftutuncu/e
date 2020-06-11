@@ -392,6 +392,21 @@ public interface EOr<A> {
     }
 
     /**
+     * Constructs an EOr from an Optional value
+     *
+     * @param <A> Type of value
+     *
+     * @param a         An Optional value
+     * @param ifEmpty   An error to use in case value is empty
+     *
+     * @return An EOr containing either value or given E
+     */
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    static <A> EOr<A> fromOptional(Optional<A> a, Supplier<E> ifEmpty) {
+        return !a.isPresent() ? new Failure<>(ifEmpty.get()) : new Success<>(a.get());
+    }
+
+    /**
      * Constructs an EOr from a computation that can throw
      *
      * @param <A> Type of value
