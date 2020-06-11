@@ -1,7 +1,6 @@
 package dev.akif.ehttp4sexample.common
 
 import cats.free.Free
-import dev.akif.ehttp4sexample.common.Errors.EAsException
 import doobie.free.connection.ConnectionOp
 import doobie.util.transactor.Transactor
 import e.scala.E
@@ -22,7 +21,7 @@ trait Repository[F[_], M, C, U] {
   protected def handleOption[A](option: Option[A], ifNone: => E): Free[ConnectionOp, A] =
     Free.liftF {
       option match {
-        case None    => ConnectionOp.RaiseError[A](EAsException(ifNone))
+        case None    => ConnectionOp.RaiseError[A](ifNone.toException)
         case Some(a) => ConnectionOp.Raw[A](_ => a)
       }
     }

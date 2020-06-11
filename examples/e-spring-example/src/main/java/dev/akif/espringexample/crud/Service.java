@@ -2,16 +2,16 @@ package dev.akif.espringexample.crud;
 
 import java.util.List;
 
-import e.java.Maybe;
+import e.java.EOr;
 
 public interface Service<DTO, DTOWithId> {
-    Maybe<List<DTOWithId>> getAll();
+    EOr<List<DTOWithId>> getAll();
 
-    Maybe<DTOWithId> getById(long id);
+    EOr<DTOWithId> getById(long id);
 
-    Maybe<DTOWithId> create(DTO dto);
+    EOr<DTOWithId> create(DTO dto);
 
-    Maybe<DTOWithId> update(long id, DTO dto);
+    EOr<DTOWithId> update(long id, DTO dto);
 
-    Maybe<DTOWithId> delete(long id);
+    EOr<DTOWithId> delete(long id);
 }

@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import e.java.Maybe;
+import e.java.EOr;
 
 public interface Repository<Model, DTO> {
-    Maybe<List<Model>> getAll();
+    EOr<List<Model>> getAll();
 
-    Maybe<Optional<Model>> getById(long id);
+    EOr<Optional<Model>> getById(long id);
 
-    Maybe<Model> create(DTO dto);
+    EOr<Model> create(DTO dto);
 
-    Maybe<Model> update(long id, DTO dto);
+    EOr<Model> update(long id, DTO dto);
 
-    Maybe<Model> delete(long id);
+    EOr<Model> delete(long id);
 
     default <A> List<A> toList(Iterable<A> iterator) {
         List<A> list = new ArrayList<>();

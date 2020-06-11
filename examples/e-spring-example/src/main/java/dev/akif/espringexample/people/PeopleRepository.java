@@ -10,7 +10,8 @@ import dev.akif.espringexample.errors.Errors;
 import dev.akif.espringexample.crud.Repository;
 import dev.akif.espringexample.people.dto.PersonDTO;
 import dev.akif.espringexample.people.model.Person;
-import e.java.Maybe;
+import e.java.E;
+import e.java.EOr;
 
 @Component
 public class PeopleRepository implements Repository<Person, PersonDTO> {
@@ -21,60 +22,62 @@ public class PeopleRepository implements Repository<Person, PersonDTO> {
         this.jpa = jpa;
     }
 
-    @Override public Maybe<List<Person>> getAll() {
-        return Maybe.catching(
+    @Override public EOr<List<Person>> getAll() {
+        return EOr.catching(
             () -> toList(jpa.findAll()),
-            t  -> Errors.database.message("Cannot get all people!").cause(t)
+            t  -> Errors.database.message("Cannot get all people!").cause(E.fromThrowable(t))
         );
     }
 
-    @Override public Maybe<Optional<Person>> getById(long id) {
-        return Maybe.catching(
+    @Override public EOr<Optional<Person>> getById(long id) {
+        return EOr.catching(
             () -> jpa.findById(id),
-            t  -> Errors.database.message("Cannot get person by id!").cause(t).data("id", id)
+            t  -> Errors.database.message("Cannot get person by id!").cause(E.fromThrowable(t)).data("id", id)
         );
     }
 
-    @Override public Maybe<Person> create(PersonDTO personDTO) {
-        return Maybe.catching(
+    @Override public EOr<Person> create(PersonDTO personDTO) {
+        return EOr.catching(
             () -> jpa.save(personDTO.toPerson()),
             t  -> Errors.database
                         .message("Cannot create person!")
-                        .cause(t)
+                        .cause(E.fromThrowable(t))
                         .data("name", personDTO.getName())
                         .data("age",  personDTO.getAge())
         );
     }
 
-    @Override public Maybe<Person> update(long id, PersonDTO personDTO) {
-        return Maybe.catchingMaybe(
-            () -> Maybe.nullable(
-                jpa.findById(id).orElse(null),
-                () -> Errors.notFound.message("Cannot find person to update!").data("id", id)
-            ).map(person ->
-                jpa.save(personDTO.updated(person))
-            ),
+    @Override public EOr<Person> update(long id, PersonDTO personDTO) {
+        return EOr.catching(
+            () -> jpa.findById(id),
             t -> Errors.database
                        .message("Cannot update person!")
-                       .cause(t)
+                       .cause(E.fromThrowable(t))
                        .data("name", personDTO.getName())
                        .data("age",  personDTO.getAge())
+        ).flatMap(person ->
+            EOr.fromNullable(
+                person.orElse(null),
+                () -> Errors.notFound.message("Cannot find person to update!").data("id", id)
+            )
         );
     }
 
-    @Override public Maybe<Person> delete(long id) {
-        return Maybe.catchingMaybe(
-            () -> Maybe.nullable(
-                jpa.findById(id).orElse(null),
-                () -> Errors.notFound.message("Cannot find person to delete!").data("id", id)
-            ).map(person -> {
-                jpa.delete(person);
-                return person;
-            }),
+    @Override public EOr<Person> delete(long id) {
+        return EOr.catching(
+            () -> jpa.findById(id),
             t -> Errors.database
                        .message("Cannot delete person!")
-                       .cause(t)
+                       .cause(E.fromThrowable(t))
                        .data("id", id)
-        );
+        ).flatMap(person ->
+            EOr.fromNullable(
+                person.orElse(null),
+                () -> Errors.notFound.message("Cannot find person to delete!").data("id", id)
+            )
+        ).map(person -> {
+            jpa.delete(person);
+            return person;
+        });
     }
 }
