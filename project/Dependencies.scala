@@ -8,5 +8,5 @@ object Dependencies {
   lazy val zio            = "dev.zio"              %% "zio"               % "1.0.0-RC17"
   lazy val jUnit          = "org.junit.jupiter"     % "junit-jupiter"     % "5.6.2" % Test
   lazy val jUnitInterface = "net.aichler"           % "jupiter-interface" % "0.8.3" % Test
-  lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.1.2" % Test
+  lazy val scalaTest      = "org.scalatest"        %% "scalatest"         % "3.2.0" % Test
 }
