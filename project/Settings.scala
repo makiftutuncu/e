@@ -1,5 +1,5 @@
 import kotlin.Keys.{kotlinLib, kotlinVersion}
-import mdoc.MdocPlugin.autoImport.{mdocOut, mdocVariables}
+import mdoc.MdocPlugin.autoImport.{mdocIn, mdocOut, mdocVariables}
 import net.aichler.jupiter.sbt.Import.jupiterTestFramework
 import sbt.Keys._
 import sbt._
@@ -9,7 +9,7 @@ object Settings {
   lazy val latestKotlinVersion = "1.3.70"
   lazy val latestScalaVersion  = "2.13.2"
 
-  lazy val crossCompiledScalaVersions = Seq("2.12.11", latestScalaVersion)
+  lazy val crossCompiledScalaVersions = Seq("2.12.12", latestScalaVersion)
 
   lazy val commonSettings = Seq(
     resolvers               += Resolver.jcenterRepo,
@@ -26,6 +26,7 @@ object Settings {
       "CROSS_SCALA_VERSIONS" -> crossCompiledScalaVersions.mkString(", "),
       "COPYRIGHT_YEAR"       -> "2020"
     ),
+    mdocIn := file("docs"),
     mdocOut := file(".")
   )
 
