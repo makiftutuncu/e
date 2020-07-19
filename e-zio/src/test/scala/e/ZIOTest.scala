@@ -61,4 +61,7 @@ object ZIOTest extends DefaultRunnableSpec {
   )
 
   override def spec: ZSpec[TestEnvironment, E] = allTests.provide(divider)
+
+  // ZIO test fails as `java.lang.NoSuchMethodError: zio.ZIO.raceWith` due to it's default timeout configuration 🤷🏻
+  override def aspects: List[TestAspect[Nothing, TestEnvironment, Nothing, Any]] = List.empty
 }
