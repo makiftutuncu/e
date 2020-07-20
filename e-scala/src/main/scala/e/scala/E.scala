@@ -161,33 +161,6 @@ final case class E(code: Option[Int]         = None,
   val hasTime: Boolean = time.isDefined
 
   /**
-   * A trace of this error and its causes as a String, like the stack trace of an [[_root_.scala.Exception]]
-   *
-   * {{{
-   *   val e = E(name = Some("error1"), causes = List(E(name = Some("error2")), E(name = Some("error3"))))
-   *
-   *   // error1
-   *   //   error2
-   *   //   error3
-   *   e.trace
-   * }}}
-   *
-   * @return Trace String of this E and its causes
-   *
-   * @see [[e.scala.E#toString]]
-   */
-  def trace: String = {
-    def line(e: E, level: Int): String = ("  " * level) + e.toString
-
-    def traverse(e: E, level: Int): List[String] =
-      e.causes.foldLeft(List(line(e, level))) { case (strings, cause) =>
-        strings ++ traverse(cause, level + 1)
-      }
-
-    traverse(this, 0).mkString("\n")
-  }
-
-  /**
    * Converts this E to a failed EOr
    *
    * @tparam A The A type in resulting EOr
@@ -206,16 +179,20 @@ final case class E(code: Option[Int]         = None,
   def toException: EException = EException(this)
 
   override def toString: String = {
-    val parts = List(
-      code.map(c => s"E$c").getOrElse(""),
-      name.getOrElse(""),
-      message.getOrElse(""),
-      if (!hasData) "" else data.map { case (k, v) => s"$k -> $v" }.mkString("[", ", ", "]")
-    ).filter(_.nonEmpty)
+    def quote(s: String): String = s.replaceAll("\"", "\\\"")
 
-    val string = parts.mkString(" | ").trim
-
-    if (string.isEmpty) "[Empty E]" else string
+    List(
+      code.map(c => s""""code":$c"""),
+      name.map(n => s""""name":"${quote(n)}""""),
+      message.map(m => s""""message":"${quote(m)}""""),
+      if (!hasCause) None else Some(s""""causes":${causes.mkString("[", ",", "]")}"""),
+      if (!hasData)  None else Some(s""""data":${data.map { case (k, v) => s""""${quote(k)}":"${quote(v)}"""" }.mkString("{", ",", "}")}"""),
+      time.map(t => s""""time":$t""")
+    ).collect {
+      case Some(s) => s
+    }.mkString(
+      "{", ",", "}"
+    )
   }
 }
 

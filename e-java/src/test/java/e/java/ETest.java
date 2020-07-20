@@ -87,34 +87,6 @@ public class ETest {
         assertAlmostSame(now, E.fromNow().time().get());
     }
 
-    @Test void gettingTraceOfAnE() {
-        E e9 = E.fromCode(9);
-        E e8 = E.fromMessage("Test 8");
-        E e7 = E.fromName("test7");
-        E e6 = E.fromName("test6").message("Test 6");
-        E e5 = E.fromCode(5).message("Test 5");
-        E e4 = E.fromCode(4).name("test4");
-        E e3 = E.fromCode(3).name("test3").message("Test 3");
-        E e2 = E.fromCode(2).name("test2").message("Test 2").causes(listOf(e3, E.empty));
-        E e = new E(1, "test1", "Test 1", listOf(e2, e4, e5, e6, e7, e8, e9), mapOf(mapEntry("foo", "bar")), null);
-
-        String expected =
-            "E1 | test1 | Test 1 | [foo -> bar]\n" +
-            "  E2 | test2 | Test 2\n" +
-            "    E3 | test3 | Test 3\n" +
-            "    [Empty E]\n" +
-            "  E4 | test4\n" +
-            "  E5 | Test 5\n" +
-            "  test6 | Test 6\n" +
-            "  test7\n" +
-            "  Test 8\n" +
-            "  E9";
-
-        String actual = e.trace();
-
-        assertEquals(expected, actual);
-    }
-
     @Test void convertingAnEToAnEOr() {
         E e             = E.fromName("test").message("Test");
         EOr<String> eor = e.toEOr();
@@ -132,28 +104,5 @@ public class ETest {
     @Test void constructingAnEFromAThrowable() {
         assertEquals(E.fromMessage("Test"), E.fromThrowable(new Exception("Test")));
         assertEquals(E.fromName("test"), E.fromThrowable(E.fromName("test").toException()));
-    }
-
-    @Test void convertingAnEToAString() {
-        E e9 = E.fromCode(9);
-        E e8 = E.fromMessage("Test 8");
-        E e7 = E.fromName("test7");
-        E e6 = E.fromName("test6").message("Test 6");
-        E e5 = E.fromCode(5).message("Test 5");
-        E e4 = E.fromCode(4).name("test4");
-        E e3 = E.fromCode(3).name("test3").message("Test 3");
-        E e2 = E.fromCode(2).name("test2").message("Test 2").causes(listOf(e3));
-        E e1 = new E(1, "test1", "Test 1", listOf(e2, e4, e5, e6, e7, e8, e9), mapOf(mapEntry("foo", "bar")), null);
-
-        assertEquals("[Empty E]", E.empty.toString());
-        assertEquals("E1 | test1 | Test 1 | [foo -> bar]", e1.toString());
-        assertEquals("E2 | test2 | Test 2", e2.toString());
-        assertEquals("E3 | test3 | Test 3", e3.toString());
-        assertEquals("E4 | test4", e4.toString());
-        assertEquals("E5 | Test 5", e5.toString());
-        assertEquals("test6 | Test 6", e6.toString());
-        assertEquals("test7", e7.toString());
-        assertEquals("Test 8", e8.toString());
-        assertEquals("E9", e9.toString());
     }
 }

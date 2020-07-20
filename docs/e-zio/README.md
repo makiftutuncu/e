@@ -5,7 +5,7 @@
 
 This module contains aliases [`MaybeZ`](src/main/scala/e/zio/package.scala) and [`MaybeZR`](src/main/scala/e/zio/package.scala) for [ZIO](https://zio.dev). They fix the `E` type parameter of `ZIO[R, E, A]` to [`e.scala.E`](../e-scala/src/main/scala/e/scala/E.scala).
 
-```scala mdoc
+```scala mdoc:reset:to-string
 import e.scala._
 import e.scala.implicits._
 import e.zio._

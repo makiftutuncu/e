@@ -41,6 +41,8 @@ object Settings {
       Dependencies.jUnitInterface
     ),
 
+    classLoaderLayeringStrategy in Test := ClassLoaderLayeringStrategy.Flat,
+
     testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
   )
 
