@@ -2,7 +2,6 @@ package e.java;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /** A generic and immutable error, containing helpful information */
 public final class E {
@@ -263,45 +262,6 @@ public final class E {
     }
 
     /**
-     * A trace of this error and its causes as a String, like the stack trace of an [kotlin.Exception]
-     *
-     * @return Trace String of this E and its causes
-     *
-     * @see e.java.E#toString
-     */
-    public String trace() {
-        class TraceBuilder {
-            private String line(E e, int level) {
-                StringBuilder prefix = new StringBuilder();
-                for (int i = 0; i < level; i++) {
-                    prefix.append("  ");
-                }
-
-                return prefix.append(e.toString()).toString();
-            }
-
-            private List<String> traverse(E e, int level) {
-                List<String> strings = new LinkedList<>();
-                List<String> causeStrings = e.causes
-                    .stream()
-                    .flatMap(cause -> traverse(cause, level + 1).stream())
-                    .collect(Collectors.toList());
-
-                strings.add(line(e, level));
-                strings.addAll(causeStrings);
-
-                return strings;
-            }
-        }
-
-        List<String> strings = new TraceBuilder().traverse(this, 0);
-        StringJoiner joiner = new StringJoiner("\n");
-        strings.forEach(joiner::add);
-
-        return joiner.toString();
-    }
-
-    /**
      * Converts this E to a failed EOr&lt;A&gt;
      *
      * @param <A> The A type in resulting EOr
@@ -341,21 +301,29 @@ public final class E {
     }
 
     @Override public String toString() {
-        if (!hasCode() && !hasName() && !hasMessage() && !hasData()) {
-            return "[Empty E]";
+        class Quoter {
+            public String quote(String s) {
+                return s.replaceAll("\"", "\\\"");
+            }
         }
 
-        StringJoiner joiner = new StringJoiner(" | ");
+        Quoter quoter = new Quoter();
+        StringJoiner joiner = new StringJoiner(",", "{", "}");
+        StringJoiner causeJoiner = new StringJoiner(",", "[", "]");
+        StringJoiner dataJoiner = new StringJoiner(",", "{", "}");
 
-        if (hasCode())    { joiner.add("E" + code); }
-        if (hasName())    { joiner.add(name); }
-        if (hasMessage()) { joiner.add(message); }
-
+        if (hasCode()) { joiner.add(String.format("\"code\":%d", code)); }
+        if (hasName()) { joiner.add(String.format("\"name\":\"%s\"", quoter.quote(name))); }
+        if (hasMessage()) { joiner.add(String.format("\"message\":\"%s\"", quoter.quote(message))); }
+        if (hasCause()) {
+            causes.forEach(cause -> causeJoiner.add(cause.toString()));
+            joiner.add(String.format("\"causes\":%s", causeJoiner.toString()));
+        }
         if (hasData()) {
-            StringJoiner dataJoiner = new StringJoiner(", ", "[", "]");
-            data.forEach((k, v) -> dataJoiner.add(k + " -> " + v));
-            joiner.add(dataJoiner.toString());
+            data.forEach((k, v) -> dataJoiner.add(String.format("\"%s\":\"%s\"", quoter.quote(k), quoter.quote(v))));
+            joiner.add(String.format("\"data\":%s", dataJoiner.toString()));
         }
+        if (hasTime()) { joiner.add(String.format("\"time\":%d", time)); }
 
         return joiner.toString();
     }

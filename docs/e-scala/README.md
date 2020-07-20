@@ -2,7 +2,7 @@
 
 # e-scala
 
-This is the main implementation of e in Scala. It contains two main types [E](src/main/scala/e/scala/E.scala) and [EOr](src/main/scala/e/scala/EOr.scala). It also contains decoding and encoding definitions for these. Decoding and encoding implementations are provided by separate modules.
+This is the main implementation of e in Scala. It contains two main types [E](src/main/scala/e/scala/E.scala) and [EOr](src/main/scala/e/scala/EOr.scala). It also contains definitions of decoding and encoding for these. Implementations of decoding and encoding are provided in separate modules.
 
 ## Installation
 
@@ -11,32 +11,38 @@ If you use SBT, add following to your `build.sbt`:
 ```scala
 libraryDependencies += "dev.akif" %% "e-scala" % "@VERSION@"
 ```
-If you use Maven, add following to your `pom.xml` where `[SCALA_VERSION]` is your Scala version (i.e. 2.12 or 2.13):
+If you use Maven, add following to your `pom.xml` (replace 2.13 if you need a different Scala version):
 
 ```xml
 <dependencies>
   <dependency>
     <groupId>dev.akif</groupId>
-    <artifactId>e-scala_[SCALA_VERSION]</artifactId>
+    <artifactId>e-scala_2.13</artifactId>
     <version>@VERSION@</version>
   </dependency>
 </dependencies>
 ```
-If you use Gradle, add following to your project's `build.gradle` where `[SCALA_VERSION]` is your Scala version (i.e. 2.12 or 2.13):
+If you use Gradle, add following to your project's `build.gradle` (replace 2.13 if you need a different Scala version):
 
 ```javascript
 dependencies {
-  implementation('dev.akif:e-scala_[SCALA_VERSION]:@VERSION@')
+  implementation('dev.akif:e-scala_2.13:@VERSION@')
 }
 ```
 
 ## Contents
 
-Below are some details and examples of e-scala's content. For more, please check corresponding automated tests and Scaladoc.
+Below are some details and examples of e-scala's content. For more, please check corresponding automated tests and Scaladoc documentation.
+
+To get started, add following import which will cover all your needs:
+
+```scala
+import e.scala._
+```
 
 ### 1. E
 
-E (short for error) is the main error type used to represent an error. It is immutable object with a fluent API. It contains following data about the error.
+E (short for error) is the main error type used to represent an error. It is an immutable object with a fluent API. It contains following data about the error.
 
 | Field   | Type                  | Description                                               | Default Value |
 | ------- | --------------------- | --------------------------------------------------------- | ------------- |
@@ -55,7 +61,7 @@ An instance of E can be created by
 * modifying an existing instance
 * using static constructor methods
 
-```scala mdoc
+```scala mdoc:reset:to-string
 import e.scala._
 
 E.empty
@@ -73,34 +79,32 @@ val errorWithDataAndCause = unexpectedError.data("action" -> "test").cause(notSo
 
 Since E is a case class, you can directly access its fields. There are additional methods as well.
 
-```scala mdoc
+```scala mdoc:reset:to-string
 import e.scala._
 
 val databaseError = E.name("database").code(1)
 
-val e1 = E(message = Some("Cannot get user!"), name = Some("Unknown")).cause(databaseError)
+val error = E(message = Some("Cannot get user!"), name = Some("Unknown")).cause(databaseError)
 
-e1.message
+error.message
 
-e1.code orElse (e1.causes.headOption.flatMap(_.code))
+error.code orElse (error.causes.headOption.flatMap(_.code))
 
-e1.hasData
-
-e1.trace
+error.hasData
 ```
 
 #### 1.3. Converting E
 
 You can convert your E into an Exception or an EOr.
 
-```scala mdoc
+```scala mdoc:reset:to-string
 import e.scala._
 
-val e2 = E.name("test").message("Test")
+val error = E.name("test").message("Test")
 
-e2.toException
+error.toException
 
-e2.toEOr[Int]
+error.toEOr[Int]
 ```
 
 ### 2. EOr
@@ -117,17 +121,16 @@ An instance of EOr can be created by
 * constructing from an E or a value
 * converting from other types by extension methods
 
-```scala mdoc
+```scala mdoc:reset:to-string
 import e.scala._
-import e.scala.EOr.{Failure, Success}
 
 EOr[Boolean](E.code(0))
 
 EOr("hello")
 
-Failure(E.code(1))
+EOr.Failure(E.code(1))
 
-Success("test")
+EOr.Success("test")
 
 E.message("test").toEOr[Int]
 
@@ -144,12 +147,69 @@ EOr.fromEither[Int, String](Left(4)) { left => E.code(left) }
 
 #### 2.2. Accessing Content of an EOr
 
-TODO
+The error or the value inside an EOr can be accessed safely.
 
-#### 2.3. Modifying an EOr and Composing
+```scala mdoc:reset:to-string
+import e.scala._
 
-TODO
+val eor1 = E.message("test").toEOr[Int]
+
+val eor2 = "hello".orE
+
+eor1.hasValue
+
+eor1.error
+
+eor2.hasError
+
+eor2.value
+```
+
+#### 2.3. Working With EOr
+
+There are many methods in EOr for modifying, composing, handling the error etc.
+
+```scala mdoc:reset:to-string
+import e.scala._
+
+val eor1 = E.message("test").toEOr[Int]
+
+val eor2 = "hello".orE
+
+eor2.map(_.toUpperCase)
+
+eor1.mapError(_.code(1))
+
+eor2.flatMap(s => eor1)
+
+eor2.filter(_.length < 3)
+
+eor1.getOrElse(0)
+
+eor1.fold(e => e.code, i => Some(i)).getOrElse(0)
+
+case class Person(name: String, age: Int)
+
+def makePerson(name: String, age: Int): EOr[Person] =
+  // You can do for-comprehensions too!
+  for {
+    n <- EOr(name) if name.nonEmpty
+    a <- EOr(age).filter(_ > 0, invalidAge => E.name("invalid-age").data("value" -> invalidAge)) // custom error for filtering
+  } yield {
+    Person(n, a)
+  }
+
+makePerson("", 5)
+
+makePerson("Akif", -1)
+
+makePerson("Akif", 29)
+```
 
 ### 3. Codec, Decoder and Encoder
 
-TODO
+e-scala provides definitions for implementing decoding/encoding mechanism for E and EOr.
+
+* [Decoder[I, O]](src/main/scala/e/scala/codec/Decoder.scala) is for building an `O` (output) from an `I` (input) while handling the decoding failures with E
+* [Encoder[I, O]](src/main/scala/e/scala/codec/Encoder.scala) is for building an `O` (output) from an `I` (input)
+* [Codec[S, T]](src/main/scala/e/scala/codec/Codec.scala) is a combination of Decoder and Encoder for an `S` (source) type where output of Encoder and input of Decoder is the same `T` (target) type

@@ -47,11 +47,11 @@ trait Assertions { self: munit.Assertions =>
     def assertError(thatE: E): Unit =
       eor match {
         case Success(a)     => fail(s"EOr did not contain error, it contained: $a")
-        case Failure(thisE) => assertEquals(thisE, thatE, s"Expected: ${thatE.trace}, Actual: ${thisE.trace}")
+        case Failure(thisE) => assertEquals(thisE, thatE, s"Expected: $thatE, Actual: $thisE")
       }
 
     def assertValue(thatA: A): Unit = eor match {
-      case Failure(e)     => fail(s"EOr did not contain value, it contained: ${e.trace}")
+      case Failure(e)     => fail(s"EOr did not contain value, it contained: $e")
       case Success(thisA) => assertEquals(thisA, thatA)
     }
   }

@@ -5,7 +5,7 @@
 
 This module contains [`CodecForPlayJson`](src/main/scala/e/playjson/CodecForPlayJson.scala) as a `Codec` implementation of `E` using [play-json](https://github.com/playframework/play-json).
 
-```scala
+```scala mdoc:reset:to-string
 import e.scala._
 import e.playjson._
 import e.scala.implicits._
@@ -13,33 +13,22 @@ import e.playjson.implicits._
 import play.api.libs.json._
 
 val e1 = E.empty
-// e1: E = E("", "", 0, None, Map())
 
 val e2 = E("test-name", "Test Message", 1, Some(new Exception("Test Exception")), Map("test" -> "data"))
-// e2: E = E(
-//   "test-name",
-//   "Test Message",
-//   1,
-//   Some(java.lang.Exception: Test Exception),
-//   Map("test" -> "data")
-// )
 
 /*************************/
 /* Encoding E as JsValue */
 /*************************/
 
 CodecForPlayJson.encode(e1).toString()
-// res0: String = "{}"
 
 CodecForPlayJson.encode(e2).toString()
-// res1: String = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":1,\"cause\":\"Test Exception\",\"data\":{\"test\":\"data\"}}"
 
 /*************************/
 /* Decoding JsValue as E */
 /*************************/
 
 CodecForPlayJson.decode(Json.arr(1, 2))
-// res2: e.AbstractDecoder.DecodingResult[E] = {"name":"decoding-failure","message":"Input is not a Json object!","data":{"input":"[1,2]"}}
 
 CodecForPlayJson.decode(
   Json.obj(
@@ -50,7 +39,6 @@ CodecForPlayJson.decode(
     "data"    -> Map("test" -> "data")
   )
 )
-// res3: e.AbstractDecoder.DecodingResult[E] = {"name":"test-name","message":"Test Message","code":1,"data":{"test":"data"}}
 
 /*****************************/
 /* Decoding JsValue as Maybe */
@@ -59,30 +47,12 @@ CodecForPlayJson.decode(
 Json.obj("foo" -> "bar").readMaybe[List[String]] { jsError =>
   E(message = jsError.toString)
 }
-// res4: Maybe[List[String]] = Failure(
-//   E(
-//     "",
-//     "JsError(List((,List(JsonValidationError(List(error.expected.jsarray),ArraySeq())))))",
-//     0,
-//     None,
-//     Map()
-//   )
-// )
 
 /******************************/
 /* Decoding JsValue as Either */
 /******************************/
 
 CodecForPlayJson.decodeEither(Json.arr(1, 2))
-// res5: Either[E, E] = Left(
-//   E(
-//     "decoding-failure",
-//     "Input is not a Json object!",
-//     0,
-//     None,
-//     Map("input" -> "[1,2]")
-//   )
-// )
 
 CodecForPlayJson.decodeEither(
   Json.obj(
@@ -93,42 +63,20 @@ CodecForPlayJson.decodeEither(
     "data"    -> Map("test" -> "data")
   )
 )
-// res6: Either[E, E] = Right(
-//   E("test-name", "Test Message", 1, None, Map("test" -> "data"))
-// )
 
 /**************************************/
 /* Using play-json's Reads and Writes */
 /**************************************/
 
 Json.toJson(e1).toString()
-// res7: String = "{}"
 
 Json.toJson(e2).toString()
-// res8: String = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":1,\"cause\":\"Test Exception\",\"data\":{\"test\":\"data\"}}"
 
 Json.toJson(e2.toMaybe[String]).toString()
-// res9: String = "{\"name\":\"test-name\",\"message\":\"Test Message\",\"code\":1,\"cause\":\"Test Exception\",\"data\":{\"test\":\"data\"}}"
 
 Json.toJson(Map("test" -> "data").toMaybe).toString()
-// res10: String = "{\"test\":\"data\"}"
 
 Json.arr(1, 2).validate[E]
-// res11: JsResult[E] = JsError(
-//   List(
-//     (
-//       JsPath(List()),
-//       List(
-//         JsonValidationError(
-//           List(
-//             "{\"name\":\"decoding-failure\",\"message\":\"Input is not a Json object!\",\"data\":{\"input\":\"[1,2]\"}}"
-//           ),
-//           ArraySeq()
-//         )
-//       )
-//     )
-//   )
-// )
 
 Json.obj(
   "name"    -> "test-name",
@@ -137,5 +85,5 @@ Json.obj(
   "cause"   -> "Test Exception",
   "data"    -> Map("test" -> "data")
 ).as[E]
-// res12: E = E("test-name", "Test Message", 1, None, Map("test" -> "data"))
+
 ``` 

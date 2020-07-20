@@ -62,14 +62,14 @@ public final class Assertions {
 
     public static <A> void assertError(EOr<A> eor, E thatE) {
         eor.fold(
-            thisE -> { assertEquals(thatE, thisE, "Expected: " + thisE.trace() + ", Actual: "+ thatE.trace()); return null; },
+            thisE -> { assertEquals(thatE, thisE, "Expected: " + thisE + ", Actual: "+ thatE); return null; },
             a     -> fail(String.format("EOr did not contain error, it contained: %s", a))
         );
     }
 
     public static <A> void assertValue(EOr<A> eor, A thatA) {
         eor.fold(
-            e     -> fail(String.format("EOr did not contain value, it contained: %s", e.trace())),
+            e     -> fail(String.format("EOr did not contain value, it contained: %s", e)),
             thisA -> { assertEquals(thatA, thisA); return null; }
         );
     }

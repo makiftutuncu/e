@@ -192,7 +192,7 @@ public class EOrTest {
     }
 
     @Test void convertingAnEOrToString() {
-        assertEquals("test", E.fromName("test").toEOr().toString());
+        assertEquals("{\"name\":\"test\"}", E.fromName("test").toEOr().toString());
         assertEquals("42", EOr.from(42).toString());
     }
 }

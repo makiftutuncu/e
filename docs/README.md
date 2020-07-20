@@ -14,7 +14,7 @@ It consists of different modules for different needs. You can find details, inst
 ## Table of Contents
 
 1. [Modules](#modules)
-2. [Migration](MIGRATION.md)
+2. [Migrating from 1.x](MIGRATION.md#migrating-from-1x-to-2x)
 3. [Examples and Use Cases](#examples-and-use-cases)
 4. [Development and Testing](#development-and-testing)
 5. [Documentation](#documentation)

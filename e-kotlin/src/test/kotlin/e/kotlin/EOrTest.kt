@@ -201,7 +201,7 @@ object EOrTest: Assertions {
     }
 
     @Test fun `converting an EOr to String`() {
-        assertEquals("test", E.name("test").toEOr<String>().toString())
+        assertEquals("""{"name":"test"}""", E.name("test").toEOr<String>().toString())
         assertEquals("42", 42.orE().toString())
     }
 }

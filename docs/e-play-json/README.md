@@ -5,7 +5,7 @@
 
 This module contains [`CodecForPlayJson`](src/main/scala/e/playjson/CodecForPlayJson.scala) as a `Codec` implementation of `E` using [play-json](https://github.com/playframework/play-json).
 
-```scala mdoc
+```scala mdoc:reset:to-string
 import e.scala._
 import e.playjson._
 import e.scala.implicits._

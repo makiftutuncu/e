@@ -85,40 +85,6 @@ object ETest: Assertions {
         assertAlmostSame(now, E.now().time)
     }
 
-    @Test fun `getting trace of an E`() {
-        val e9 = E(code = 9)
-        val e8 = E(message = "Test 8")
-        val e7 = E(name = "test7")
-        val e6 = E(name = "test6", message = "Test 6")
-        val e5 = E(code = 5, message = "Test 5")
-        val e4 = E(code = 4, name = "test4")
-        val e3 = E(code = 3, name = "test3", message = "Test 3")
-        val e2 = E(code = 2, name = "test2", message = "Test 2", causes = listOf(e3, E.empty))
-        val e = E(
-            code    = 1,
-            name    = "test1",
-            message = "Test 1",
-            data    = mapOf("foo" to "bar"),
-            causes  = listOf(e2, e4, e5, e6, e7, e8, e9)
-        )
-
-        val expected =
-            """E1 | test1 | Test 1 | [foo -> bar]
-              |  E2 | test2 | Test 2
-              |    E3 | test3 | Test 3
-              |    [Empty E]
-              |  E4 | test4
-              |  E5 | Test 5
-              |  test6 | Test 6
-              |  test7
-              |  Test 8
-              |  E9""".trimMargin()
-
-        val actual = e.trace()
-
-        assertEquals(expected, actual)
-    }
-
     @Test fun `converting an E to an EOr`() {
         val e   = E(name = "test", message = "Test")
         val eor = e.toEOr<String>()
@@ -137,34 +103,5 @@ object ETest: Assertions {
         assertEquals(E.message("Test"), Exception("Test").toE())
         assertEquals(E.message("Test"), E.fromThrowable(Exception("Test")))
         assertEquals(E.name("test"), E.fromThrowable(E.name("test").toException()))
-    }
-
-    @Test fun `converting an E to a String`() {
-        val e9 = E(code = 9)
-        val e8 = E(message = "Test 8")
-        val e7 = E(name = "test7")
-        val e6 = E(name = "test6", message = "Test 6")
-        val e5 = E(code = 5, message = "Test 5")
-        val e4 = E(code = 4, name = "test4")
-        val e3 = E(code = 3, name = "test3", message = "Test 3")
-        val e2 = E(code = 2, name = "test2", message = "Test 2", causes = listOf(e3))
-        val e1 = E(
-            code    = 1,
-            name    = "test1",
-            message = "Test 1",
-            data    = mapOf("foo" to "bar"),
-            causes  = listOf(e2, e4, e5, e6, e7, e8, e9)
-        )
-
-        assertEquals("[Empty E]", E.empty.toString())
-        assertEquals("E1 | test1 | Test 1 | [foo -> bar]", e1.toString())
-        assertEquals("E2 | test2 | Test 2", e2.toString())
-        assertEquals("E3 | test3 | Test 3", e3.toString())
-        assertEquals("E4 | test4", e4.toString())
-        assertEquals("E5 | Test 5", e5.toString())
-        assertEquals("test6 | Test 6", e6.toString())
-        assertEquals("test7", e7.toString())
-        assertEquals("Test 8", e8.toString())
-        assertEquals("E9", e9.toString())
     }
 }

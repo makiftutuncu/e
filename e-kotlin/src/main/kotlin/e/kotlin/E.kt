@@ -163,24 +163,6 @@ data class E(val code: Int?                = null,
     val hasTime: Boolean = time != null
 
     /**
-     * A trace of this error and its causes as a String, like the stack trace of an [kotlin.Exception]
-     *
-     * @return Trace String of this E and its causes
-     *
-     * @see e.kotlin.E.toString
-     */
-    fun trace(): String {
-        fun line(e: E, level: Int): String = "  ".repeat(level) + e.toString()
-
-        fun traverse(e: E, level: Int): List<String> =
-            e.causes.fold(listOf(line(e, level))) { strings, cause ->
-                strings + traverse(cause, level + 1)
-            }
-
-        return traverse(this, 0).joinToString("\n")
-    }
-
-    /**
      * Converts this E to a failed EOr<A>
      *
      * @param A The A type in resulting EOr
@@ -199,16 +181,20 @@ data class E(val code: Int?                = null,
     fun toException(): EException = EException(this)
 
     override fun toString(): String {
-        val parts = listOf(
-            code?.let { c -> "E$c" } ?: "",
-            name ?: "",
-            message ?: "",
-            if (!hasData) "" else data.map { (k, v) -> "$k -> $v" }.joinToString(", ", "[", "]")
-        ).filter { it.isNotEmpty() }
+        fun quote(s: String): String = s.replace("\"", "\\\"")
 
-        val string = parts.joinToString(" | ").trim()
-
-        return if (string.isEmpty()) "[Empty E]" else string
+        return listOf(
+            code?.let { """"code":$it""" },
+            name?.let { """"name":"${quote(it)}"""" },
+            message?.let { """"message":"${quote(it)}"""" },
+            causes.takeIf { hasCause }?.let { """"causes":${it.joinToString(",", "[", "]")}""" },
+            data.takeIf { hasData }?.let { """"data":${data.map { (k, v) -> """"${quote(k)}":"${quote(v)}"""" }.joinToString(",", "{", "}")}""" },
+            time?.let { """"time":$it""" }
+        ).flatMap {
+            if (it == null) emptyList() else listOf(it)
+        }.joinToString(
+            ",", "{", "}"
+        )
     }
 
     companion object {

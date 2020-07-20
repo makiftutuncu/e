@@ -5,7 +5,7 @@
 
 This module contains [`CodecForCirceJson`](src/main/scala/e/circe/CodecForCirceJson.scala) as a `Codec` implementation of `E` using [circe](https://circe.github.io/circe).
 
-```scala mdoc
+```scala mdoc:reset:to-string
 import e.scala._
 import e.circe._
 import io.circe._
