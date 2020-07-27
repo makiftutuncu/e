@@ -61,50 +61,63 @@ An instance of E can be created by
 * modifying an existing instance
 * using static constructor methods
 
-```scala mdoc:reset:to-string
+```scala
 import e.scala._
 
 E.empty
+// res1: E = {}
 
 val notSoEmpty = E(Some(1), Some("error-name"), Some("Error Message"))
+// notSoEmpty: E = {"code":1,"name":"error-name","message":"Error Message"}
 
 E.name("test-error").message("Test")
+// res2: E = {"name":"test-error","message":"Test"}
 
 val unexpectedError = E(message = Some("Unexpected Error"), code = Some(-1)).now
+// unexpectedError: E = {"code":-1,"message":"Unexpected Error","time":1595860430174}
 
 val errorWithDataAndCause = unexpectedError.data("action" -> "test").cause(notSoEmpty)
+// errorWithDataAndCause: E = {"code":-1,"message":"Unexpected Error","causes":[{"code":1,"name":"error-name","message":"Error Message"}],"data":{"action":"test"},"time":1595860430174}
 ```
 
 #### 1.2. Accessing Data in E
 
 Since E is a case class, you can directly access its fields. There are additional methods as well.
 
-```scala mdoc:reset:to-string
+```scala
 import e.scala._
 
 val databaseError = E.name("database").code(1)
+// databaseError: E = {"code":1,"name":"database"}
 
 val error = E(message = Some("Cannot get user!"), name = Some("Unknown")).cause(databaseError)
+// error: E = {"name":"Unknown","message":"Cannot get user!","causes":[{"code":1,"name":"database"}]}
 
 error.message
+// res4: Option[String] = Some(Cannot get user!)
 
 error.code orElse (error.causes.headOption.flatMap(_.code))
+// res5: Option[Int] = Some(1)
 
 error.hasData
+// res6: Boolean = false
 ```
 
 #### 1.3. Converting E
 
 You can convert your E into an Exception or an EOr.
 
-```scala mdoc:reset:to-string
+```scala
 import e.scala._
 
 val error = E.name("test").message("Test")
+// error: E = {"name":"test","message":"Test"}
 
 error.toException
+// res8: EException = {"name":"test","message":"Test"}
 
 error.toEOr[Int]
+// res9: EOr[Int] = {"name":"test","message":"Test"}
 ```
 
 ### 2. EOr
@@ -121,72 +134,96 @@ An instance of EOr can be created by
 * constructing from an E or a value
 * converting from other types by extension methods
 
-```scala mdoc:reset:to-string
+```scala
 import e.scala._
 
 EOr[Boolean](E.code(0))
+// res11: EOr[Boolean] = {"code":0}
 
 EOr("hello")
+// res12: EOr[String] = hello
 
 EOr.Failure(E.code(1))
+// res13: EOr.Failure = {"code":1}
 
 EOr.Success("test")
+// res14: EOr.Success[String] = test
 
 E.message("test").toEOr[Int]
+// res15: EOr[Int] = {"message":"test"}
 
 "hello".orE
+// res16: EOr[String] = hello
 
 Some(true).orE(E.code(2))
+// res17: EOr[Boolean] = true
 
 Option.empty[String].orE(E.code(3))
+// res18: EOr[String] = {"code":3}
 
 EOr.fromEither[Int, String](Right("hello")) { left => E.code(left) }
+// res19: EOr[String] = hello
 
 EOr.fromEither[Int, String](Left(4)) { left => E.code(left) }
+// res20: EOr[String] = {"code":4}
 ```
 
 #### 2.2. Accessing Content of an EOr
 
 The error or the value inside an EOr can be accessed safely.
 
-```scala mdoc:reset:to-string
+```scala
 import e.scala._
 
 val eor1 = E.message("test").toEOr[Int]
+// eor1: EOr[Int] = {"message":"test"}
 
 val eor2 = "hello".orE
+// eor2: EOr[String] = hello
 
 eor1.hasValue
+// res22: Boolean = false
 
 eor1.error
+// res23: Option[E] = Some({"message":"test"})
 
 eor2.hasError
+// res24: Boolean = false
 
 eor2.value
+// res25: Option[String] = Some(hello)
 ```
 
 #### 2.3. Working With EOr
 
 There are many methods in EOr for modifying, composing, handling the error etc.
 
-```scala mdoc:reset:to-string
+```scala
 import e.scala._
 
 val eor1 = E.message("test").toEOr[Int]
+// eor1: EOr[Int] = {"message":"test"}
 
 val eor2 = "hello".orE
+// eor2: EOr[String] = hello
 
 eor2.map(_.toUpperCase)
+// res27: EOr[String] = HELLO
 
 eor1.mapError(_.code(1))
+// res28: EOr[Int] = {"code":1,"message":"test"}
 
 eor2.flatMap(s => eor1)
+// res29: EOr[Int] = {"message":"test"}
 
 eor2.filter(_.length < 3)
+// res30: EOr[String] = {"name":"filtered","message":"Condition does not hold!","data":{"value":"hello"}}
 
 eor1.getOrElse(0)
+// res31: Int = 0
 
 eor1.fold(e => e.code, i => Some(i)).getOrElse(0)
+// res32: Int = 0
 
 case class Person(name: String, age: Int)
 
@@ -200,10 +237,13 @@ def makePerson(name: String, age: Int): EOr[Person] =
   }
 
 makePerson("", 5)
+// res33: EOr[Person] = {"name":"filtered","message":"Condition does not hold!","data":{"value":""}}
 
 makePerson("Akif", -1)
+// res34: EOr[Person] = {"name":"invalid-age","data":{"value":"-1"}}
 
 makePerson("Akif", 29)
+// res35: EOr[Person] = Person(Akif,29)
 ```
 
 ### 3. Codec, Decoder and Encoder
