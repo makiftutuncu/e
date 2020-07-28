@@ -25,15 +25,15 @@ It consists of different modules for different needs. You can find details, inst
 
 ## Modules
 
-| Name        | Platform | Details                                                      | Documentation                 |
-| ----------- | -------- | ------------------------------------------------------------ | ----------------------------- |
-| e-scala     | Scala    | Scala implementation                                         | [Link](e-scala/README.md)     |
-| e-kotlin    | Kotlin   | Kotlin implementation                                        | [Link](e-kotlin/README.md)    |
-| e-java      | Java     | Java implementation                                          | [Link](e-java/README.md)      |
-| e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)            | [Link](e-circe/README.md)     |
-| e-play-json | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | [Link](e-play-json/README.md) |
-| e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                            | [Link](e-zio/README.md)       |
-| e-gson      | Java     | Extras for [gson](https://github.com/google/gson)            | [Link](e-gson/README.md)      |
+| Name                                 | Platform | Details                                                            | Documentation |
+| ------------------------------------ | -------- | ------------------------------------------------------------------ | ------------- |
+| [e-scala](e-scala/README.md)         | Scala    | Scala implementation                                               | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-scala)     |
+| [e-kotlin](e-kotlin/README.md)       | Kotlin   | Kotlin implementation                                              | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=kotlin&color=0095d5&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-kotlin)   |
+| [e-java](e-java/README.md)           | Java     | Java implementation                                                | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=java&color=007396&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-java)       |
+| [e-circe](e-circe/README.md)         | Scala    | Extras for [circe](https://circe.github.io/circe)                  | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-circe)     |
+| [e-play-json](e-play-json/README.md) | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-play-json) |
+| [e-zio](e-zio/README.md)             | Scala    | Extras for [ZIO](https://zio.dev)                                  | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-zio)       |
+| [e-gson](e-gson/README.md)           | Java     | Extras for [gson](https://github.com/google/gson)                  | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=java&color=007396&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-gson)       |
 
 ## Examples and Use Cases
 
