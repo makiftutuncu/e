@@ -14,7 +14,7 @@ import play.filters.HttpFiltersComponents
 import play.filters.cors.{CORSConfig, CORSFilter}
 import router.Routes
 import zio.Runtime
-import zio.internal.PlatformLive
+import zio.internal.Platform
 
 object AppComponents {
   type Modules = DB with PeopleRepository with PeopleService
@@ -47,7 +47,7 @@ class AppComponents(ctx: Context) extends BuiltInComponentsFromContext(ctx)
 
   override def httpFilters: Seq[EssentialFilter] = Seq(new CORSFilter(CORSConfig.fromConfiguration(configuration), httpErrorHandler))
 
-  lazy val runtime: Runtime[Modules] = Runtime(AppComponents.modules(dbApi), PlatformLive.Default)
+  lazy val runtime: Runtime[Modules] = Runtime(AppComponents.modules(dbApi), Platform.default)
 
   lazy val pingController: PingController     = new PingController(controllerComponents)
   lazy val peopleController: PeopleController = new PeopleController(runtime, controllerComponents)

@@ -14,7 +14,7 @@ It consists of different modules for different needs. You can find details, inst
 ## Table of Contents
 
 1. [Modules](#modules)
-2. [Installation](#installation)
+2. [Migrating from 1.x](MIGRATION.md#1-migrating-from-1x-to-2x)
 3. [Examples and Use Cases](#examples-and-use-cases)
 4. [Development and Testing](#development-and-testing)
 5. [Documentation](#documentation)
@@ -25,59 +25,15 @@ It consists of different modules for different needs. You can find details, inst
 
 ## Modules
 
-| Name        | Platform | Details                                                            | Documentation                 |
-| ----------- | -------- | ------------------------------------------------------------------ | ----------------------------- |
-| e-core      | Java     | Core module for sharing common code between modules                | [Link](e-core/README.md)      |
-| e-java      | Java     | Java implementation                                                | [Link](e-java/README.md)      |
-| e-scala     | Scala    | Scala implementation                                               | [Link](e-scala/README.md)     |
-| e-kotlin    | Kotlin   | Kotlin implementation                                              | [Link](e-kotlin/README.md)    |
-| e-circe     | Scala    | Extras for [circe](https://circe.github.io/circe)                  | [Link](e-circe/README.md)     |
-| e-play-json | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | [Link](e-play-json/README.md) |
-| e-zio       | Scala    | Extras for [ZIO](https://zio.dev)                                  | [Link](e-zio/README.md)       |
-| e-gson      | Java     | Extras for [gson](https://github.com/google/gson)                  | [Link](e-gson/README.md)      |
-
-## Installation
-
-* Replace `[MODULE]` with a module name and `[SCALA_VERSION]` with your project's Scala version (if applicable)
-* If you use SBT, add following to your `build.sbt` for each module you want to use
-```scala
-libraryDependencies ++= Seq(
-  // Scala modules
-  "dev.akif" %% "[MODULE]" % "@VERSION@",
-
-  // Java/Kotlin modules
-  "dev.akif" % "[MODULE]" % "@VERSION@"
-)
-```
-* If you use Maven, add following to your `pom.xml` for each module you want to use
-```xml
-<dependencies>
-  <!-- Scala modules -->
-  <dependency>
-    <groupId>dev.akif</groupId>
-    <artifactId>[MODULE]_[SCALA_VERSION]</artifactId>
-    <version>@VERSION@</version>
-  </dependency>
-
-  <!-- Java/Kotlin modules -->
-  <dependency>
-    <groupId>dev.akif</groupId>
-    <artifactId>[MODULE]</artifactId>
-    <version>@VERSION@</version>
-  </dependency>
-</dependencies>
-```
-* If you use Gradle, add following to your project's `build.gradle` for each module you want to use
-
-```javascript
-dependencies {
-  // Scala modules
-  implementation('dev.akif:[MODULE]_[SCALA_VERSION]:@VERSION@'),
-
-  // Java/Kotlin modules
-  implementation('dev.akif:[MODULE]:@VERSION@')
-}
-```
+| Name                                 | Platform | Details                                                            | Documentation |
+| ------------------------------------ | -------- | ------------------------------------------------------------------ | ------------- |
+| [e-scala](e-scala/README.md)         | Scala    | Scala implementation                                               | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-scala)     |
+| [e-kotlin](e-kotlin/README.md)       | Kotlin   | Kotlin implementation                                              | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=kotlin&color=0095d5&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-kotlin)   |
+| [e-java](e-java/README.md)           | Java     | Java implementation                                                | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=java&color=007396&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-java)       |
+| [e-circe](e-circe/README.md)         | Scala    | Extras for [circe](https://circe.github.io/circe)                  | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-circe)     |
+| [e-play-json](e-play-json/README.md) | Scala    | Extras for [play-json](https://github.com/playframework/play-json) | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-play-json) |
+| [e-zio](e-zio/README.md)             | Scala    | Extras for [ZIO](https://zio.dev)                                  | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=scala&color=dc322f&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-zio)       |
+| [e-gson](e-gson/README.md)           | Java     | Extras for [gson](https://github.com/google/gson)                  | [![](https://img.shields.io/badge/docs-@VERSION@-brightgreen.svg?style=for-the-badge&logo=java&color=007396&labelColor=333333)](https://javadoc.io/doc/dev.akif/e-gson)       |
 
 ## Examples and Use Cases
 

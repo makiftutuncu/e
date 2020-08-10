@@ -8,10 +8,6 @@ import dev.akif.ektorexample.database.DB
 import dev.akif.ektorexample.todo.TodoRepository
 import dev.akif.ektorexample.todo.TodoService
 import dev.akif.ektorexample.todo.todo
-import e.gson.GsonAdapterForE
-import e.gson.GsonSerializerForMaybe
-import e.kotlin.E
-import e.kotlin.Maybe
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -29,8 +25,6 @@ val gson =
     GsonBuilder()
         .setPrettyPrinting()
         .serializeNulls()
-        .registerTypeAdapter(E::class.java, GsonAdapterForE.get())
-        .registerTypeAdapter(Maybe::class.java, GsonSerializerForMaybe.get())
         .registerTypeAdapter(ZonedDateTime::class.java, ZDT.gsonAdapter)
         .create()
 

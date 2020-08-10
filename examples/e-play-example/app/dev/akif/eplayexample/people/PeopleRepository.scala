@@ -2,7 +2,7 @@ package dev.akif.eplayexample.people
 
 import anorm.{SQL, SqlParser}
 import dev.akif.eplayexample.common.Repository
-import e.zio.MaybeZ
+import e.ezio.EIO
 
 trait PeopleRepository {
   val peopleRepository: PeopleRepository.Def
@@ -10,19 +10,19 @@ trait PeopleRepository {
 
 object PeopleRepository {
   trait Def extends Repository {
-    def getAll: MaybeZ[List[Person]]
+    def getAll: EIO[List[Person]]
 
-    def get(id: Long): MaybeZ[Option[Person]]
+    def get(id: Long): EIO[Option[Person]]
 
-    def create(create: CreatePerson): MaybeZ[Person]
+    def create(create: CreatePerson): EIO[Person]
 
-    def update(person: Person): MaybeZ[Person]
+    def update(person: Person): EIO[Person]
 
-    def delete(person: Person): MaybeZ[Person]
+    def delete(person: Person): EIO[Person]
   }
 
   trait Impl extends Def {
-    override def getAll: MaybeZ[List[Person]] =
+    override def getAll: EIO[List[Person]] =
       run[List[Person]] { implicit connection =>
         val sql =
           SQL(
@@ -36,7 +36,7 @@ object PeopleRepository {
         sql.executeQuery().as(Person.rowParser.*)
       }
 
-    override def get(id: Long): MaybeZ[Option[Person]] =
+    override def get(id: Long): EIO[Option[Person]] =
       run[Option[Person]] { implicit connection =>
         val sql =
           SQL(
@@ -52,7 +52,7 @@ object PeopleRepository {
         sql.executeQuery().as(Person.rowParser.singleOpt)
       }
 
-    override def create(create: CreatePerson): MaybeZ[Person] =
+    override def create(create: CreatePerson): EIO[Person] =
       run[Long] { implicit connection =>
         val sql =
           SQL(
@@ -70,7 +70,7 @@ object PeopleRepository {
         create.toPerson(id)
       }
 
-    override def update(person: Person): MaybeZ[Person] =
+    override def update(person: Person): EIO[Person] =
       run { implicit connection =>
         val sql =
           SQL(
@@ -90,7 +90,7 @@ object PeopleRepository {
         person
       }
 
-    override def delete(person: Person): MaybeZ[Person] =
+    override def delete(person: Person): EIO[Person] =
       run { implicit connection =>
         val sql =
           SQL(
