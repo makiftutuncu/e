@@ -35,6 +35,12 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
       ).dropNullValues
     }
 
+  implicit def eorEncoder[A](implicit aEncoder: CirceEncoder[A]): CirceEncoder[EOr[A]] =
+    CirceEncoder.instance {
+      case EOr.Failure(e) => encode(e)
+      case EOr.Success(a) => encode(a)
+    }
+
   override def decode[A](json: Json)(implicit aDecoder: CirceDecoder[A]): EOr[A] =
     aDecoder.decodeAccumulating(HCursor.fromJson(json)).toEither.orE { failures =>
       failures.foldLeft(Decoder.decodingError) {
@@ -49,12 +55,6 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
     }
 
   override def encode[A](a: A)(implicit aEncoder: CirceEncoder[A]): Json = aEncoder.apply(a)
-
-  implicit def eorEncoder[A](implicit aEncoder: CirceEncoder[A]): CirceEncoder[EOr[A]] =
-    CirceEncoder.instance {
-      case EOr.Failure(e) => encode(e)
-      case EOr.Success(a) => encode(a)
-    }
 
   private def rootObjectDecoder[A](decoder: => CirceDecoder[A]): CirceDecoder[A] =
     CirceDecoder.decodeJson.flatMap[A] { json =>

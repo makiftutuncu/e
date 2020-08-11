@@ -34,6 +34,11 @@ object playjson extends CodecFor[JsValue, Reads, Writes] {
     e.time.fold(empty)(t => Json.obj("time" -> t))
   }
 
+  implicit def eorEncoder[A](implicit aWrites: Writes[A]): Writes[EOr[A]] = Writes {
+    case EOr.Failure(e) => encode(e)
+    case EOr.Success(a) => encode(a)
+  }
+
   override def decode[A](json: JsValue)(implicit aReads: Reads[A]): EOr[A] =
     aReads.reads(json).asEither.orE { errors =>
       errors.foldLeft[E](Decoder.decodingError) {
