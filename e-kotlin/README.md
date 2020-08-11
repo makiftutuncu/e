@@ -99,7 +99,7 @@ error.message
 error.code ?: error.causes.firstOrNull()?.let { it.code }
 // res5: Int? = 1
 
-error.hasData
+error.hasData()
 // res6: Boolean = false
 ```
 
@@ -175,13 +175,13 @@ val eor1 = E.message("test").toEOr<Int>()
 val eor2 = "hello".orE()
 // eor2: EOr<String> = hello
 
-eor1.hasValue
+eor1.hasValue()
 // res22: Boolean = false
 
 eor1.error
 // res23: E? = Some({"message":"test"})
 
-eor2.hasError
+eor2.hasError()
 // res24: Boolean = false
 
 eor2.value
@@ -216,7 +216,7 @@ eor2.filter { it.length < 3 }
 eor1.getOrElse(0)
 // res31: Int = 0
 
-eor1.fold({ e -> e.code ?: 0 }, { i -> i })
+eor1.fold({ e -> e.code }, { i -> i }) ?: 0
 // res32: Int = 0
 
 data class Person(val name: String, val age: Int)

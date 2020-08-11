@@ -50,6 +50,12 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
 
   override def encode[A](a: A)(implicit aEncoder: CirceEncoder[A]): Json = aEncoder.apply(a)
 
+  implicit def eorEncoder[A](implicit aEncoder: CirceEncoder[A]): CirceEncoder[EOr[A]] =
+    CirceEncoder.instance {
+      case EOr.Failure(e) => encode(e)
+      case EOr.Success(a) => encode(a)
+    }
+
   private def rootObjectDecoder[A](decoder: => CirceDecoder[A]): CirceDecoder[A] =
     CirceDecoder.decodeJson.flatMap[A] { json =>
       if (!json.isObject) {
@@ -67,16 +73,14 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
 
         case Some(j) =>
           CirceDecoder[A].decodeJson(j).fold[CirceDecoder.Result[Option[A]]](
-            failure => Left(
-              DecodingFailure(
-                "Expected: " + (field match {
-                  case "causes" => "List[E]"
-                  case "data"   => "Map[String, String]"
-                  case _        => failure.message
-                }),
-                List(DownField(field))
-              )
-            ),
+            failure => {
+              val message = field match {
+                case "causes" => "List[E]"
+                case "data"   => "Map[String, String]"
+                case _        => failure.message
+              }
+              Left(DecodingFailure(s"Expected: $message", List(DownField(field))))
+            },
             a => Right(Some(a))
           )
       }
