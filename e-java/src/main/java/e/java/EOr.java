@@ -2,6 +2,7 @@ package e.java;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -193,16 +194,14 @@ public interface EOr<A> {
     /**
      * Performs a side-effect using error in this, if it exists
      *
-     * @param <U> Type of result of the side-effect
-     *
      * @param f Side-effecting function
      *
      * @return This EOr for chaining
      */
-    default <U> EOr<A> onError(Function<E, U> f) {
+    default EOr<A> onError(Consumer<E> f) {
         if (hasError()) {
             E e = ((Failure<A>) this).e;
-            f.apply(e);
+            f.accept(e);
         }
 
         return this;
@@ -211,16 +210,14 @@ public interface EOr<A> {
     /**
      * Performs a side-effect using value in this, if it exists
      *
-     * @param <U> Type of result of the side-effect
-     *
      * @param f Side-effecting function
      *
      * @return This EOr for chaining
      */
-    default <U> EOr<A> onValue(Function<A, U> f) {
+    default EOr<A> onValue(Consumer<A> f) {
         if (hasValue()) {
             A a = ((Success<A>) this).a;
-            f.apply(a);
+            f.accept(a);
         }
 
         return this;
@@ -233,7 +230,7 @@ public interface EOr<A> {
      *
      * @see e.java.EOr#onValue
      */
-    default <U> EOr<A> forEach(Function<A, U> f) {
+    default EOr<A> forEach(Consumer<A> f) {
         return onValue(f);
     }
 
