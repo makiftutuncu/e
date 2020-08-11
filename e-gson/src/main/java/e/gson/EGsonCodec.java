@@ -74,35 +74,29 @@ public class EGsonCodec implements Codec<E, JsonElement>,
         } else {
             JsonObject obj = json.getAsJsonObject();
 
-            decodeCode(obj).fold(
-                decodingFailure -> { decodingFailures.add(decodingFailure); return null; },
-                maybeCode       -> { maybeCode.ifPresent(code -> decodedE[0] = decodedE[0].code(code)); return null; }
-            );
+            decodeCode(obj)
+                .onError(decodingFailures::add)
+                .onValue(maybeCode -> maybeCode.ifPresent(code -> decodedE[0] = decodedE[0].code(code)));
 
-            decodeName(obj).fold(
-                decodingFailure -> { decodingFailures.add(decodingFailure); return null; },
-                maybeName       -> { maybeName.ifPresent(name -> decodedE[0] = decodedE[0].name(name)); return null; }
-            );
+            decodeName(obj)
+                .onError(decodingFailures::add)
+                .onValue(maybeName -> maybeName.ifPresent(name -> decodedE[0] = decodedE[0].name(name)));
 
-            decodeMessage(obj).fold(
-                decodingFailure -> { decodingFailures.add(decodingFailure); return null; },
-                maybeMessage    -> { maybeMessage.ifPresent(message -> decodedE[0] = decodedE[0].message(message)); return null; }
-            );
+            decodeMessage(obj)
+                .onError(decodingFailures::add)
+                .onValue(maybeMessage -> maybeMessage.ifPresent(message -> decodedE[0] = decodedE[0].message(message)));
 
-            decodeCauses(obj).fold(
-                decodingFailure -> { decodingFailures.add(decodingFailure); return null; },
-                causes          -> { decodedE[0] = decodedE[0].causes(causes); return null; }
-            );
+            decodeCauses(obj)
+                .onError(decodingFailures::add)
+                .onValue(causes -> decodedE[0] = decodedE[0].causes(causes));
 
-            decodeData(obj).fold(
-                decodingFailure -> { decodingFailures.add(decodingFailure); return null; },
-                data            -> { decodedE[0] = decodedE[0].data(data); return null; }
-            );
+            decodeData(obj)
+                .onError(decodingFailures::add)
+                .onValue(data -> decodedE[0] = decodedE[0].data(data));
 
-            decodeTime(obj).fold(
-                decodingFailure -> { decodingFailures.add(decodingFailure); return null; },
-                maybeTime       -> { maybeTime.ifPresent(time -> decodedE[0] = decodedE[0].time(time)); return null; }
-            );
+            decodeTime(obj)
+                .onError(decodingFailures::add)
+                .onValue(maybeTime -> maybeTime.ifPresent(time -> decodedE[0] = decodedE[0].time(time)));
         }
 
         return !decodingFailures.isEmpty() ?
@@ -156,10 +150,11 @@ public class EGsonCodec implements Codec<E, JsonElement>,
         List<E> causeDecodingFailures = new LinkedList<>();
         List<E> decodedCauses = new LinkedList<>();
 
-        causesJson.getAsJsonArray().iterator().forEachRemaining(j -> decode(j).fold(
-            decodingFailure -> { causeDecodingFailures.add(decodingFailure); return null; },
-            cause           -> { decodedCauses.add(cause); return null; }
-        ));
+        causesJson.getAsJsonArray().iterator().forEachRemaining(j ->
+            decode(j)
+                .onError(causeDecodingFailures::add)
+                .onValue(decodedCauses::add)
+        );
 
         if (!causeDecodingFailures.isEmpty()) {
             return expected.causes(causeDecodingFailures).toEOr();
