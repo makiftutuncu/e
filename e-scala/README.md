@@ -74,10 +74,10 @@ E.name("test-error").message("Test")
 // res2: E = {"name":"test-error","message":"Test"}
 
 val unexpectedError = E(message = Some("Unexpected Error"), code = Some(-1)).now
-// unexpectedError: E = {"code":-1,"message":"Unexpected Error","time":1595937816225}
+// unexpectedError: E = {"code":-1,"message":"Unexpected Error","time":1597138519415}
 
 val errorWithDataAndCause = unexpectedError.data("action" -> "test").cause(notSoEmpty)
-// errorWithDataAndCause: E = {"code":-1,"message":"Unexpected Error","causes":[{"code":1,"name":"error-name","message":"Error Message"}],"data":{"action":"test"},"time":1595937816225}
+// errorWithDataAndCause: E = {"code":-1,"message":"Unexpected Error","causes":[{"code":1,"name":"error-name","message":"Error Message"}],"data":{"action":"test"},"time":1597138519415}
 ```
 
 #### 1.2. Accessing Data in E
