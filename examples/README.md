@@ -17,7 +17,7 @@ Exceptions are dangerous and costly. Using them as a means of representing error
 
 Here's a good and long discussion on errors as values vs. exceptions: [https://softwareengineering.stackexchange.com/questions/405038](https://softwareengineering.stackexchange.com/questions/405038)
 
-e provides `E` type for treating errors as data and `Maybe` type for wrapping other values that can potentially fail. They both have friendly APIs and by using them, you can leave the exceptions to actual exceptional cases.
+e provides `E` type for treating errors as data and `EOr` type for wrapping other values that can potentially fail. They both have friendly APIs and by using them, you can leave the exceptions to actual exceptional cases.
 
 Here is an example method throwing exceptions:
 
@@ -56,43 +56,48 @@ Here is the same example without the exceptions:
 
 ```java
 import e.java.E;
-import e.java.Maybe;
+import e.java.EOr;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
-public <A> Maybe<A> one(List<A> list) {
+public <A> EOr<A> one(List<A> list) {
     if (list == null) {
-        return new E("invalid-argument", "List is null").toMaybe();
+        return E.fromName("invalid-argument").message("List is null").toEOr();
     }
   
     if (list.isEmpty()) {
-        return new E("invalid-argument", "List is empty").toMaybe();
+        return E.fromName("invalid-argument").message("List is empty").toEOr();
     }
   
     if (list.size() != 1) {
-        return new E("invalid-argument", "List has more than 1 items")
+        return E.fromName("invalid-argument")
+            .message("List has more than 1 items")
             .data("size", list.size())
-            .toMaybe();
+            .toEOr();
     }
     
-    return Maybe.successful(list.get(0));
+    return EOr.from(list.get(0));
 }
 
-Maybe<String> s = one<String>(null);
-// isSuccess: false
+EOr<String> s = one<String>(null);
+// hasError: true
+// hasValue: false
 // {"name":"invalid-argument","message":"List is null"}
 
-Maybe<Integer> i = one<Integer>(new ArrayList<>());
-// isSuccess: false
+EOr<Integer> i = one<Integer>(new ArrayList<>());
+// hasError: true
+// hasValue: false
 // {"name":"invalid-argument","message":"List is empty"}
 
-Maybe<Long> l = one<Long>(Arrays.asList(1L, 2L));
-// isSuccess: false
+EOr<Long> l = one<Long>(Arrays.asList(1L, 2L));
+// hasError: true
+// hasValue: false
 // {"name":"invalid-argument","message":"List has more than 1 items","data":{"size":"2"}}
 
-Maybe<String> one = one<String>(Arrays.asList("hello"));
-// isSuccess: true
+EOr<String> one = one<String>(Arrays.asList("hello"));
+// hasError: false
+// hasValue: true
 // "hello"
 ```
 
@@ -108,26 +113,26 @@ Here's an example in Play Framework:
 
 ```scala
 import e.scala.E
-import e.scala.Maybe
+import e.scala.EOr
 import play.api.mvc.Results.Status
 import play.api.mvc.{Result, Results}
 import scala.concurrent.Future
 
-def respond(maybe: Maybe[String], codeIfSuccess: Status = Results.Ok): Future[Result] =
-  maybe.fold(
-    e     => Future.successful(Status(e.code)(e.toString)),
+def respond(eor: EOr[String], codeIfSuccess: Status = Results.Ok): Future[Result] =
+  eor.fold(
+    e     => Future.successful(Status(e.code.getOrElse(500))(e.toString)),
     value => Future.successful(codeIfSuccess(value))
   )
 
-def first(list: List[String]): Maybe[String] =
-  Maybe.fromOption(
+def first(list: List[String]): EOr[String] =
+  EOr.fromOption(
     list.headOption,
-    E("empty").code(400)
+    E.name("empty").code(400)
   )
 
 respond(first(List.empty))
 // 400 Bad Request
-// empty
+// {"code":400,"name":"empty"}
 
 respond(first(List("hello", "world")))
 // 200 OK
@@ -142,92 +147,97 @@ Here's one example in Java:
 
 ```java
 import e.java.E;
-import e.java.Maybe;
+import e.java.EOr;
 import java.util.Arrays;
 
 public final class Errors {
     public static final E invalidData =
-        new E("invalid-data", "Provided data is invalid!", 400);
+        new E(400, "invalid-data", "Provided data is invalid!", null, null, null);
     
     public static final E notFound =
-        new E("not-found", "Requested resource does not exist!", 404);
+        new E(404, "not-found", "Requested resource does not exist!", null, null, null);
 
     private Errors() {}
 }
 
-public Maybe<Integer> extractNegativeNumber(List<String> list) {
+public EOr<Integer> extractNegativeNumber(List<String> list) {
     if (list == null || list.isEmpty()) {
-        return Errors.invalidData.message("List is empty").toMaybe();
+        return Errors.invalidData.message("List is empty").toEOr();
     }
   
     for (String s : list) {
-        Maybe<Integer> maybe = Maybe.catching(
+        EOr<Integer> eor = EOr.catching(
             () -> Integer.parseInt(s),
-            t  -> Errors.invalidData.message("Not a number").cause(t).data("value", s)
+            t  -> Errors.invalidData.message("Not a number").cause(E.fromThrowable(t)).data("value", s)
         );
 
-        if (!maybe.isSuccess()) {
-            return maybe;
+        if (eor.hasError()) {
+            return eor;
         }
 
-        if (maybe.filter(i -> i < 0).isSuccess()) {
-            return maybe;
+        if (eor.filter(i -> i < 0).hasValue()) {
+            return eor;
         }
     }
     
-    return Errors.notFound.message("Cannot find negative number").toMaybe();
+    return Errors.notFound.message("Cannot find negative number").toEOr();
 }
 
-Maybe<Integer> maybe1 = extractNegativeNumber(null);
-// isSuccess: false
+EOr<Integer> eor1 = extractNegativeNumber(null);
+// hasError: true
+// hasValue: false
 // {"name":"invalid-data","message":"List is empty","code":400}
 
-Maybe<Integer> maybe2 = extractNegativeNumber(Arrays.asList("a", "b"));
-// isSuccess: false
+EOr<Integer> eor2 = extractNegativeNumber(Arrays.asList("a", "b"));
+// hasError: true
+// hasValue: false
 // {"name":"invalid-data","message":"Not a number","code":400,"data":{"value":"a"}}
 
-Maybe<Integer> maybe3 = extractNegativeNumber(Arrays.asList(1, 2, 3));
-// isSuccess: false
+EOr<Integer> eor3 = extractNegativeNumber(Arrays.asList(1, 2, 3));
+// hasError: true
+// hasValue: false
 // {"name":"invalid-data","message":"Cannot find negative number","code":400}
 
-Maybe<Integer> maybe4 = extractNegativeNumber(Arrays.asList(1, -1));
-// isSuccess: true
+EOr<Integer> eor4 = extractNegativeNumber(Arrays.asList(1, -1));
+// hasError: false
+// hasValue: true
 // -1
 ```
 
 ## 4. Validating User Input
 
-User input is never to be trusted and must always be validated. The result of an invalid user input is naturally an error, usually an expected one. Representing these as `E`s and using `Maybe` can help you deal with this.
+User input is never to be trusted and must always be validated. The result of an invalid user input is naturally an error, usually an expected one. Representing these as `E`s and using `EOr` can help you deal with this.
 
 Here's a validator in Kotlin:
 
 ```kotlin
-import e.kotlin.E
-import e.kotlin.Maybe
+import e.kotlin.*
 
 data class User(val email: String, val password: String)
 
 object UserValidator {
-    fun validate(user: User): Maybe<Unit> =
+    fun validate(user: User): EOr<Unit> =
         validateEmail(user.email).andThen {
-        validatePassword(user.password).andThen {
-        Maybe.unit() }}
+            validatePassword(user.password).andThen {
+                EOr.unit
+            }
+        }
 
-    private fun validateEmail(email: String): Maybe<Unit> {
+    private fun validateEmail(email: String): EOr<Unit> {
         val e = email.trim()
         return when {
-            e.isEmpty()     -> E("email-empty").toMaybe()
-            e.contains("@") -> E("email-invalid").toMaybe()
-            else            -> Maybe.unit()
+            e.isEmpty()     -> E.name("email-empty").toEOr()
+            e.contains("@") -> E.name("email-invalid").toEOr()
+            else            -> EOr.unit
         }
     }
 
-    private fun validatePassword(password: String): Maybe<Unit> {
+    private fun validatePassword(password: String): EOr<Unit> {
         val p = password.trim()
         return when {
-            p.isEmpty()  -> E("password-empty").toMaybe()
-            p.length < 6 -> E("password-too-short").toMaybe()
-            else         -> Maybe.unit()
+            p.isEmpty()  -> E.name("password-empty").toEOr()
+            p.length < 6 -> E.name("password-too-short").toEOr()
+            else         -> EOr.unit
         }
     }
 }
