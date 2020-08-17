@@ -22,7 +22,6 @@ object AppComponents {
   def modules(dbApi: DBApi): Modules =
     new DB with PeopleRepository with PeopleService { env =>
       override val db: DB.Def = new DB.Impl {
-
         override val playDB: Database = dbApi.database("default")
       }
 
