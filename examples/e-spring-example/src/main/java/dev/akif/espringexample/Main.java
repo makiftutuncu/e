@@ -17,10 +17,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import e.gson.GsonAdapterForE;
-import e.gson.GsonSerializerForMaybe;
+import dev.akif.espringexample.people.dto.PersonDTOWithId;
+import e.gson.EGsonCodec;
+import e.gson.EOrGsonCodec;
 import e.java.E;
-import e.java.Maybe;
+import e.java.EOr;
 
 @SpringBootApplication(exclude = {JacksonAutoConfiguration.class})
 @EnableWebMvc
@@ -28,8 +29,8 @@ import e.java.Maybe;
 public class Main implements WebMvcConfigurer {
     private static final Gson gson = new GsonBuilder()
             .serializeNulls()
-            .registerTypeAdapter(E.class, GsonAdapterForE.get())
-            .registerTypeAdapter(Maybe.class, GsonSerializerForMaybe.get())
+            .registerTypeAdapter(E.class, EGsonCodec.get())
+            .registerTypeAdapter(EOr.class, new EOrGsonCodec<>(new Gson(), PersonDTOWithId.class))
             .create();
 
     @Bean

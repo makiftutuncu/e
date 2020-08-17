@@ -1,12 +1,10 @@
 package dev.akif.eplayexample.common
 
-import e.scala.E
+import e.scala._
 
 object Errors {
-  final case class EAsException(e: E) extends Exception(e.toString(), e.cause.orNull)
-
-  val invalidData: E = E("invalid-data", code = 400)
-  val notFound: E    = E("not-found",    code = 404)
-  val database: E    = E("database",     code = 500)
-  val unexpected: E  = E("unexpected",   code = 500).message("An unexpected error occurred!")
+  val invalidData: E = E.name("invalid-data").code(400)
+  val notFound: E    = E.name("not-found").code(404)
+  val database: E    = E.name("database").code(500)
+  val unexpected: E  = E.name("unexpected").code(500).message("An unexpected error occurred!")
 }

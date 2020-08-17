@@ -10,7 +10,7 @@ import dev.akif.espringexample.errors.Errors;
 import dev.akif.espringexample.crud.Service;
 import dev.akif.espringexample.people.dto.PersonDTO;
 import dev.akif.espringexample.people.dto.PersonDTOWithId;
-import e.java.Maybe;
+import e.java.EOr;
 
 @Component
 public class PeopleService implements Service<PersonDTO, PersonDTOWithId> {
@@ -23,38 +23,37 @@ public class PeopleService implements Service<PersonDTO, PersonDTOWithId> {
         this.validator  = validator;
     }
 
-    @Override public Maybe<List<PersonDTOWithId>> getAll() {
+    @Override public EOr<List<PersonDTOWithId>> getAll() {
         return repository.getAll().map(people ->
             people.stream().map(PersonDTOWithId::new).collect(Collectors.toList())
         );
     }
 
-    @Override public Maybe<PersonDTOWithId> getById(long id) {
-        return repository.getById(id).flatMap(personOpt -> {
-            if (personOpt.isEmpty()) {
-                return Errors.notFound
-                             .message("Person is not found!")
-                             .data("id", id)
-                             .toMaybe();
-            }
-
-            return Maybe.success(new PersonDTOWithId(personOpt.get()));
-        });
+    @Override public EOr<PersonDTOWithId> getById(long id) {
+        return repository.getById(id)
+            .flatMap(personOpt ->
+                EOr.fromOptional(personOpt, () ->
+                    Errors.notFound
+                          .message("Person is not found!")
+                          .data("id", id)
+                )
+            )
+            .map(PersonDTOWithId::new);
     }
 
-    @Override public Maybe<PersonDTOWithId> create(PersonDTO personDTO) {
+    @Override public EOr<PersonDTOWithId> create(PersonDTO personDTO) {
         return validator.validatePersonDTO(personDTO, false)
                         .andThen(() -> repository.create(personDTO))
                         .map(PersonDTOWithId::new);
     }
 
-    @Override public Maybe<PersonDTOWithId> update(long id, PersonDTO personDTO) {
+    @Override public EOr<PersonDTOWithId> update(long id, PersonDTO personDTO) {
         return validator.validatePersonDTO(personDTO, true)
                         .andThen(() -> repository.update(id, personDTO))
                         .map(PersonDTOWithId::new);
     }
 
-    @Override public Maybe<PersonDTOWithId> delete(long id) {
+    @Override public EOr<PersonDTOWithId> delete(long id) {
         return repository.delete(id).map(PersonDTOWithId::new);
     }
 }

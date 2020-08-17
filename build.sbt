@@ -14,37 +14,22 @@ scmInfo              in ThisBuild := Some(ScmInfo(url("https://github.com/makift
 
 lazy val e = project
   .in(file("."))
-  .aggregate(`e-core`, `e-java`, `e-scala`, `e-kotlin`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .aggregate(`e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
 
 lazy val `e-docs` = project
   .in(file("e-docs"))
-  .dependsOn(`e-core`, `e-java`, `e-scala`, `e-kotlin`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
+  .dependsOn(`e-scala`, `e-kotlin`, `e-java`, `e-circe`, `e-play-json`, `e-gson`, `e-zio`)
   .enablePlugins(MdocPlugin)
   .settings(Settings.scalaSettings)
   .settings(Settings.mdocSettings)
 
-lazy val `e-core` = project
-  .in(file("e-core"))
-  .settings(Settings.javaSettings)
-
-lazy val `e-java` = project
-  .in(file("e-java"))
-  .dependsOn(`e-core`)
-  .settings(Settings.javaSettings)
-
-lazy val `e-scala` = project
-  .in(file("e-scala"))
-  .dependsOn(`e-core`)
-  .settings(Settings.scalaSettings)
-
-lazy val `e-kotlin` = project
-  .in(file("e-kotlin"))
-  .dependsOn(`e-core`)
-  .settings(Settings.kotlinSettings)
+lazy val `e-scala`  = project.in(file("e-scala")).settings(Settings.scalaSettings)
+lazy val `e-kotlin` = project.in(file("e-kotlin")).settings(Settings.kotlinSettings)
+lazy val `e-java`   = project.in(file("e-java")).settings(Settings.javaSettings)
 
 lazy val `e-circe` = project
   .in(file("e-circe"))
-  .dependsOn(`e-scala`)
+  .dependsOn(`e-scala` % "compile->compile;test->test")
   .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -55,17 +40,32 @@ lazy val `e-circe` = project
 
 lazy val `e-play-json` = project
   .in(file("e-play-json"))
-  .dependsOn(`e-scala`)
+  .dependsOn(`e-scala` % "compile->compile;test->test")
   .settings(Settings.scalaSettings)
   .settings(
     libraryDependencies ++= Seq(
+      Dependencies.catsCore,
       Dependencies.playJson
     )
   )
 
+lazy val `e-zio` = project
+  .in(file("e-zio"))
+  .dependsOn(`e-scala` % "compile->compile;test->test")
+  .settings(Settings.scalaSettings)
+  .settings(
+    libraryDependencies ++= Seq(
+      Dependencies.zio,
+      Dependencies.zioTest,
+      Dependencies.zioTestSBT
+    ),
+
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
+)
+
 lazy val `e-gson` = project
   .in(file("e-gson"))
-  .dependsOn(`e-java`)
+  .dependsOn(`e-java` % "compile->compile;test->test")
   .settings(Settings.javaSettings)
   .settings(
     libraryDependencies ++= Seq(
@@ -73,21 +73,14 @@ lazy val `e-gson` = project
     )
   )
 
-lazy val `e-zio` = project
-  .in(file("e-zio"))
-  .dependsOn(`e-scala`)
-  .settings(Settings.scalaSettings)
-  .settings(
-    libraryDependencies ++= Seq(
-      Dependencies.zio
-    )
-  )
-
 // === Release Settings ===
 
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
-credentials          in ThisBuild += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
+val sonatypeUser = sys.env.getOrElse("SONATYPE_USER", "")
+val sonatypePass = sys.env.getOrElse("SONATYPE_PASS", "")
+
+credentials          in ThisBuild += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", sonatypeUser, sonatypePass)
 pomIncludeRepository in ThisBuild := { _ => false }
 publishMavenStyle    in ThisBuild := true
 publishTo            in ThisBuild := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
@@ -100,8 +93,17 @@ val updateDocumentation = ReleaseStep(
   }
 )
 
+val checkCredentials = ReleaseStep { state =>
+  if (sonatypeUser.isEmpty || sonatypePass.isEmpty) {
+    throw new Exception("Sonatype credentials are missing! Make sure to provide SONATYPE_USER and SONATYPE_PASS environment variables.")
+  }
+
+  state
+}
+
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
+  checkCredentials,
   inquireVersions,
   runClean,
   runTest,
@@ -109,9 +111,8 @@ releaseProcess := Seq[ReleaseStep](
   updateDocumentation,
   commitReleaseVersion,
   tagRelease,
-  releaseStepCommandAndRemaining("e-core/publishSigned"),
-  releaseStepCommandAndRemaining("e-java/publishSigned"),
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
+  releaseStepCommandAndRemaining("e-java/publishSigned"),
   releaseStepCommandAndRemaining("e-kotlin/publishSigned"),
   releaseStepCommandAndRemaining("+e-circe/publishSigned"),
   releaseStepCommandAndRemaining("+e-play-json/publishSigned"),
