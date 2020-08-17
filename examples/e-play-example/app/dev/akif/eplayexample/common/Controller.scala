@@ -44,7 +44,7 @@ abstract class Controller(private val runtime: Runtime[Modules], private val cc:
     zioAction(r => f(r).map(a => result(a)))
 
   protected def json[A: Reads](request: Request[AnyContent]): EIO[A] =
-    request.body.asJson.orE(
+    request.body.asJson.toEOr(
       Errors.invalidData
             .message("Request body is not Json!")
             .data("method" -> request.method)

@@ -112,13 +112,13 @@ import e.scala._
 
 encode[EOr[String]](E.name("test").toEOr[String])
 
-encode[EOr[Int]](123.orE)
+encode[EOr[Int]](123.toEOr)
 
 val encoder = makeEncoder[EOr[String]]
 
 encoder.encode(E.name("test").toEOr[String])
 
-encoder.encode("123".orE)
+encoder.encode("123".toEOr)
 ```
 
 ### 3. Codec

@@ -7,7 +7,7 @@ Although the idea and most of the members stayed the same, some of the changes a
 
 ## 1.1. e-core Module is Removed
 
-e-core module is removed. It was a common Java module to share code between Scala, Kotlin and Java modules but it didn't provide enough value and made definitions more complex than they needed to be. With 2.x, main modules are now e-scala, e-kotlin and e-java.
+e-core module is removed. It was a common Java module to share code between Scala, Kotlin and Java modules but it didn't provide enough value and made definitions more complex than they needed to be. With 2.x; e-scala, e-kotlin and e-java are main modules instead of implementations of e-core.
 
 ## 1.2. Changes in E
 
@@ -34,7 +34,7 @@ The implementations (i.e. `Success` and `Failure`) and members of EOr in 2.x are
 | Accessor values are renamed | `eOpt: Option[E]` and `valueOpt: Option[A]`                  | `error: Option[E]` and `value: Option[A]`                    |
 | Check values are renamed    | `isSuccess: Boolean`                                         | `hasValue: Boolean` and its counterpart `hasError: Boolean` is added |
 | Error mapping               | (Doesn't exist)                                              | `mapError` and `flatMapError` methods are added to map according to the error, not the value |
-| Extensions are changed      | Extensions (i.e. `toMaybe` methods for several types) come from `e.scala.implicits`) | Extensions come from `e.scala` and are named `orE` (because they are invoked on values) |
+| Extensions are changed      | Extensions (i.e. `toMaybe` methods for several types) come from `e.scala.implicits`) | Extensions come from `e.scala` and are named `toEOr` (because they are invoked on values) |
 
 ## 1.4. `JsonStringEncoder` is Removed
 
@@ -50,4 +50,4 @@ Due to e-core being removed, Decoder, Encoder and their combination Codec change
 | `e.scala.Decoder[IN]` where `IN` is input              | `e.scala.codec.Decoder[-I, +O]` where `I` is input and `O` is output |
 | `e.scala.Encoder[OUT]` where `OUT` is input            | `e.scala.codec.Encoder[-I, +O]` where `I` is input and `O` is output |
 
-Their implementations are in seperate modules such as e-circe or e-gson and they provide instances of these for E and EOr.
+Their implementations are in separate modules such as e-circe or e-gson and they provide instances of these for E and EOr.

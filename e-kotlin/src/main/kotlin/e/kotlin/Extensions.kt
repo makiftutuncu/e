@@ -43,7 +43,7 @@ inline fun <reified A> EOr<A>.orElse(crossinline alternative: () -> EOr<A>): EOr
  *
  * @see e.kotlin.EOr
  */
-fun <A> A.orE(): EOr<A> =
+fun <A> A.toEOr(): EOr<A> =
     EOr.from(this)
 
 /**
@@ -55,7 +55,7 @@ fun <A> A.orE(): EOr<A> =
  *
  * @return An EOr containing either this value or given E
  */
-fun <A> A?.orE(ifNull: () -> E): EOr<A> =
+fun <A> A?.toEOr(ifNull: () -> E): EOr<A> =
     EOr.fromNullable(this, ifNull)
 
 /**

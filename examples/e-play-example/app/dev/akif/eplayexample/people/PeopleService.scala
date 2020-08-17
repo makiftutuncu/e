@@ -28,7 +28,7 @@ object PeopleService {
       peopleRepository.getAll
 
     override def get(id: Long): EIO[Person] =
-      peopleRepository.get(id).flatMap(_.orE(Errors.database.message("Cannot find person!").data("id" -> id)).toEIO)
+      peopleRepository.get(id).flatMap(_.toEOr(Errors.database.message("Cannot find person!").data("id" -> id)).toEIO)
 
     override def create(create: CreatePerson): EIO[Person] =
       peopleRepository.create(create)

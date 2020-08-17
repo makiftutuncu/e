@@ -134,11 +134,11 @@ EOr.Success("test")
 
 E.message("test").toEOr[Int]
 
-"hello".orE
+"hello".toEOr
 
-Some(true).orE(E.code(2))
+Some(true).toEOr(E.code(2))
 
-Option.empty[String].orE(E.code(3))
+Option.empty[String].toEOr(E.code(3))
 
 EOr.fromEither[Int, String](Right("hello")) { left => E.code(left) }
 
@@ -154,7 +154,7 @@ import e.scala._
 
 val eor1 = E.message("test").toEOr[Int]
 
-val eor2 = "hello".orE
+val eor2 = "hello".toEOr
 
 eor1.hasValue
 
@@ -174,7 +174,7 @@ import e.scala._
 
 val eor1 = E.message("test").toEOr[Int]
 
-val eor2 = "hello".orE
+val eor2 = "hello".toEOr
 
 eor2.map(_.toUpperCase)
 

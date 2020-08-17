@@ -15,7 +15,7 @@ package object scala {
    * @see [[e.scala.E]]
    * @see [[e.scala.EOr]]
    */
-  type or[_ <: E, +A] = EOr[A]
+  type or[+_ <: E, +A] = EOr[A]
 
   implicit class ValueExtensionsForEOr[A](a: => A) {
     /**
@@ -25,7 +25,7 @@ package object scala {
      *
      * @see [[e.scala.EOr]]
      */
-    @inline def orE: EOr[A] =
+    @inline def toEOr: EOr[A] =
       EOr(a)
 
     /**
@@ -47,7 +47,7 @@ package object scala {
      *
      * @return An EOr containing either value in this Option or given E
      */
-    @inline def orE(ifNone: => E): EOr[A] =
+    @inline def toEOr(ifNone: => E): EOr[A] =
       EOr.fromOption(option)(ifNone)
   }
 
@@ -59,7 +59,7 @@ package object scala {
      *
      * @return An EOr containing either Right value in this Either or an E computed by given function
      */
-    @inline def orE(ifLeft: L => E): EOr[R] =
+    @inline def toEOr(ifLeft: L => E): EOr[R] =
       EOr.fromEither(either)(ifLeft)
   }
 
@@ -71,7 +71,7 @@ package object scala {
      *
      * @return An EOr containing either value in this Try or an E computed by given function
      */
-    @inline def orE(ifFailure: Throwable => E = E.fromThrowable): EOr[A] =
+    @inline def toEOr(ifFailure: Throwable => E = E.fromThrowable): EOr[A] =
       EOr.fromTry(`try`)(ifFailure)
   }
 
