@@ -42,7 +42,7 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder] {
     }
 
   override def decode[A](json: Json)(implicit aDecoder: CirceDecoder[A]): EOr[A] =
-    aDecoder.decodeAccumulating(HCursor.fromJson(json)).toEither.orE { failures =>
+    aDecoder.decodeAccumulating(HCursor.fromJson(json)).toEither.toEOr { failures =>
       failures.foldLeft(Decoder.decodingError) {
         case (e, failure) =>
           e.cause(

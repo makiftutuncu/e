@@ -56,7 +56,7 @@ E.name("test-error").message("Test").toEIO[String]
 E.code(1).toEOr[String].toEIO
 
 // From successful EOr
-"test".orE.toEIO
+"test".toEOr.toEIO
 
 def divide(a: Int, b: Int): EIO[Int] =
   if (b == 0) {
@@ -86,7 +86,7 @@ E.name("test-error").message("Test").toREIO[Boolean, String]
 E.code(1).toEOr[String].toREIO[Long]
 
 // From successful EOr
-"test".orE.toREIO[String]
+"test".toEOr.toREIO[String]
 
 class Divider {
   def divide(a: Int, b: Int): EIO[Int] =

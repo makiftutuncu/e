@@ -59,7 +59,7 @@ E.code(1).toEOr[String].toEIO
 // res3: EIO[String] = zio.ZIO$Fail@1d286849
 
 // From successful EOr
-"test".orE.toEIO
+"test".toEOr.toEIO
 // res4: EIO[String] = zio.ZIO$EffectTotal@7ec97c17
 
 def divide(a: Int, b: Int): EIO[Int] =
@@ -95,7 +95,7 @@ E.code(1).toEOr[String].toREIO[Long]
 // res10: REIO[Long, String] = zio.ZIO$Fail@4b0c903
 
 // From successful EOr
-"test".orE.toREIO[String]
+"test".toEOr.toREIO[String]
 // res11: REIO[String, String] = zio.ZIO$EffectTotal@2c45a020
 
 class Divider {

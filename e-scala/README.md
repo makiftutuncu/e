@@ -152,13 +152,13 @@ EOr.Success("test")
 E.message("test").toEOr[Int]
 // res15: EOr[Int] = {"message":"test"}
 
-"hello".orE
+"hello".toEOr
 // res16: EOr[String] = hello
 
-Some(true).orE(E.code(2))
+Some(true).toEOr(E.code(2))
 // res17: EOr[Boolean] = true
 
-Option.empty[String].orE(E.code(3))
+Option.empty[String].toEOr(E.code(3))
 // res18: EOr[String] = {"code":3}
 
 EOr.fromEither[Int, String](Right("hello")) { left => E.code(left) }
@@ -178,7 +178,7 @@ import e.scala._
 val eor1 = E.message("test").toEOr[Int]
 // eor1: EOr[Int] = {"message":"test"}
 
-val eor2 = "hello".orE
+val eor2 = "hello".toEOr
 // eor2: EOr[String] = hello
 
 eor1.hasValue
@@ -204,7 +204,7 @@ import e.scala._
 val eor1 = E.message("test").toEOr[Int]
 // eor1: EOr[Int] = {"message":"test"}
 
-val eor2 = "hello".orE
+val eor2 = "hello".toEOr
 // eor2: EOr[String] = hello
 
 eor2.map(_.toUpperCase)
@@ -253,3 +253,4 @@ e-scala provides definitions for implementing decoding/encoding mechanism for E 
 * [Decoder[I, O]](src/main/scala/e/scala/codec/Decoder.scala) is for building an `O` (output) from an `I` (input) while handling the decoding failures with E
 * [Encoder[I, O]](src/main/scala/e/scala/codec/Encoder.scala) is for building an `O` (output) from an `I` (input)
 * [Codec[S, T]](src/main/scala/e/scala/codec/Codec.scala) is a combination of Decoder and Encoder for an `S` (source) type where output of Encoder and input of Decoder is the same `T` (target) type
+

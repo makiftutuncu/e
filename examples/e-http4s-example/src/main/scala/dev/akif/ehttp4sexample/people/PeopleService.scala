@@ -11,7 +11,7 @@ class PeopleService(val peopleRepository: PeopleRepository) extends Service[IO, 
   override def get(id: Long): IO[Person] =
     for {
       personOpt <- peopleRepository.get(id)
-      person    <- personOpt.orE(Errors.notFound.message("Person is not found!")).toIO
+      person    <- personOpt.toEOr(Errors.notFound.message("Person is not found!")).toIO
     } yield {
       person
     }

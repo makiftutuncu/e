@@ -143,7 +143,7 @@ encode[EOr[String]](E.name("test").toEOr[String])
 //   "name" : "test"
 // }
 
-encode[EOr[Int]](123.orE)
+encode[EOr[Int]](123.toEOr)
 // res15: io.circe.Json = 123
 
 val encoder = makeEncoder[EOr[String]]
@@ -154,7 +154,7 @@ encoder.encode(E.name("test").toEOr[String])
 //   "name" : "test"
 // }
 
-encoder.encode("123".orE)
+encoder.encode("123".toEOr)
 // res17: io.circe.Json = "123"
 ```
 

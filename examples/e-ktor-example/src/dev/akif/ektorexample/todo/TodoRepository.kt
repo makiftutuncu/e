@@ -41,7 +41,7 @@ class TodoRepository(override val db: DB, val zdt: ZDTProvider) : Repository<Tod
             if (todo != null && todo.userId != userId) {
                 Errors.notFound.message("Todo $id is not found!").toEOr()
             } else {
-                todo.orE()
+                todo.toEOr()
             }
         }
 

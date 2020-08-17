@@ -55,7 +55,7 @@ sealed trait EOr[+A] { self =>
   def map[B](f: A => B): EOr[B] =
     self match {
       case Failure(e)     => e.toEOr[B]
-      case Success(value) => f(value).orE
+      case Success(value) => f(value).toEOr
     }
 
   /**
@@ -208,7 +208,7 @@ sealed trait EOr[+A] { self =>
              filteredError: A => E = { a => EOr.filteredError.data("value", a) }): EOr[A] =
     self match {
       case Failure(_)     => self
-      case Success(value) => if (condition(value)) value.orE else filteredError(value).toEOr[A]
+      case Success(value) => if (condition(value)) value.toEOr else filteredError(value).toEOr[A]
     }
 
   /**
@@ -233,7 +233,7 @@ sealed trait EOr[+A] { self =>
    */
   def handle[AA >: A](f: PartialFunction[E, AA]): EOr[AA] =
     self match {
-      case Failure(e) if f.isDefinedAt(e) => f(e).orE
+      case Failure(e) if f.isDefinedAt(e) => f(e).toEOr
       case _                              => self
     }
 

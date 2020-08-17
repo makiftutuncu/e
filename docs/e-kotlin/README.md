@@ -152,13 +152,13 @@ EOr.Success("test")
 E.message("test").toEOr<Int>()
 // res15: EOr<Int> = {"message":"test"}
 
-"hello".orE()
+"hello".toEOr()
 // res16: EOr<String> = hello
 
-(true as Boolean?).orE(E.code(2))
+(true as Boolean?).toEOr(E.code(2))
 // res17: EOr<Boolean> = true
 
-(null as String?).orE(E.code(3))
+(null as String?).toEOr(E.code(3))
 // res18: EOr<String> = {"code":3}
 ```
 
@@ -172,7 +172,7 @@ import e.kotlin.*
 val eor1 = E.message("test").toEOr<Int>()
 // eor1: EOr<Int> = {"message":"test"}
 
-val eor2 = "hello".orE()
+val eor2 = "hello".toEOr()
 // eor2: EOr<String> = hello
 
 eor1.hasValue()
@@ -198,7 +198,7 @@ import e.kotlin.*
 val eor1 = E.message("test").toEOr<Int>()
 // eor1: EOr<Int> = {"message":"test"}
 
-val eor2 = "hello".orE()
+val eor2 = "hello".toEOr()
 // eor2: EOr<String> = hello
 
 eor2.map { it.toUpperCase() }

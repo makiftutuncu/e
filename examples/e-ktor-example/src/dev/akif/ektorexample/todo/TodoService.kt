@@ -10,7 +10,7 @@ class TodoService(val repository: TodoRepository) {
 
     fun getById(id: Long, userId: Long): EOr<Todo> =
         repository.getById(id, userId).flatMap { todo ->
-            todo.orE { Errors.notFound.message("Todo $id is not found!") }
+            todo.toEOr { Errors.notFound.message("Todo $id is not found!") }
         }
 
     fun update(id: Long, userId: Long, updateTodo: UpdateTodo): EOr<Todo> =

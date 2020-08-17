@@ -127,7 +127,7 @@ import e.scala._
 encode[EOr[String]](E.name("test").toEOr[String])
 // res14: play.api.libs.json.JsValue = {"name":"test"}
 
-encode[EOr[Int]](123.orE)
+encode[EOr[Int]](123.toEOr)
 // res15: play.api.libs.json.JsValue = 123
 
 val encoder = makeEncoder[EOr[String]]
@@ -136,7 +136,7 @@ val encoder = makeEncoder[EOr[String]]
 encoder.encode(E.name("test").toEOr[String])
 // res16: play.api.libs.json.JsValue = {"name":"test"}
 
-encoder.encode("123".orE)
+encoder.encode("123".toEOr)
 // res17: play.api.libs.json.JsValue = "123"
 ```
 

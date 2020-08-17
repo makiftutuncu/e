@@ -14,14 +14,14 @@ object EOrTest: Assertions {
         e.toEOr<String>().assertError(e)
 
         EOr.from("test").assertValue("test")
-        "test".orE().assertValue("test")
+        "test".toEOr().assertValue("test")
 
         val nullable1: String? = null
         val nullable2: String? = "test"
         val eNull = E.name("null")
         EOr.fromNullable(nullable1) { eNull }.assertError(eNull)
-        nullable1.orE { eNull }.assertError(eNull)
-        nullable2.orE { eNull }.assertValue("test")
+        nullable1.toEOr { eNull }.assertError(eNull)
+        nullable2.toEOr { eNull }.assertValue("test")
 
         val t1: () -> String = { throw Exception("test") }
         val t2: () -> String = { "Test" }
@@ -35,7 +35,7 @@ object EOrTest: Assertions {
         val failed = E.name("failed")
 
         failed.toEOr<Int>().map { it.toString() }.assertError(failed)
-        42.orE().map { it.toString() }.assertValue("42")
+        42.toEOr().map { it.toString() }.assertValue("42")
     }
 
     @Test fun `flat mapping an EOr`() {
@@ -43,23 +43,23 @@ object EOrTest: Assertions {
         val failed2 = E.name("failed2")
 
         failed1.toEOr<Int>().flatMap { failed2.toEOr<String>() }.assertError(failed1)
-        failed1.toEOr<Int>().flatMap { it.toString().orE() }.assertError(failed1)
+        failed1.toEOr<Int>().flatMap { it.toString().toEOr() }.assertError(failed1)
 
-        42.orE().flatMap { failed2.toEOr<String>() }.assertError(failed2)
-        42.orE().flatMap { it.toString().orE() }.assertValue("42")
+        42.toEOr().flatMap { failed2.toEOr<String>() }.assertError(failed2)
+        42.toEOr().flatMap { it.toString().toEOr() }.assertValue("42")
     }
 
     @Test fun `mapping error of an EOr`() {
-        42.orE().mapError { it.code(1) }.assertValue(42)
+        42.toEOr().mapError { it.code(1) }.assertValue(42)
 
         E.name("test").toEOr<Int>().mapError { it.name((it.name ?: "").toUpperCase()) }.assertError(E.name("TEST"))
     }
 
     @Test fun `flat mapping error of an EOr`() {
-        42.orE().flatMapError { it.code(1).toEOr() }.assertValue(42)
-        42.orE().flatMapError { 43.orE() }.assertValue(42)
+        42.toEOr().flatMapError { it.code(1).toEOr() }.assertValue(42)
+        42.toEOr().flatMapError { 43.toEOr() }.assertValue(42)
 
-        E.name("test").toEOr<Int>().flatMapError { 42.orE() }.assertValue(42)
+        E.name("test").toEOr<Int>().flatMapError { 42.toEOr() }.assertValue(42)
         E.name("test").toEOr<Int>().flatMapError { it.code(1).toEOr() }.assertError(E.code(1).name("test"))
     }
 
@@ -67,13 +67,13 @@ object EOrTest: Assertions {
         assertEquals("",  E.empty.toEOr<Int>().fold({ it.code?.toString() ?: "" }, { it.toString() }))
         assertEquals("1", E.code(1).toEOr<Int>().fold({ it.code?.toString() ?: "" }, { it.toString() }))
 
-        assertEquals("42", 42.orE().fold({ it.code?.toString() ?: "" }, { it.toString() }))
+        assertEquals("42", 42.toEOr().fold({ it.code?.toString() ?: "" }, { it.toString() }))
     }
 
     @Test fun `getting value of an EOr or a default value`() {
         assertEquals("", E.code(1).toEOr<String>().getOrElse { "" })
 
-        assertEquals("test", "test".orE().getOrElse { "" })
+        assertEquals("test", "test".toEOr().getOrElse { "" })
     }
 
     @Test fun `getting an EOr or an alternative one on error`() {
@@ -82,8 +82,8 @@ object EOrTest: Assertions {
 
         e1.toEOr<String>().orElse { e2.toEOr() }.assertError(e2)
 
-        "test".orE().orElse { e2.toEOr() }.assertValue("test")
-        e1.toEOr<String>().orElse { "test".orE() }.assertValue("test")
+        "test".toEOr().orElse { e2.toEOr() }.assertValue("test")
+        e1.toEOr<String>().orElse { "test".toEOr() }.assertValue("test")
     }
 
     @Test fun `getting an EOr or a next one on value`() {
@@ -91,16 +91,16 @@ object EOrTest: Assertions {
         val e2 = E.code(2)
 
         e1.toEOr<String>().andThen { e2.toEOr<String>() }.assertError(e1)
-        e1.toEOr<String>().andThen { "test".orE() }.assertError(e1)
+        e1.toEOr<String>().andThen { "test".toEOr() }.assertError(e1)
 
-        "test".orE().andThen { e2.toEOr<String>() }.assertError(e2)
-        "test".orE().andThen { 42.orE() }.assertValue(42)
+        "test".toEOr().andThen { e2.toEOr<String>() }.assertError(e2)
+        "test".toEOr().andThen { 42.toEOr() }.assertValue(42)
     }
 
     @Test fun `performing side-effect on an EOr on error`() {
         var counter = 0
 
-        "test".orE().onError {
+        "test".toEOr().onError {
             counter += 1
         }
         assertEquals(0, counter)
@@ -123,7 +123,7 @@ object EOrTest: Assertions {
         assertEquals(0, counter)
 
         listOf("test1", "test2", "test3").forEach {
-            it.orE().onValue {
+            it.toEOr().onValue {
                 counter += 1
             }
         }
@@ -140,7 +140,7 @@ object EOrTest: Assertions {
         assertEquals(0, counter)
 
         listOf("test1", "test2", "test3").forEach {
-            it.orE().forEach {
+            it.toEOr().forEach {
                 counter += 1
             }
         }
@@ -154,19 +154,19 @@ object EOrTest: Assertions {
         e.toEOr<Int>().filter({ it > 0 }).assertError(e)
         e.toEOr<Int>().filter({ it > 0 }) { negative }.assertError(e)
 
-        42.orE().filter({ it > 0 }).assertValue(42)
-        (-42).orE().filter({ it > 0 }).assertError(EOr.filteredError.data("value", -42))
+        42.toEOr().filter({ it > 0 }).assertValue(42)
+        (-42).toEOr().filter({ it > 0 }).assertError(EOr.filteredError.data("value", -42))
 
-        42.orE().filter({ it > 0 }) { negative.data("value", it) }.assertValue(42)
-        (-42).orE().filter({ it > 0 }) { negative.data("value", it) }.assertError(negative.data("value", -42))
+        42.toEOr().filter({ it > 0 }) { negative.data("value", it) }.assertValue(42)
+        (-42).toEOr().filter({ it > 0 }) { negative.data("value", it) }.assertError(negative.data("value", -42))
     }
 
     @Test fun `equality and hash code of EOr`() {
-        val eor1 = "test1".orE()
-        val eor2 = "test2".orE()
+        val eor1 = "test1".toEOr()
+        val eor2 = "test2".toEOr()
 
-        assertEquals("test1".orE(), eor1)
-        assertEquals("test1".orE().hashCode(), eor1.hashCode())
+        assertEquals("test1".toEOr(), eor1)
+        assertEquals("test1".toEOr().hashCode(), eor1.hashCode())
 
         assertNotEquals(eor1, eor2)
         assertNotEquals(eor1.hashCode(), eor2.hashCode())
@@ -202,6 +202,6 @@ object EOrTest: Assertions {
 
     @Test fun `converting an EOr to String`() {
         assertEquals("""{"name":"test"}""", E.name("test").toEOr<String>().toString())
-        assertEquals("42", 42.orE().toString())
+        assertEquals("42", 42.toEOr().toString())
     }
 }

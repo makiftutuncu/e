@@ -40,7 +40,7 @@ object playjson extends CodecFor[JsValue, Reads, Writes] {
   }
 
   override def decode[A](json: JsValue)(implicit aReads: Reads[A]): EOr[A] =
-    aReads.reads(json).asEither.orE { errors =>
+    aReads.reads(json).asEither.toEOr { errors =>
       errors.foldLeft[E](Decoder.decodingError) {
         case (e, (path, validationErrors)) =>
           val name   = path.toJsonString
