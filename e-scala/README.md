@@ -74,10 +74,10 @@ E.name("test-error").message("Test")
 // res2: E = {"name":"test-error","message":"Test"}
 
 val unexpectedError = E(message = Some("Unexpected Error"), code = Some(-1)).now
-// unexpectedError: E = {"code":-1,"message":"Unexpected Error","time":1597138519415}
+// unexpectedError: E = {"code":-1,"message":"Unexpected Error","time":1597699594081}
 
 val errorWithDataAndCause = unexpectedError.data("action" -> "test").cause(notSoEmpty)
-// errorWithDataAndCause: E = {"code":-1,"message":"Unexpected Error","causes":[{"code":1,"name":"error-name","message":"Error Message"}],"data":{"action":"test"},"time":1597138519415}
+// errorWithDataAndCause: E = {"code":-1,"message":"Unexpected Error","causes":[{"code":1,"name":"error-name","message":"Error Message"}],"data":{"action":"test"},"time":1597699594081}
 ```
 
 #### 1.2. Accessing Data in E
@@ -253,4 +253,3 @@ e-scala provides definitions for implementing decoding/encoding mechanism for E 
 * [Decoder[I, O]](src/main/scala/e/scala/codec/Decoder.scala) is for building an `O` (output) from an `I` (input) while handling the decoding failures with E
 * [Encoder[I, O]](src/main/scala/e/scala/codec/Encoder.scala) is for building an `O` (output) from an `I` (input)
 * [Codec[S, T]](src/main/scala/e/scala/codec/Codec.scala) is a combination of Decoder and Encoder for an `S` (source) type where output of Encoder and input of Decoder is the same `T` (target) type
-

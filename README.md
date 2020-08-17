@@ -9,7 +9,7 @@ It consists of different modules for different needs. You can find details, inst
 
 | Latest Version of e | Java Version          | Scala Versions          | Kotlin Version   |
 | ------------------- | --------------------- | ----------------------- | ---------------- |
-| 2.0.0-SNAPSHOT           | 1.8        | 2.12.12, 2.13.2  | 1.3.70 |
+| 2.0.0-SNAPSHOT           | 1.8        | 2.12.12, 2.13.2  | 1.4.0 |
 
 ## Table of Contents
 

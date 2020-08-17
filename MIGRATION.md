@@ -7,7 +7,7 @@ Although the idea and most of the members stayed the same, some of the changes a
 
 ## 1.1. e-core Module is Removed
 
-e-core module is removed. It was a common Java module to share code between Scala, Kotlin and Java modules but it didn't provide enough value and made definitions more complex than they needed to be. With 2.x, main modules are now e-scala, e-kotlin and e-java.
+e-core module is removed. It was a common Java module to share code between Scala, Kotlin and Java modules but it didn't provide enough value and made definitions more complex than they needed to be. With 2.x; e-scala, e-kotlin and e-java are main modules instead of implementations of e-core.
 
 ## 1.2. Changes in E
 
