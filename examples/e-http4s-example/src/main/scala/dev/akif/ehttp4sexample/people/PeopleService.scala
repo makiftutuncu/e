@@ -3,7 +3,7 @@ package dev.akif.ehttp4sexample.people
 import cats.effect.IO
 import dev.akif.ehttp4sexample.common.{Errors, Service}
 import dev.akif.ehttp4sexample.common.implicits._
-import e.scala.implicits._
+import e.scala._
 
 class PeopleService(val peopleRepository: PeopleRepository) extends Service[IO, Person, CreatePerson, UpdatePerson] {
   override def getAll: IO[List[Person]] = peopleRepository.getAll
@@ -11,7 +11,7 @@ class PeopleService(val peopleRepository: PeopleRepository) extends Service[IO, 
   override def get(id: Long): IO[Person] =
     for {
       personOpt <- peopleRepository.get(id)
-      person    <- personOpt.toMaybe(Errors.notFound.message("Person is not found!")).toIO
+      person    <- personOpt.toEOr(Errors.notFound.message("Person is not found!")).toIO
     } yield {
       person
     }

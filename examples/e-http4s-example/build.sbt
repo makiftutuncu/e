@@ -1,5 +1,5 @@
 val logbackVersion = "1.2.3"
-val eVersion       = "1.1.2"
+val eVersion       = "2.0.0"
 val http4sVersion  = "0.21.1"
 val flywayVersion  = "6.1.4"
 val doobieVersion  = "0.8.8"

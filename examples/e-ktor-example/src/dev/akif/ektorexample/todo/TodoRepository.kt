@@ -4,13 +4,12 @@ import dev.akif.ektorexample.common.Errors
 import dev.akif.ektorexample.common.Repository
 import dev.akif.ektorexample.common.ZDTProvider
 import dev.akif.ektorexample.database.DB
-import e.kotlin.Maybe
-import e.kotlin.toMaybe
+import e.kotlin.*
 import org.jetbrains.exposed.sql.*
 import java.time.ZoneOffset
 
 class TodoRepository(override val db: DB, val zdt: ZDTProvider) : Repository<Todo>(db) {
-    fun create(userId: Long, createTodo: CreateTodo): Maybe<Todo> {
+    fun create(userId: Long, createTodo: CreateTodo): EOr<Todo> {
         val now = zdt.now()
 
         return run {
@@ -25,14 +24,14 @@ class TodoRepository(override val db: DB, val zdt: ZDTProvider) : Repository<Tod
         }
     }
 
-    fun getAllByUserId(userId: Long): Maybe<List<Todo>> =
+    fun getAllByUserId(userId: Long): EOr<List<Todo>> =
         run {
             TodoTable
                 .select { TodoTable.userId eq userId }
                 .map { row -> TodoTable.toTodo(row) }
         }
 
-    fun getById(id: Long, userId: Long): Maybe<Todo?> =
+    fun getById(id: Long, userId: Long): EOr<Todo?> =
         run {
             TodoTable
                 .select { TodoTable.id eq id }
@@ -40,13 +39,13 @@ class TodoRepository(override val db: DB, val zdt: ZDTProvider) : Repository<Tod
                 ?.let { TodoTable.toTodo(it) }
         }.flatMap { todo ->
             if (todo != null && todo.userId != userId) {
-                Errors.notFound.message("Todo $id is not found!").toMaybe()
+                Errors.notFound.message("Todo $id is not found!").toEOr()
             } else {
-                todo.toMaybe()
+                todo.toEOr()
             }
         }
 
-    fun update(todo: Todo, updateTodo: UpdateTodo): Maybe<Todo> {
+    fun update(todo: Todo, updateTodo: UpdateTodo): EOr<Todo> {
         val now = zdt.now()
 
         return run {
@@ -60,7 +59,7 @@ class TodoRepository(override val db: DB, val zdt: ZDTProvider) : Repository<Tod
         }
     }
 
-    fun delete(id: Long): Maybe<Unit> =
+    fun delete(id: Long): EOr<Unit> =
         run<Unit> {
             TodoTable.deleteWhere {
                 TodoTable.id eq id

@@ -1,122 +1,108 @@
 package e.java;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static e.java.test.Assertions.*;
+import static e.java.test.Helpers.*;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class ETest {
-    private Throwable cause;
-    private Map<String, String> data;
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Test void constructingAnE() {
+        E empty = E.empty;
+        assertCode(empty, null);
+        assertName(empty, null);
+        assertMessage(empty, null);
+        assertCauses(empty, listOf());
+        assertData(empty, mapOf());
+        assertTime(empty, null);
 
-    @BeforeEach void reset() {
-        cause = new Exception("Test Exception");
-        data = new LinkedHashMap<>();
-        data.put("test", "data");
+        int code                 = 1;
+        String name              = "test";
+        String message           = "Test";
+        List<E> causes           = listOf(E.fromName("cause1"), E.fromName("cause2"));
+        Map<String, String> data = mapOf(mapEntry("foo", "bar"));
+        long time                = 123456789L;
+
+        E e = new E(code, name, message, causes, data, time);
+
+        int code2 = 2;
+
+        assertCode(e, code);
+        assertCode(new E(code, null, null, null, null, null), code);
+        assertCode(E.fromCode(code), code);
+        assertCode(e.code(code2), code2);
+
+        String name2 = "test2";
+
+        assertName(e, name);
+        assertName(new E(null, name, null, null, null, null), name);
+        assertName(E.fromName(name), name);
+        assertName(e.name(name2), name2);
+
+        String message2 = "Test 2";
+
+        assertMessage(e, message);
+        assertMessage(new E(null, null, message, null, null, null), message);
+        assertMessage(E.fromMessage(message), message);
+        assertMessage(e.message(message2), message2);
+
+        E cause3 = E.fromName("cause3");
+
+        assertCauses(e, causes);
+        assertCauses(new E(null, null, null, causes, null, null), causes);
+        assertCauses(E.fromCauses(causes), causes);
+        assertCauses(e.causes(listOf(cause3)), added(causes, cause3));
+
+        assertCauses(e.cause(cause3), added(causes, cause3));
+        assertCauses(E.fromCause(cause3), listOf(cause3));
+
+        assertCauses(e.causeIf(true, () -> cause3), added(causes, cause3));
+        assertCauses(e.causeIf(false, () -> cause3), causes);
+        assertCauses(E.fromCauseIf(true, () -> cause3), listOf(cause3));
+        assertCauses(E.fromCauseIf(false,  () -> cause3), listOf());
+
+        assertData(e, data);
+        assertData(new E(null, null, null, null, data, null), data);
+        assertData(E.fromData(data), data);
+
+        String key = "test";
+        int value  = 42;
+
+        assertData(e.data(key, value), added(data, key, String.valueOf(value)));
+        assertData(E.fromData(key, value), mapOf(mapEntry(key, String.valueOf(value))));
+
+        long now = System.currentTimeMillis();
+
+        assertTime(e, time);
+        assertTime(new E(null, null, null, null, null, time), time);
+        assertTime(E.fromTime(time), time);
+        assertTime(e.time(now), now);
+
+        assertAlmostSame(now, e.now().time().get());
+        assertAlmostSame(now, E.fromNow().time().get());
     }
 
-    @Test void testConstructingEWithAllFields() {
-        E e = new E("test-name", "Test Message", 1, cause, data);
+    @Test void convertingAnEToAnEOr() {
+        E e             = E.fromName("test").message("Test");
+        EOr<String> eor = e.toEOr();
 
-        assertTrue(e.hasName());
-        assertEquals("test-name", e.name());
-
-        assertTrue(e.hasMessage());
-        assertEquals("Test Message", e.message());
-
-        assertTrue(e.hasCode());
-        assertEquals(1, e.code());
-
-        assertTrue(e.hasCause());
-        assertEquals("Test Exception", e.cause().getMessage());
-
-        assertTrue(e.hasData());
-        assertEquals(1, e.data().size());
-        assertEquals("data", e.data().get("test"));
+        assertError(eor, e);
     }
 
-    @Test void testConstructingEWithNoFields() {
-        E e = new E();
+    @Test void convertingAnEToAnEException() {
+        E e          = E.fromName("test").message("Test");
+        Exception ex = e.toException();
 
-        assertFalse(e.hasName());
-        assertEquals("", e.name());
-
-        assertFalse(e.hasMessage());
-        assertEquals("", e.message());
-
-        assertFalse(e.hasCode());
-        assertEquals(E.EMPTY_CODE, e.code());
-
-        assertFalse(e.hasCause());
-        assertNull(e.cause());
-
-        assertFalse(e.hasData());
-        assertEquals(new LinkedHashMap<>(), e.data());
+        assertEquals(new EException(e), ex);
     }
 
-    @Test void testConstructingEAsEmpty() {
-        E actual   = E.empty();
-        E expected = new E();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test void testConvertingToException() {
-        E e1 = new E("test-name", "Test Message", 1);
-
-        Exception expected1 = new Exception(e1.toString());
-        Exception actual1   = e1.toException();
-
-        assertEquals(expected1.getMessage(), actual1.getMessage());
-        assertNull(actual1.getCause());
-
-        E e2 = e1.cause(cause);
-
-        Exception expected2 = new Exception(e2.toString(), cause);
-        Exception actual2   = e2.toException();
-
-        assertEquals(expected2.getMessage(), actual2.getMessage());
-        assertEquals(expected2.getCause(),   actual2.getCause());
-    }
-
-    @Test void testConvertingToMaybe() {
-        E e = new E("test-name", "Test Message", 1);
-
-        Maybe<String> expected = Maybe.failure(e);
-        Maybe<String> actual   = e.toMaybe();
-
-        assertEquals(expected, actual);
-    }
-
-    @Test void testEquality() {
-        E e = new E("test-name", "Test Message", 1, cause, data);
-        Map<String, String> otherData = new LinkedHashMap<>();
-        otherData.put("foo", "bar");
-
-        assertEquals(e,    new E("test-name", "Test Message", 1, cause,                data));
-        assertNotEquals(e, new E("test-name", "Test Message", 2, cause,                data));
-        assertNotEquals(e, new E("foo",       "Test Message", 1, cause,                data));
-        assertNotEquals(e, new E("test-name", "bar",          1, cause,                data));
-        assertNotEquals(e, new E("test-name", "Test Message", 1, new Exception("baz"), data));
-        assertNotEquals(e, new E("test-name", "Test Message", 1, cause,                otherData));
-    }
-
-    @Test void testHashCodeGeneration() {
-        E e = new E("test-name", "Test Message", 1, cause, data);
-        Map<String, String> otherData = new LinkedHashMap<>();
-        otherData.put("foo", "bar");
-
-        assertNotEquals(e.hashCode(), new E("test-name", "Test Message", 2, cause,                data).hashCode());
-        assertNotEquals(e.hashCode(), new E("foo",       "Test Message", 1, cause,                data).hashCode());
-        assertNotEquals(e.hashCode(), new E("test-name", "bar",          1, cause,                data).hashCode());
-        assertNotEquals(e.hashCode(), new E("test-name", "Test Message", 1, new Exception("baz"), data).hashCode());
-        assertNotEquals(e.hashCode(), new E("test-name", "Test Message", 1, cause,                otherData).hashCode());
+    @Test void constructingAnEFromAThrowable() {
+        assertEquals(E.fromMessage("Test"), E.fromThrowable(new Exception("Test")));
+        assertEquals(E.fromName("test"), E.fromThrowable(E.fromName("test").toException()));
     }
 }
