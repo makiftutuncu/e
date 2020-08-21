@@ -12,8 +12,7 @@ object Settings {
   lazy val crossCompiledScalaVersions = Seq("2.12.12", latestScalaVersion)
 
   lazy val commonSettings = Seq(
-    resolvers               += Resolver.jcenterRepo,
-    Compile / compileOrder  := CompileOrder.JavaThenScala
+    resolvers += Resolver.jcenterRepo
   )
 
   lazy val mdocSettings = Seq(
@@ -63,12 +62,13 @@ object Settings {
 
       scalacOptions ++= Seq(
         "-encoding", "utf8"
+        , "-feature"
         , "-deprecation"
         , "-language:implicitConversions"
         , "-language:higherKinds"
         , "-Xfatal-warnings"
         , "-Xlint:unused"
-        //      , "-Vimplicits"
+        //, "-Vimplicits"
       ),
 
       scalacOptions ++= (
@@ -106,6 +106,25 @@ object Settings {
     kotlinLib("stdlib"),
 
     kotlinVersion := latestKotlinVersion,
+
+    // Delegate doc generation to Gradle and Dokka
+    doc in Compile := {
+      import sys.process._
+      Process(Seq("./gradlew", "dokkaJavadoc"), baseDirectory.value).!
+      target.value / "api"
+    },
+
+    // Include Kotlin files in sources
+    packageConfiguration in Compile := {
+      val old = (packageConfiguration in Compile in packageSrc).value
+      val newSources = (sourceDirectories in Compile).value.flatMap(_ ** "*.kt" get)
+
+      new Package.Configuration(
+        old.sources ++ newSources.map(f => f -> f.getName),
+        old.jar,
+        old.options
+      )
+    },
 
     libraryDependencies ++= Seq(
       Dependencies.jUnit,

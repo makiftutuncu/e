@@ -23,9 +23,9 @@ lazy val `e-docs` = project
   .settings(Settings.scalaSettings)
   .settings(Settings.mdocSettings)
 
-lazy val `e-scala`  = project.in(file("e-scala")).settings(Settings.scalaSettings)
+lazy val `e-scala`  = project.in(file("e-scala")).settings(Settings.scalaSettings).disablePlugins(KotlinPlugin)
 lazy val `e-kotlin` = project.in(file("e-kotlin")).settings(Settings.kotlinSettings)
-lazy val `e-java`   = project.in(file("e-java")).settings(Settings.javaSettings)
+lazy val `e-java`   = project.in(file("e-java")).settings(Settings.javaSettings).disablePlugins(KotlinPlugin)
 
 lazy val `e-circe` = project
   .in(file("e-circe"))
@@ -85,15 +85,11 @@ pomIncludeRepository in ThisBuild := { _ => false }
 publishMavenStyle    in ThisBuild := true
 publishTo            in ThisBuild := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
 
-val updateDocumentation = ReleaseStep(
-  releaseStepCommand("e-docs/mdoc") andThen { st =>
-    import sys.process._
-    "git add -A".!
-    st
-  }
-)
+publishArtifact in packageBin in Compile := true
+publishArtifact in packageSrc in Compile := true
+publishArtifact in packageDoc in Compile := true
 
-val checkCredentials = ReleaseStep { state =>
+val checkPublishCredentials = ReleaseStep { state =>
   if (sonatypeUser.isEmpty || sonatypePass.isEmpty) {
     throw new Exception("Sonatype credentials are missing! Make sure to provide SONATYPE_USER and SONATYPE_PASS environment variables.")
   }
@@ -101,14 +97,22 @@ val checkCredentials = ReleaseStep { state =>
   state
 }
 
+val runMDoc = ReleaseStep(
+  releaseStepCommand("e-docs/mdoc") andThen { st =>
+    import sys.process._
+    Process(Seq("git", "add", "-A"), st.baseDir).!
+    st
+  }
+)
+
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
-  checkCredentials,
+  checkPublishCredentials,
   inquireVersions,
   runClean,
   runTest,
   setReleaseVersion,
-  updateDocumentation,
+  runMDoc,
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("+e-scala/publishSigned"),
