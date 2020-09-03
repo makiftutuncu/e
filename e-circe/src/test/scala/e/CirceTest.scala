@@ -1,6 +1,6 @@
 package e
 
-import cats.implicits._
+import cats.syntax.all._
 import e.circe._
 import e.scala.E
 import e.scala.codec._

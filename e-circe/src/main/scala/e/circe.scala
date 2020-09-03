@@ -1,6 +1,6 @@
 package e
 
-import cats.implicits._
+import cats.syntax.all._
 import e.scala._
 import e.scala.codec.{CodecFor, Decoder}
 import io.circe.CursorOp.DownField
