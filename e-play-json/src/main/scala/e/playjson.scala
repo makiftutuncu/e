@@ -1,7 +1,7 @@
 package e
 
 import cats.{Functor, Semigroupal}
-import cats.implicits._
+import cats.syntax.all._
 import e.scala._
 import e.scala.codec.{CodecFor, Decoder}
 import play.api.libs.json._
