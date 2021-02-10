@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  lazy val catsCore       = "org.typelevel"        %% "cats-core"    % "2.3.1"
+  lazy val catsCore       = "org.typelevel"        %% "cats-core"    % "2.4.0"
   lazy val circeCore      = "io.circe"             %% "circe-core"   % "0.13.0"
   lazy val circeParser    = "io.circe"             %% "circe-parser" % "0.13.0"
   lazy val gson           = "com.google.code.gson"  % "gson"         % "2.8.6"
