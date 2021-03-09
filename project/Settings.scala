@@ -9,7 +9,7 @@ object Settings {
   lazy val latestKotlinVersion = "1.4.21-2"
   lazy val latestScalaVersion  = "2.13.5"
 
-  lazy val crossCompiledScalaVersions = Seq("2.12.12", latestScalaVersion)
+  lazy val crossCompiledScalaVersions = Seq("2.12.13", latestScalaVersion)
 
   lazy val commonSettings = Seq(
     resolvers += Resolver.jcenterRepo
