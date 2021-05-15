@@ -8,7 +8,7 @@ object Dependencies {
   lazy val playJson       = "com.typesafe.play"    %% "play-json"    % "2.9.2"
   lazy val zio            = "dev.zio"              %% "zio"          % "1.0.5"
 
-  lazy val jUnit           = "org.junit.jupiter"  % "junit-jupiter"     % "5.7.0" % Test
+  lazy val jUnit           = "org.junit.jupiter"  % "junit-jupiter"     % "5.7.2" % Test
   lazy val jUnitInterface  = "net.aichler"        % "jupiter-interface" % "0.8.3" % Test
   lazy val mUnit           = "org.scalameta"     %% "munit"             % "0.7.20" % Test
   lazy val mUnitScalaCheck = "org.scalameta"     %% "munit-scalacheck"  % "0.7.20" % Test
