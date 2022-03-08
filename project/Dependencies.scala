@@ -4,7 +4,7 @@ object Dependencies {
   lazy val catsCore       = "org.typelevel"        %% "cats-core"    % "2.3.1"
   lazy val circeCore      = "io.circe"             %% "circe-core"   % "0.14.1"
   lazy val circeParser    = "io.circe"             %% "circe-parser" % "0.14.1"
-  lazy val gson           = "com.google.code.gson"  % "gson"         % "2.8.6"
+  lazy val gson           = "com.google.code.gson"  % "gson"         % "2.8.9"
   lazy val playJson       = "com.typesafe.play"    %% "play-json"    % "2.9.2"
   lazy val zio            = "dev.zio"              %% "zio"          % "1.0.5"
 
