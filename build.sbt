@@ -1,14 +1,14 @@
 // === Project Definition ===
 
-(ThisBuild / description) := "A zero-dependency micro library to deal with errors"
-(ThisBuild / homepage) := Some(url("https://github.com/makiftutuncu/e"))
-(ThisBuild / startYear) := Some(2019)
-(ThisBuild / licenses) := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
-(ThisBuild / organization) := "dev.akif"
-(ThisBuild / organizationName) := "Mehmet Akif Tütüncü"
-(ThisBuild / organizationHomepage) := Some(url("https://akif.dev"))
-(ThisBuild / developers) := List(Developer("makiftutuncu", "Mehmet Akif Tütüncü", "m.akif.tutuncu@gmail.com", url("https://akif.dev")))
-(ThisBuild / scmInfo) := Some(ScmInfo(url("https://github.com/makiftutuncu/e"), "git@github.com:makiftutuncu/e.git"))
+ThisBuild / description          := "A zero-dependency micro library to deal with errors"
+ThisBuild / homepage             := Some(url("https://github.com/makiftutuncu/e"))
+ThisBuild / startYear            := Some(2019)
+ThisBuild / licenses             := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
+ThisBuild / organization         := "dev.akif"
+ThisBuild / organizationName     := "Mehmet Akif Tütüncü"
+ThisBuild / organizationHomepage := Some(url("https://akif.dev"))
+ThisBuild / developers           := List(Developer("makiftutuncu", "Mehmet Akif Tütüncü", "m.akif.tutuncu@gmail.com", url("https://akif.dev")))
+ThisBuild / scmInfo              := Some(ScmInfo(url("https://github.com/makiftutuncu/e"), "git@github.com:makiftutuncu/e.git"))
 
 // === Modules ===
 
@@ -80,14 +80,14 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 val sonatypeUser = sys.env.getOrElse("SONATYPE_USER", "")
 val sonatypePass = sys.env.getOrElse("SONATYPE_PASS", "")
 
-(ThisBuild / credentials) += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", sonatypeUser, sonatypePass)
-(ThisBuild / pomIncludeRepository) := { _ => false }
-(ThisBuild / publishMavenStyle) := true
-(ThisBuild / publishTo) := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
+ThisBuild / credentials          += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", sonatypeUser, sonatypePass)
+ThisBuild / pomIncludeRepository := { _ => false }
+ThisBuild / publishMavenStyle    := true
+ThisBuild / publishTo            := { Some(if (isSnapshot.value) "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots" else "releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") }
 
-(Compile / publishArtifact in packageBin)(packageBin / publishArtifact) := true
-(Compile / publishArtifact in packageSrc)(packageSrc / publishArtifact) := true
-(Compile / publishArtifact in packageDoc)(packageDoc / publishArtifact) := true
+Compile / packageBin / publishArtifact := true
+Compile / packageSrc / publishArtifact := true
+Compile / packageDoc / publishArtifact := true
 
 val checkPublishCredentials = ReleaseStep { state =>
   if (sonatypeUser.isEmpty || sonatypePass.isEmpty) {
