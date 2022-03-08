@@ -6,7 +6,7 @@ import sbt._
 
 object Settings {
   lazy val javaVersion         = "1.8"
-  lazy val latestKotlinVersion = "1.4.32"
+  lazy val latestKotlinVersion = "1.5.10"
   lazy val latestScalaVersion  = "2.13.8"
 
   lazy val crossCompiledScalaVersions = Seq("2.12.15", latestScalaVersion)
@@ -116,7 +116,7 @@ object Settings {
 
     // Include Kotlin files in sources
     (Compile / packageConfiguration) := {
-      val old = (packageSrc / packageConfiguration in Compile)(Compile / packageConfiguration).value
+      val old = (Compile / packageSrc / packageConfiguration).value
       val newSources = (Compile / sourceDirectories).value.flatMap(_ ** "*.kt" get)
 
       new Package.Configuration(
