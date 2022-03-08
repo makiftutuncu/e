@@ -6,7 +6,7 @@ import sbt._
 
 object Settings {
   lazy val javaVersion         = "1.8"
-  lazy val latestKotlinVersion = "1.4.32"
+  lazy val latestKotlinVersion = "1.5.10"
   lazy val latestScalaVersion  = "2.13.8"
 
   lazy val crossCompiledScalaVersions = Seq("2.12.15", latestScalaVersion)
@@ -16,7 +16,7 @@ object Settings {
   )
 
   lazy val mdocSettings = Seq(
-    skip in publish := true,
+    (publish / skip) := true,
     mdocVariables := Map(
       "VERSION"              -> version.value,
       "JAVA_VERSION"         -> javaVersion,
@@ -40,7 +40,7 @@ object Settings {
       Dependencies.jUnitInterface
     ),
 
-    classLoaderLayeringStrategy in Test := ClassLoaderLayeringStrategy.Flat,
+    (Test / classLoaderLayeringStrategy) := ClassLoaderLayeringStrategy.Flat,
 
     testOptions += Tests.Argument(jupiterTestFramework, "-q", "-v")
   )
@@ -50,9 +50,9 @@ object Settings {
       scalaVersion       := latestScalaVersion,
       crossScalaVersions := crossCompiledScalaVersions,
 
-      unmanagedSourceDirectories in Compile ++= (
+      (Compile / unmanagedSourceDirectories) ++= (
         if (scalaVersion.value.startsWith("2.12")) {
-          Seq((sourceDirectory in Compile).value / s"scala-${scalaBinaryVersion.value}")
+          Seq((Compile / sourceDirectory).value / s"scala-${scalaBinaryVersion.value}")
         } else {
           Seq.empty
         }
@@ -82,7 +82,7 @@ object Settings {
       autoAPIMappings := true,
       exportJars := true,
       apiMappings ++= {
-        val classpath = (fullClasspath in Compile).value
+        val classpath = (Compile / fullClasspath).value
         def findJar(name: String): File = {
           val regex = ("/" + name + "[^/]*.jar$").r
           classpath.find { jar => regex.findFirstIn(jar.data.toString).nonEmpty }.get.data
@@ -108,16 +108,16 @@ object Settings {
     kotlinVersion := latestKotlinVersion,
 
     // Delegate doc generation to Gradle and Dokka
-    doc in Compile := {
+    (Compile / doc) := {
       import sys.process._
       Process(Seq("./gradlew", "dokkaJavadoc"), baseDirectory.value).!
       target.value / "api"
     },
 
     // Include Kotlin files in sources
-    packageConfiguration in Compile := {
-      val old = (packageConfiguration in Compile in packageSrc).value
-      val newSources = (sourceDirectories in Compile).value.flatMap(_ ** "*.kt" get)
+    (Compile / packageConfiguration) := {
+      val old = (Compile / packageSrc / packageConfiguration).value
+      val newSources = (Compile / sourceDirectories).value.flatMap(_ ** "*.kt" get)
 
       new Package.Configuration(
         old.sources ++ newSources.map(f => f -> f.getName),

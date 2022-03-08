@@ -52,7 +52,7 @@ object EOrTest: Assertions {
     @Test fun `mapping error of an EOr`() {
         42.toEOr().mapError { it.code(1) }.assertValue(42)
 
-        E.name("test").toEOr<Int>().mapError { it.name((it.name ?: "").toUpperCase()) }.assertError(E.name("TEST"))
+        E.name("test").toEOr<Int>().mapError { it.name((it.name ?: "").uppercase()) }.assertError(E.name("TEST"))
     }
 
     @Test fun `flat mapping error of an EOr`() {
