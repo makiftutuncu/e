@@ -9,6 +9,7 @@ ThisBuild / organizationName     := "Mehmet Akif Tütüncü"
 ThisBuild / organizationHomepage := Some(url("https://akif.dev"))
 ThisBuild / developers           := List(Developer("makiftutuncu", "Mehmet Akif Tütüncü", "m.akif.tutuncu@gmail.com", url("https://akif.dev")))
 ThisBuild / scmInfo              := Some(ScmInfo(url("https://github.com/makiftutuncu/e"), "git@github.com:makiftutuncu/e.git"))
+ThisBuild / versionScheme        := Some("early-semver")
 
 // === Modules ===
 
