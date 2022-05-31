@@ -1,0 +1,15 @@
+pull_request_rules:
+  - name: Automatic merge on approval
+    conditions:
+      - and:
+        - "#approved-reviews-by>=1"
+        - or:
+          - "author=dependabot"
+          - "author=scala-steward"
+    actions:
+      request_reviews:
+        users:
+          - makiftutuncu
+      merge:
+        method: rebase
+        rebase_fallback: squash
