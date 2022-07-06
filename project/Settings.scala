@@ -6,7 +6,7 @@ import sbt._
 
 object Settings {
   lazy val javaVersion         = "1.8"
-  lazy val latestKotlinVersion = "1.6.21"
+  lazy val latestKotlinVersion = "1.7.0"
   lazy val latestScalaVersion  = "2.13.8"
 
   lazy val crossCompiledScalaVersions = Seq("2.12.15", latestScalaVersion)
