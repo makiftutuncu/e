@@ -75,6 +75,7 @@ divide(4, 0)
 ```scala mdoc:reset:to-string
 import e.ezio._
 import e.scala._
+import zio._
 
 // From E
 E.name("test-error").message("Test").toREIO[Boolean, String]
@@ -99,10 +100,9 @@ class Divider {
 
 val divider: Divider = new Divider
 
-def divide(a: Int, b: Int): REIO[Divider, Int] = REIO.accessM[Divider](_.divide(a, b))
+def divide(a: Int, b: Int): REIO[Divider, Int] = REIO.serviceWithZIO[Divider](_.divide(a, b))
 
-divide(4, 2).provide(divider)
+divide(4, 2).provide(ZLayer.succeed(divider))
 
-divide(4, 0).provide(divider)
+divide(4, 0).provide(ZLayer.succeed(divider))
 ```
-
