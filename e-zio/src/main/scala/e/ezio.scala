@@ -60,7 +60,7 @@ object ezio {
      *
      * @return A ZIO succeeding with this value
      */
-    def toEIO: EIO[A] = EIO.effectTotal(a)
+    def toEIO: EIO[A] = EIO.succeed(a)
 
     /**
      * Converts this value to a successful ZIO, in an environment
@@ -69,7 +69,7 @@ object ezio {
      *
      * @return A ZIO succeeding with this value
      */
-    def toREIO[R]: REIO[R, A] = REIO.effectTotal(a)
+    def toREIO[R]: REIO[R, A] = REIO.succeed(a)
   }
 
   implicit class EOrExtensionsForEIO[A](eor: EOr[A]) {
@@ -78,7 +78,7 @@ object ezio {
      *
      * @return A ZIO that fails with E in this EOr or succeeds with value in this EOr
      */
-    def toEIO: EIO[A] = eor.fold(e => EIO.fail(e), a => EIO.effectTotal(a))
+    def toEIO: EIO[A] = eor.fold(e => EIO.fail(e), a => EIO.succeed(a))
 
     /**
      * Converts this EOr to a ZIO, in an environment
@@ -87,7 +87,7 @@ object ezio {
      *
      * @return A ZIO that fails with E in this EOr or succeeds with value in this EOr
      */
-    def toREIO[R]: REIO[R, A] = eor.fold(e => REIO.fail(e), a => REIO.effectTotal(a))
+    def toREIO[R]: REIO[R, A] = eor.fold(e => REIO.fail(e), a => REIO.succeed(a))
   }
 
   implicit class TaskExtensionsForEIO[A](task: Task[A]) {
