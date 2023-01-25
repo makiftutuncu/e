@@ -5,7 +5,7 @@ object Dependencies {
   lazy val circeCore      = "io.circe"             %% "circe-core"   % "0.14.2"
   lazy val circeParser    = "io.circe"             %% "circe-parser" % "0.14.2"
   lazy val gson           = "com.google.code.gson"  % "gson"         % "2.9.0"
-  lazy val playJson       = "com.typesafe.play"    %% "play-json"    % "2.9.2"
+  lazy val playJson       = "com.typesafe.play"    %% "play-json"    % "2.9.4"
   lazy val zio            = "dev.zio"              %% "zio"          % "2.0.0"
 
   lazy val jUnit           = "org.junit.jupiter"  % "junit-jupiter"     % "5.8.2" % Test
