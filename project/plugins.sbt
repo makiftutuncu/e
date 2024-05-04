@@ -1,7 +1,6 @@
-resolvers += Resolver.jcenterRepo
-
-addSbtPlugin("com.hanhuy.sbt" % "kotlin-plugin"         % "2.0.0")
-addSbtPlugin("com.github.sbt" % "sbt-release"           % "1.1.0")
-addSbtPlugin("net.aichler"    % "sbt-jupiter-interface" % "0.10.0")
-addSbtPlugin("org.scalameta"  % "sbt-mdoc"              % "2.2.24")
-addSbtPlugin("com.github.sbt" % "sbt-pgp"               % "2.1.2")
+addSbtPlugin("org.bitlap" % "sbt-kotlin-plugin" % "4.0.0")
+addSbtPlugin("com.github.sbt" % "sbt-release" % "1.4.0")
+addSbtPlugin("net.aichler" % "sbt-jupiter-interface" % "0.11.1")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.5.2")
+addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.2.1")
+addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.3.3")
