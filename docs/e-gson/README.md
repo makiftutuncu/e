@@ -13,6 +13,7 @@ dependencies {
   implementation('dev.akif:e-gson:@VERSION@')
 }
 ```
+
 If you use Maven, add following to your `pom.xml`:
 
 ```xml
@@ -24,6 +25,7 @@ If you use Maven, add following to your `pom.xml`:
   </dependency>
 </dependencies>
 ```
+
 If you use SBT, add following to your `build.sbt`:
 
 ```scala

@@ -7,3 +7,5 @@ target
 .bloop
 .gradle
 .bsp
+.vscode
+metals.sbt

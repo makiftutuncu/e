@@ -13,6 +13,7 @@ dependencies {
   implementation('dev.akif:e-java:@VERSION@')
 }
 ```
+
 If you use Maven, add following to your `pom.xml`:
 
 ```xml
@@ -24,6 +25,7 @@ If you use Maven, add following to your `pom.xml`:
   </dependency>
 </dependencies>
 ```
+
 If you use SBT, add following to your `build.sbt`:
 
 ```java
@@ -45,7 +47,7 @@ import e.java.*;
 E (short for error) is the main error type used to represent an error. It is an immutable object with a fluent API. It contains following data about the error.
 
 | Field   | Type                  | Description                                               | Default Value           |
-| ------- | --------------------- | --------------------------------------------------------- | ----------------------- |
+|---------|-----------------------|-----------------------------------------------------------|-------------------------|
 | code    | `Optional<Integer>`   | A numeric code identifying the error                      | `Optional.empty()`      |
 | name    | `Optional<String>`    | A name identifying the error, usually enum-like           | `Optional.empty()`      |
 | message | `Optional<String>`    | A message about the error, usually human-readable         | `Optional.empty()`      |

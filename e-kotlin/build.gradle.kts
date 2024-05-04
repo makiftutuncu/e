@@ -1,26 +1,25 @@
-import java.net.URL
+import java.net.URI
 
 plugins {
-    kotlin("jvm") version "1.5.10"
-    id("org.jetbrains.dokka") version "1.6.10"
+    kotlin("jvm") version "1.9.23"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 group = "dev.akif"
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
-buildDir = file("target")
+layout.buildDirectory = file("target")
 
 dependencies {
     implementation(kotlin("stdlib"))
-    testImplementation("org.junit.jupiter", "junit-jupiter", "5.8.2")
+    testImplementation("org.junit.jupiter", "junit-jupiter", "5.10.2")
 }
 
 tasks.dokkaJavadoc.configure {
-    outputDirectory.set(buildDir.resolve("target/api")) // SBT will look into here while doing `packageDoc`
+    outputDirectory.set(layout.buildDirectory.dir("target/api")) // SBT will look into here while doing `packageDoc`
     dokkaSourceSets {
         named("main") {
             configureEach {
@@ -30,13 +29,15 @@ tasks.dokkaJavadoc.configure {
                 failOnWarning.set(false)
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/makiftutuncu/e/blob/master/e-kotlin/src/main/kotlin"))
+                    remoteUrl.set(
+                        URI.create("https://github.com/makiftutuncu/e/blob/master/e-kotlin/src/main/kotlin").toURL()
+                    )
                     remoteLineSuffix.set("#L")
                 }
                 jdkVersion.set(8)
                 externalDocumentationLink {
-                    url.set(URL("https://javadoc.io/doc/dev.akif/e-kotlin/"))
-                    packageListUrl.set(URL("https://javadoc.io/doc/dev.akif/e-kotlin/"))
+                    url.set(URI.create("https://javadoc.io/doc/dev.akif/e-kotlin/").toURL())
+                    packageListUrl.set(URI.create("https://javadoc.io/doc/dev.akif/e-kotlin/").toURL())
                 }
             }
         }
