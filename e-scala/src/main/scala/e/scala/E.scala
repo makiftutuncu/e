@@ -192,22 +192,20 @@ final case class E(
           if !hasData then None
           else
               Some(
-                s""""data":${
-                    data
+                s""""data":${data
                         .map:
                             case (k, v) => s""""${quote(k)}":"${quote(v)}""""
-                        .mkString("{", ",", "}")
-                }"""
+                        .mkString("{", ",", "}")}"""
               )
           ,
           time.map(t => s""""time":$t""")
         ).collect:
             case Some(s) => s
         .mkString(
-          start = "{",
-          sep = ",",
-          end = "}"
-        )
+              start = "{",
+              sep = ",",
+              end = "}"
+            )
 
 object E:
     /** An empty E

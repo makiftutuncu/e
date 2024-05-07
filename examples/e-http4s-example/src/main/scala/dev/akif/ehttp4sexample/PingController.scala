@@ -6,8 +6,8 @@ import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
 object PingController extends Controller[IO]("/") {
-  override val route: HttpRoutes[IO] =
-    HttpRoutes.of[IO] {
-      case GET -> Root / "ping" => Ok("pong")
-    }
+    override val route: HttpRoutes[IO] =
+        HttpRoutes.of[IO] { case GET -> Root / "ping" =>
+            Ok("pong")
+        }
 }
