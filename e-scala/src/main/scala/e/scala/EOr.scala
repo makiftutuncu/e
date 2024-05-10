@@ -182,7 +182,7 @@ sealed trait EOr[+A]:
       *   [[e.scala.EOr#onValue]]
       */
     def foreach[U](f: A => U): Unit =
-        onValue(f)
+        val _ = onValue(f)
 
     /** Filters this EOr by value in it, if it exists, using given function
       *
