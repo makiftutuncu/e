@@ -1,7 +1,7 @@
 package e
 
 import e.scala.*
-import zio.{ZIO, Task, RIO, IO}
+import zio.{ZIO, IO}
 
 object ezio:
     /** Type alias for a ZIO that fails with E
