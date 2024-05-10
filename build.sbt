@@ -8,7 +8,7 @@ val catsCore = "org.typelevel" %% "cats-core" % "2.10.0"
 val circeCore = "io.circe" %% "circe-core" % "0.14.7"
 val circeParser = "io.circe" %% "circe-parser" % "0.14.7"
 val gson = "com.google.code.gson" % "gson" % "2.10.1"
-val playJson = "com.typesafe.play" %% "play-json" % "2.10.5"
+val playJson = "org.playframework" %% "play-json" % "3.0.3"
 val zio = "dev.zio" %% "zio" % "2.1.0"
 
 val jUnit = "org.junit.jupiter" % "junit-jupiter" % "5.10.2" % Test
