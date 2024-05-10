@@ -15,9 +15,9 @@ object playjson extends CodecFor[JsValue, Reads, Writes]:
         new Semigroupal[JsResult]:
             override def product[A, B](fa: JsResult[A], fb: JsResult[B]): JsResult[(A, B)] =
                 (fa, fb) match
-                    case (JsError(ea), JsError(eb)) => JsError(ea ++ eb)
-                    case (JsError(ea), _) => JsError(ea)
-                    case (_, JsError(eb)) => JsError(eb)
+                    case (JsError(ea), JsError(eb))           => JsError(ea ++ eb)
+                    case (JsError(ea), _)                     => JsError(ea)
+                    case (_, JsError(eb))                     => JsError(eb)
                     case (JsSuccess(a, ap), JsSuccess(b, bp)) => JsSuccess((a, b), ap ++ bp)
 
     override given eDecoder: Reads[E] =
@@ -48,7 +48,8 @@ object playjson extends CodecFor[JsValue, Reads, Writes]:
             e.code.fold(empty)(c => Json.obj("code" -> c)) ++
                 e.name.fold(empty)(n => Json.obj("name" -> n)) ++
                 e.message.fold(empty)(m => Json.obj("message" -> m)) ++
-                (if !e.hasCause then empty else Json.obj("causes" -> Json.toJson(e.causes)(using Writes.list[E](using eEncoder)))) ++
+                (if !e.hasCause then empty
+                 else Json.obj("causes" -> Json.toJson(e.causes)(using Writes.list[E](using eEncoder)))) ++
                 (if !e.hasData then empty else Json.obj("data" -> Json.toJson(e.data))) ++
                 e.time.fold(empty)(t => Json.obj("time" -> t))
 

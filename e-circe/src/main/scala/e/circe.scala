@@ -26,7 +26,8 @@ object circe extends CodecFor[Json, CirceDecoder, CirceEncoder]:
               "code" := e.code,
               "name" := e.name,
               "message" := e.message,
-              "causes" := (if e.hasCause then e.causes.asJson(using CirceEncoder.encodeList[E](using eEncoder)) else Json.Null),
+              "causes" := (if e.hasCause then e.causes.asJson(using CirceEncoder.encodeList[E](using eEncoder))
+                           else Json.Null),
               "data" := (if e.hasData then e.data.asJson else Json.Null),
               "time" := e.time
             ).dropNullValues
