@@ -13,8 +13,8 @@ val zio = "dev.zio" %% "zio" % "2.1.0"
 
 val jUnit = "org.junit.jupiter" % "junit-jupiter" % "5.10.2" % Test
 val jUnitInterface = "net.aichler" % "jupiter-interface" % "0.11.1" % Test
-val mUnit = "org.scalameta" %% "munit" % "0.7.29" % Test
-val mUnitScalaCheck = "org.scalameta" %% "munit-scalacheck" % "0.7.29" % Test
+val mUnit = "org.scalameta" %% "munit" % "1.0.0" % Test
+val mUnitScalaCheck = "org.scalameta" %% "munit-scalacheck" % "1.0.0" % Test
 val zioTest = "dev.zio" %% "zio-test" % "2.1.0" % Test
 val zioTestSBT = "dev.zio" %% "zio-test-sbt" % "2.1.0" % Test
 
