@@ -2,7 +2,7 @@
 
 val javaVersion = "21"
 val latestKotlinVersion = "2.0.0"
-val latestScalaVersion = "3.4.1"
+val latestScalaVersion = "3.4.2"
 
 val catsCore = "org.typelevel" %% "cats-core" % "2.10.0"
 val circeCore = "io.circe" %% "circe-core" % "0.14.7"
