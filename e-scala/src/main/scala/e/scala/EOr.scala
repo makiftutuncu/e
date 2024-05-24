@@ -161,8 +161,10 @@ sealed trait EOr[+A]:
       */
     def onError[U](f: E => U): EOr[A] =
         self match
-            case Failure(e) => f(e); this
-            case _          => this
+            case Failure(e) =>
+                val _ = f(e);
+                this
+            case _ => this
 
     /** Performs a side-effect using value in this, if it exists
       *
@@ -173,8 +175,10 @@ sealed trait EOr[+A]:
       */
     def onValue[U](f: A => U): EOr[A] =
         self match
-            case Success(a) => f(a); this
-            case _          => this
+            case Success(a) =>
+                val _ = f(a);
+                this
+            case _ => this
 
     /** Alias of `onValue`
       *
