@@ -9,15 +9,15 @@ class EOrTest extends ESuite:
     property("Constructing an EOr"):
         EOr.unit.assertValue(())
 
-        forAll: (e: E) =>
+        val _ = forAll: (e: E) =>
             EOr[String](e).assertError(e)
             e.toEOr[String].assertError(e)
 
-        forAll: (string: String) =>
+        val _ = forAll: (string: String) =>
             EOr[String](string).assertValue(string)
             string.toEOr.assertValue(string)
 
-        forAll: (option: Option[String]) =>
+        val _ = forAll: (option: Option[String]) =>
             val none = E.name("None")
 
             val eor1 = EOr.fromOption(option)(none)
@@ -26,7 +26,7 @@ class EOrTest extends ESuite:
             val eor2 = option.toEOr(none)
             assertEquals(eor1, eor2)
 
-        forAll: (either: Either[Int, String]) =>
+        val _ = forAll: (either: Either[Int, String]) =>
             val toE = (i: Int) => E.code(i)
             val eor1 = EOr.fromEither(either)(toE)
             either.fold(i => eor1.assertError(toE(i)), s => eor1.assertValue(s))
@@ -34,7 +34,7 @@ class EOrTest extends ESuite:
             val eor2 = either.toEOr(toE)
             assertEquals(eor1, eor2)
 
-        forAll: (t: Try[String]) =>
+        val _ = forAll: (t: Try[String]) =>
             val toE = (th: Throwable) => E.message(th.getMessage)
             val eor1 = EOr.fromTry(t)(toE)
             t.fold(t => eor1.assertError(toE(t)), s => eor1.assertValue(s))
@@ -124,14 +124,14 @@ class EOrTest extends ESuite:
         var counter = 0
         var previous = 0
 
-        "test".toEOr.onError: _ =>
+        val _ = "test".toEOr.onError: _ =>
             previous = counter
             counter = previous + 1
         assertEquals(counter, 0)
         assertEquals(previous, 0)
 
         forAll: (e: E) =>
-            e.toEOr[String]
+            val _ = e.toEOr[String]
                 .onError: _ =>
                     previous = counter
                     counter = previous + 1
@@ -141,7 +141,7 @@ class EOrTest extends ESuite:
         val e = E.code(1)
         var counter = 0
         var previous = 0
-        e.toEOr[String]
+        val _ = e.toEOr[String]
             .onValue: _ =>
                 previous = counter
                 counter = previous + 1
@@ -150,7 +150,7 @@ class EOrTest extends ESuite:
         assertEquals(previous, 0)
 
         forAll: (s: String) =>
-            s.toEOr.onValue: _ =>
+            val _ = s.toEOr.onValue: _ =>
                 previous = counter
                 counter = previous + 1
             assertEquals(counter, previous + 1)
@@ -271,7 +271,7 @@ class EOrTest extends ESuite:
                 assertNotEquals(eor3.hashCode(), eor4.hashCode())
 
     property("Converting an EOr to String"):
-        forAll: (e: E) =>
+        val _ = forAll: (e: E) =>
             assertEquals(e.toEOr[String].toString, e.toString)
 
         forAll: (i: Int) =>

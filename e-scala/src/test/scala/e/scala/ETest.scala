@@ -13,7 +13,7 @@ class ETest extends ESuite:
         empty.assertData(Map.empty)
         empty.assertTime(None)
 
-        forAll:
+        val _ = forAll:
             (
                 code: Option[Int],
                 name: Option[String],
@@ -48,23 +48,23 @@ class ETest extends ESuite:
                 E(time = time).assertTime(time)
                 time.foreach(t => E.time(t).assertTime(Some(t)))
 
-        forAll: (cause: E) =>
+        val _ = forAll: (cause: E) =>
             val e = E.cause(cause)
             assert(e.hasCause)
             assert(e.causes.contains(cause))
 
-        forAll: (k: String, v: String) =>
+        val _ = forAll: (k: String, v: String) =>
             val e = E.data(k, v)
             assert(e.hasData)
             assertEquals(e.data.get(k), Some(v))
 
-        forAll: (t: (String, String)) =>
+        val _ = forAll: (t: (String, String)) =>
             val e = E.data(t)
             val (k, v) = t
             assert(e.hasData)
             assertEquals(e.data.get(k), Some(v))
 
-        forAll(genNow): (generatedNow: Long) =>
+        val _ = forAll(genNow): (generatedNow: Long) =>
             val e = E.now
             assert(e.hasTime)
             assertAlmostSame(generatedNow, e.time.get)
@@ -80,44 +80,44 @@ class ETest extends ESuite:
                 assertEquals(e, E.empty)
 
     property("Getting a modified copy an E"):
-        forAll: (e: E, code: Int) =>
+        val _ = forAll: (e: E, code: Int) =>
             e.code(code).assertCode(Some(code))
 
-        forAll: (e: E, name: String) =>
+        val _ = forAll: (e: E, name: String) =>
             e.name(name).assertName(Some(name))
 
-        forAll: (e: E, message: String) =>
+        val _ = forAll: (e: E, message: String) =>
             e.message(message).assertMessage(Some(message))
 
-        forAll: (e: E, causes: List[E]) =>
+        val _ = forAll: (e: E, causes: List[E]) =>
             val modified = e.causes(causes)
             assert(modified.hasCause)
             causes.foreach(c => assert(modified.causes.contains(c)))
 
-        forAll: (e: E, cause: E) =>
+        val _ = forAll: (e: E, cause: E) =>
             val modified = e.cause(cause)
             assert(modified.hasCause)
             assert(modified.causes.contains(cause))
 
-        forAll: (e: E, data: Map[String, String]) =>
+        val _ = forAll: (e: E, data: Map[String, String]) =>
             val modified = e.data(data)
             assert(modified.hasData)
 
-        forAll: (e: E, k: String, v: String) =>
+        val _ = forAll: (e: E, k: String, v: String) =>
             val modified = e.data(k, v)
             assert(modified.hasData)
             assertEquals(modified.data.get(k), Some(v))
 
-        forAll: (e: E, t: (String, String)) =>
+        val _ = forAll: (e: E, t: (String, String)) =>
             val modified = e.data(t)
             val (k, v) = t
             assert(modified.hasData)
             assertEquals(modified.data.get(k), Some(v))
 
-        forAll: (e: E, time: Long) =>
+        val _ = forAll: (e: E, time: Long) =>
             e.time(time).assertTime(Some(time))
 
-        forAll(genE, genNow): (e: E, generatedNow: Long) =>
+        val _ = forAll(genE, genNow): (e: E, generatedNow: Long) =>
             val modified = e.now
             assert(modified.hasTime)
             assertAlmostSame(generatedNow, modified.time.get)
@@ -139,7 +139,7 @@ class ETest extends ESuite:
             assertEquals(EException(e), e.toException)
 
     property("Constructing an E from a Throwable"):
-        forAll: (message: String) =>
+        val _ = forAll: (message: String) =>
             val ex = new Exception(message)
             val e = E.message(message)
 
