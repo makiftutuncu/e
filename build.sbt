@@ -9,14 +9,14 @@ val circeCore = "io.circe" %% "circe-core" % "0.14.7"
 val circeParser = "io.circe" %% "circe-parser" % "0.14.7"
 val gson = "com.google.code.gson" % "gson" % "2.11.0"
 val playJson = "org.playframework" %% "play-json" % "3.0.3"
-val zio = "dev.zio" %% "zio" % "2.1.1"
+val zio = "dev.zio" %% "zio" % "2.1.3"
 
 val jUnit = "org.junit.jupiter" % "junit-jupiter" % "5.10.2" % Test
 val jUnitInterface = "net.aichler" % "jupiter-interface" % "0.11.1" % Test
 val mUnit = "org.scalameta" %% "munit" % "1.0.0" % Test
 val mUnitScalaCheck = "org.scalameta" %% "munit-scalacheck" % "1.0.0" % Test
-val zioTest = "dev.zio" %% "zio-test" % "2.1.1" % Test
-val zioTestSBT = "dev.zio" %% "zio-test-sbt" % "2.1.1" % Test
+val zioTest = "dev.zio" %% "zio-test" % "2.1.3" % Test
+val zioTestSBT = "dev.zio" %% "zio-test-sbt" % "2.1.3" % Test
 
 // === Settings ===
 
