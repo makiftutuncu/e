@@ -131,7 +131,8 @@ class EOrTest extends ESuite:
         assertEquals(previous, 0)
 
         forAll: (e: E) =>
-            val _ = e.toEOr[String]
+            val _ = e
+                .toEOr[String]
                 .onError: _ =>
                     previous = counter
                     counter = previous + 1
@@ -141,7 +142,8 @@ class EOrTest extends ESuite:
         val e = E.code(1)
         var counter = 0
         var previous = 0
-        val _ = e.toEOr[String]
+        val _ = e
+            .toEOr[String]
             .onValue: _ =>
                 previous = counter
                 counter = previous + 1
