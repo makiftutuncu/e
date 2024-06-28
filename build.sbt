@@ -11,7 +11,7 @@ val gson = "com.google.code.gson" % "gson" % "2.11.0"
 val playJson = "org.playframework" %% "play-json" % "3.0.3"
 val zio = "dev.zio" %% "zio" % "2.1.1"
 
-val jUnit = "org.junit.jupiter" % "junit-jupiter" % "5.10.2" % Test
+val jUnit = "org.junit.jupiter" % "junit-jupiter" % "5.10.3" % Test
 val jUnitInterface = "net.aichler" % "jupiter-interface" % "0.11.1" % Test
 val mUnit = "org.scalameta" %% "munit" % "1.0.0" % Test
 val mUnitScalaCheck = "org.scalameta" %% "munit-scalacheck" % "1.0.0" % Test
