@@ -1,7 +1,7 @@
 // === Dependency Versions ===
 
 val javaVersion = "21"
-val latestKotlinVersion = "2.0.0"
+val latestKotlinVersion = "2.0.21"
 val latestScalaVersion = "3.4.2"
 
 val catsCore = "org.typelevel" %% "cats-core" % "2.10.0"
